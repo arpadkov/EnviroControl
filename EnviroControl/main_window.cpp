@@ -1,14 +1,18 @@
 #include "MainWindow.h"
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindowClass())
+#include "WeatherStation.h"
+
+MainWindow::MainWindow(QWidget* parent)
+	: QMainWindow(parent)
+	, ui(new Ui::MainWindowClass())
 {
-    ui->setupUi(this);
+	auto ws = new WeatherStation(this);
+
+	ui->setupUi(this);
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+	delete ui;
 }
 

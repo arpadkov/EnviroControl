@@ -23,9 +23,15 @@ set(PROJECT_SOURCES
     main.cpp
 )
 
-message(STATUS "BUILDING EnviroControl with Qt version: ${Qt6_VERSION}")
-
 qt_add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
+
+# The compiler on the pi requires explicitly including the autogen files
+target_include_directories(${PROJECT_NAME} PRIVATE
+    # For MainWindow
+    "${CMAKE_CURRENT_BINARY_DIR}/MainWindow/MainWindow_autogen/include"
+    # Example for other future UI-containing subdirectories:
+    # "${CMAKE_CURRENT_BINARY_DIR}/AnotherComponentWithUI/AnotherComponentWithUI_autogen/include"
+)
 
 # --- PLATFORM-SPECIFIC SETTINGS ---
 # Set WIN32_EXECUTABLE property ONLY for Windows builds.

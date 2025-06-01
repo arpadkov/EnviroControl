@@ -27,6 +27,11 @@ message(STATUS "BUILDING EnviroControl with Qt version: ${Qt6_VERSION}")
 
 qt_add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
 
+target_include_directories(${PROJECT_NAME} PRIVATE
+    # This retrieves the automatically generated include directory path for the 'MainWindow' target
+    $<TARGET_PROPERTY:MainWindow,AUTOGEN_INCLUDE_DIR>
+)
+
 # --- PLATFORM-SPECIFIC SETTINGS ---
 # Set WIN32_EXECUTABLE property ONLY for Windows builds.
 # On Linux (Raspberry Pi), this property is not applicable and would cause a warning/error.

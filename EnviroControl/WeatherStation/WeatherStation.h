@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QtCore/QObject.h>
+#include <QtCore/QObject>
 
 class WeatherStation : public QObject
 {

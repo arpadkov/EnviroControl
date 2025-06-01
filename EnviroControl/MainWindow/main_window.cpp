@@ -15,6 +15,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::onWeatherDataReady(const WFP::ForecastData& data)
 {
-	ui->_test_l->setText(data.toString() + " Hellooo");
+	ui->_test_l->setText(data.toString() + " HelloooXXX");
 }
 

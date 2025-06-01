@@ -1,5 +1,6 @@
 # MainWindow
 
+find_package(Qt6 COMPONENTS Widgets REQUIRED)
 qt_add_library(MainWindow STATIC
     MainWindow.ui
     MainWindow.h
@@ -15,7 +16,7 @@ target_link_libraries(MainWindow PRIVATE
     Logging
     WeatherForecastProvider
     WeatherStation
-    Qt::Core
-    Qt::Gui
-    Qt::Widgets
+    Qt6::Core
+    Qt6::Gui
+    Qt6::Widgets
 )

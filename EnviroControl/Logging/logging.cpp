@@ -19,19 +19,19 @@ Q_LOGGING_CATEGORY(appLog, "envirocontrol")
 
 namespace
 {
-QFile logFile;
+QFile log_file;
 }
 
 namespace Log
 {
 
-void setLogFile(const QString& filePath)
+void setLogHandler(const QString& file_path)
 {
-	if (logFile.isOpen())
-		logFile.close();
+	if (log_file.isOpen())
+		log_file.close();
 
-	logFile.setFileName(filePath);
-	if (logFile.open(QIODevice::Append | QIODevice::Text))
+	log_file.setFileName(file_path);
+	if (log_file.open(QIODevice::Append | QIODevice::Text))
 	{
 		auto handler = [](QtMsgType type, const QMessageLogContext& context, const QString& msg)
 			{
@@ -48,7 +48,7 @@ void setLogFile(const QString& filePath)
 				}
 				log_stream << msg << "\n";
 
-				QTextStream file_out(&logFile);
+				QTextStream file_out(&log_file);
 				file_out << formatted_msg;
 				file_out.flush();
 
@@ -70,7 +70,7 @@ void init()
 	QString log_dir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + QDir::separator() + "EnviroControl";
 	QDir().mkpath(log_dir); // Ensure the directory exists
 	QString log_file_path = log_dir + QDir::separator() + "envirocontrol.log";
-	setLogFile(log_file_path);
+	setLogHandler(log_file_path);
 }
 
 }

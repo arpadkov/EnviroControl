@@ -14,6 +14,11 @@ target_include_directories(MainWindow
         ${CMAKE_CURRENT_SOURCE_DIR} # Allows other targets to include this
 )
 
+target_include_directories(MainWindow INTERFACE
+    # This retrieves the automatically generated include directory path for the 'MainWindow' target
+    $<TARGET_PROPERTY:MainWindow,AUTOGEN_INCLUDE_DIR>
+)
+
 target_link_libraries(MainWindow PRIVATE
     Logging
     WeatherForecastProvider

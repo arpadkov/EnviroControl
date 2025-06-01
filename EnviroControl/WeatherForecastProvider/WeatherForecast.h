@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QtCore/Qobject>
+#include <QtCore/QObject>
 #include <QtCore/QTimer>
 #include <QNetworkAccessManager>
 #include <QtCore/QPointer>

@@ -13,6 +13,7 @@ target_include_directories(WeatherForecastProvider
 )
 
 target_link_libraries(WeatherForecastProvider PRIVATE
+    Config
     Logging
     ErrorDetail
     Qt6::Core

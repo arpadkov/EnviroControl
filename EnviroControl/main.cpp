@@ -1,4 +1,5 @@
 #include "MainWindow.h"
+#include "ConfigParser.h"
 #include "ErrorDetail.h"
 #include "Logging.h"
 #include "WeatherForecast.h"
@@ -19,6 +20,8 @@ WFP::WeatherForecast* createWeatherForecast()
 int main(int argc, char* argv[])
 {
 	Log::init();
+
+	const auto& cfg = ConfigParser::parseConfigFile();
 
 	qDebug(appLog) << "Application started";
 

@@ -16,6 +16,7 @@ target_link_libraries(MainWindow PRIVATE
     Logging
     WeatherForecastProvider
     WeatherStation
+    Config
     Qt6::Core
     Qt6::Gui
     Qt6::Widgets

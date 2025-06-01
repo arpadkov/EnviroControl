@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ConfigParser.h"
+
 #include <QtCore/QObject>
 #include <QtCore/QTimer>
 #include <QNetworkAccessManager>
@@ -23,7 +25,7 @@ class WeatherForecast : public QObject
 {
 	Q_OBJECT
 public:
-	explicit WeatherForecast(std::pair<double, double> coordinates, int update_sec, QObject* parent = nullptr);
+	explicit WeatherForecast(const WeatherForeCastConfig& cfg, QObject* parent = nullptr);
 
 public Q_SLOTS:
 	void startFetching();

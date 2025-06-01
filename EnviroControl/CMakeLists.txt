@@ -41,6 +41,7 @@ set(PROJECT_SOURCES
 qt_add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
 
 add_component(Logging)
+add_component(Config)
 add_component(ErrorDetail)
 add_component(WeatherForecastProvider)
 add_component(WeatherStation)

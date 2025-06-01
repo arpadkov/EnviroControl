@@ -1,6 +1,6 @@
 # WeatherStation
 
-add_library(WeatherStation STATIC
+qt_add_library(WeatherStation STATIC
     WeatherStation.h
     weather_station.cpp
 )

@@ -1,6 +1,6 @@
 # Logging
 
-add_library(Logging STATIC
+qt_add_library(Logging STATIC
     logging.cpp
     Logging.h
 )

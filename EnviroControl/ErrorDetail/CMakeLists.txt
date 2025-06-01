@@ -1,6 +1,6 @@
 # ErrorDetail
 
-add_library(ErrorDetail STATIC
+qt_add_library(ErrorDetail STATIC
     ErrorDetail.h
     error_detail.cpp
 )

@@ -1,6 +1,6 @@
 # MainWindow
 
-add_library(MainWindow STATIC
+qt_add_library(MainWindow STATIC
     MainWindow.ui
     MainWindow.h
     main_window.cpp

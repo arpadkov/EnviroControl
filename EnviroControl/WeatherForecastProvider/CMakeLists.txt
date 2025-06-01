@@ -1,6 +1,6 @@
 # WeatherForecastProvider
 
-add_library(WeatherForecastProvider STATIC
+qt_add_library(WeatherForecastProvider STATIC
     WeatherForecast.h
     weather_forecast.cpp
     ForecastData.h

@@ -6,6 +6,8 @@ qt_add_library(MainWindow STATIC
     MainWindow.h
     main_window.cpp
 )
+message(STATUS "MAIN WINDOW LIB ADDED")
+
 
 target_include_directories(MainWindow
     PUBLIC

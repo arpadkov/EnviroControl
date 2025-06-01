@@ -16,5 +16,5 @@ target_include_directories(WeatherStation
 
 target_link_libraries(WeatherStation PRIVATE
     ErrorDetail
-    Qt::Core
+    Qt6::Core
 )

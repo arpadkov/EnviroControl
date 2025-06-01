@@ -6,4 +6,4 @@ qt_add_library(Logging STATIC
 )
 
 target_include_directories(Logging PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(Logging PUBLIC Qt::Core)
+target_link_libraries(Logging PUBLIC Qt6::Core)

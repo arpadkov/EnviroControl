@@ -11,5 +11,5 @@ target_include_directories(ErrorDetail
 )
 
 target_link_libraries(ErrorDetail PRIVATE
-   Qt::Core
+   Qt6::Core
 )

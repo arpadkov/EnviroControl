@@ -23,6 +23,8 @@ set(PROJECT_SOURCES
     main.cpp
 )
 
+message(STATUS "BUILDING EnviroControl with Qt version: ${Qt6_VERSION}")
+
 qt_add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
 
 # --- PLATFORM-SPECIFIC SETTINGS ---
@@ -42,11 +44,11 @@ set_target_properties(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
-        Qt::Core
-        Qt::Gui
-        Qt::Widgets
-        Qt::Network
-        Qt::SerialPort
+        Qt6::Core
+        Qt6::Gui
+        Qt6::Widgets
+        Qt6::Network
+        Qt6::SerialPort
 
         Logging
         ErrorDetail

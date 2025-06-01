@@ -15,6 +15,6 @@ target_include_directories(WeatherForecastProvider
 target_link_libraries(WeatherForecastProvider PRIVATE
     Logging
     ErrorDetail
-    Qt::Core
-    Qt::Network
+    Qt6::Core
+    Qt6::Network
 )

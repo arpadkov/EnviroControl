@@ -4,7 +4,7 @@
 #include "WeatherForecast.h"
 #include "ForecastData.h"
 
-#include <QtCore/Qthread>
+#include <QtCore/QThread>
 #include <QtWidgets/QApplication>
 
 WFP::WeatherForecast* createWeatherForecast()

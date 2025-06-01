@@ -29,7 +29,7 @@ qt_add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     # This retrieves the automatically generated include directory path for the 'MainWindow' target
-    $<TARGET_PROPERTY:MainWindow,AUTOGEN_INCLUDE_DIR>
+    ${CMAKE_CURRENT_BINARY_DIR}/MainWindow/MainWindow_autogen/include
 )
 
 # --- PLATFORM-SPECIFIC SETTINGS ---

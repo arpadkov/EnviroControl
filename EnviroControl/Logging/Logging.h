@@ -3,7 +3,8 @@
 #include <QString>
 #include <QLoggingCategory>
 
-Q_DECLARE_LOGGING_CATEGORY(appLog)
+Q_DECLARE_LOGGING_CATEGORY(app_log)
+Q_DECLARE_LOGGING_CATEGORY(main_win)
 
 namespace Log
 {

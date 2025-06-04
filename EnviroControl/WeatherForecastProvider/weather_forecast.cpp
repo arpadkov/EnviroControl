@@ -3,26 +3,23 @@
 #include "ForecastData.h"
 
 #include <QtCore/QUrlQuery>
-#include <QNetworkReply>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QDir>
-#include <QStandardPaths>
+#include <QtCore/QJsonDocument>
+#include <QtCore/QJsonObject>
+#include <QtCore/QDir>
+#include <QtCore/QStandardPaths>
+#include <QtNetwork/QNetworkAccessManager>
+#include <QtNetwork/QNetworkReply>
 
 #include <moc_WeatherForecast.cpp>
 
 namespace WFP
 {
 
-WeatherForecast::WeatherForecast(std::pair<double, double> coordinates, int update_sec, QObject* parent)
-	: QObject(parent), _coordinates(coordinates), _update_interval_sec(update_sec)
+WeatherForecast::WeatherForecast(const Cfg::WeatherForeCastConfig& cfg, QObject* parent)
+	: QObject(parent), _cfg(cfg)
 {
 	_fetch_timer = new QTimer(this);
 	connect(_fetch_timer, &QTimer::timeout, this, &WeatherForecast::onFetchTimeout);
-
-	auto config = parseConfig();
-	_api_url = config.first;
-	_api_key = config.second;
 }
 
 void WeatherForecast::startFetching()
@@ -30,17 +27,11 @@ void WeatherForecast::startFetching()
 	if (_network_manager)
 		return; // Already started fetching
 
-	if (_api_url.isEmpty() || _api_key.isEmpty())
-	{
-		Q_EMIT errorOccurred("API URL or API key is not set. Please check your configuration.");
-		return; // Not initialized properly
-	}
-
 	// Create NetworkManager only once moved to target thread
 	_network_manager = new QNetworkAccessManager(this);
 	connect(_network_manager, &QNetworkAccessManager::finished, this, &WeatherForecast::onNetworkReplyFinished);
 
-	_fetch_timer->setInterval(_update_interval_sec * 1000);
+	_fetch_timer->setInterval(_cfg.update_sec * 1000);
 	_fetch_timer->start();
 
 	// Trigger an immediate first fetch
@@ -56,12 +47,12 @@ void WeatherForecast::onFetchTimeout()
 		return; // Not initialized
 	}
 
-	QUrl url(_api_url);
+	QUrl url(_cfg.api_url);
 	QUrlQuery query;
 
-	query.addQueryItem("lat", QString::number(_coordinates.first, 'f', 6));
-	query.addQueryItem("lon", QString::number(_coordinates.second, 'f', 6));
-	query.addQueryItem("appid", _api_key);
+	query.addQueryItem("lat", QString::number(_cfg.lat, 'f', 6));
+	query.addQueryItem("lon", QString::number(_cfg.lon, 'f', 6));
+	query.addQueryItem("appid", _cfg.api_key);
 	query.addQueryItem("units", "metric"); // Use metric units by default
 	query.addQueryItem("exclude", "minutely,hourly"); // Exclude unnecessary data
 

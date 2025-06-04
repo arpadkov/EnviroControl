@@ -71,6 +71,7 @@ target_link_libraries(${PROJECT_NAME}
         Qt6::SerialPort
 
         Logging
+        Config
         ErrorDetail
         WeatherForecastProvider
         MainWindow

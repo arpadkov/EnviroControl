@@ -5,6 +5,9 @@
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 
+namespace Cfg
+{
+
 namespace
 {
 QString getConfigFile()
@@ -118,4 +121,6 @@ std::optional<Config> ConfigParser::parseConfigFile()
 	cfg.forecast_cfg = weather_forecast_cfg.value();
 
 	return cfg;
+}
+
 }

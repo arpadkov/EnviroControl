@@ -2,6 +2,9 @@
 
 #include <QString>
 
+namespace Cfg
+{
+
 struct WeatherForeCastConfig
 {
 	QString api_url;
@@ -21,3 +24,5 @@ class ConfigParser
 public:
 	static std::optional<Config> parseConfigFile();
 };
+
+}

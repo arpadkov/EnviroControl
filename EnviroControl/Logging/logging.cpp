@@ -15,7 +15,8 @@
 #include <windows.h>
 #endif
 
-Q_LOGGING_CATEGORY(appLog, "envirocontrol")
+Q_LOGGING_CATEGORY(app_log, "envirocontrol")
+Q_LOGGING_CATEGORY(main_win, "main_window")
 
 namespace
 {

@@ -1,4 +1,5 @@
 #include "AutomationEngine.h"
+#include "WeatherStation.h"
 
 namespace Automation
 {

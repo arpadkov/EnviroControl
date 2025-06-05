@@ -2,6 +2,10 @@
 
 #include <QtCore/QObject>
 
+class WeatherData
+{
+};
+
 class WeatherStation : public QObject
 {
 	Q_OBJECT

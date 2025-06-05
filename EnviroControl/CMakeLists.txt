@@ -45,6 +45,7 @@ add_component(Config)
 add_component(ErrorDetail)
 add_component(WeatherForecastProvider)
 add_component(WeatherStation)
+add_component(DeviceController)
 add_component(MainWindow HAS_UI)
 add_component(AutomationEngine HAS_UI)
 
@@ -75,8 +76,9 @@ target_link_libraries(${PROJECT_NAME}
         Config
         ErrorDetail
         WeatherForecastProvider
-        MainWindow
         WeatherStation
         AutomationEngine
+        DeviceController
+        MainWindow
 )
 

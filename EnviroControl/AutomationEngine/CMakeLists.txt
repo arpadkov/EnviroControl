@@ -5,6 +5,8 @@ qt_add_library(AutomationEngine STATIC
     automation_engine.cpp
     AutomationWidget.h
     automation_widget.cpp
+    RulesProcessor.h
+    rules_processor.cpp
 )
 
 target_include_directories(AutomationEngine PUBLIC
@@ -16,6 +18,7 @@ target_link_libraries(AutomationEngine PRIVATE
     ErrorDetail
     WeatherStation
     Config
+    DeviceController
     Qt6::Core
     Qt6::Gui
     Qt6::Widgets

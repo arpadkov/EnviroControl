@@ -1,10 +1,15 @@
 #pragma once
 
 #include <QtCore/QObject>
+#include <QtCore/QTimer>
+#include <QtCore/QPointer>
 
 class WeatherData;
 
+namespace Device
+{
 class DeviceStates;
+}
 
 namespace Automation
 {
@@ -22,12 +27,20 @@ class AutomationEngine : public QObject
 	Q_OBJECT
 public:
 	explicit AutomationEngine(QObject* parent = nullptr);
-	~AutomationEngine();
+	~AutomationEngine() = default;
 
 Q_SIGNALS:
-	void deviceStatesCalculated(const DeviceStates& calulated_states);
+	void deviceStatesUpdate(const Device::DeviceStates& calulated_states);
 
 public Q_SLOTS:
 	void onWeatherStationData(const WeatherData& weather_data);
+
+private:
+	void onCalcTimeout();
+
+private:
+	QPointer<QTimer> _calc_timer = nullptr;
+	std::vector<WeatherData> _weather_data_history; // circular buffer, last is latest
+	int _weather_data_history_length = 3600;
 };
 }

@@ -3,6 +3,7 @@
 #include "ForecastData.h"
 #include "WeatherForecast.h"
 #include "Logging.h"
+#include "AutomationEngine.h"
 
 #include <QtCore/QThread>
 
@@ -11,6 +12,8 @@ MainWindow::MainWindow(const Cfg::Config& cfg, QWidget* parent)
 	, ui(new Ui::MainWindowClass())
 {
 	ui->setupUi(this);
+
+	initWeatherForecastThread();
 }
 
 MainWindow::~MainWindow()

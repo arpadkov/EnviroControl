@@ -46,6 +46,7 @@ add_component(ErrorDetail)
 add_component(WeatherForecastProvider)
 add_component(WeatherStation)
 add_component(MainWindow HAS_UI)
+add_component(AutomationEngine HAS_UI)
 
 # --- PLATFORM-SPECIFIC SETTINGS ---
 # Set WIN32_EXECUTABLE property ONLY for Windows builds.
@@ -76,5 +77,6 @@ target_link_libraries(${PROJECT_NAME}
         WeatherForecastProvider
         MainWindow
         WeatherStation
+        AutomationEngine
 )
 

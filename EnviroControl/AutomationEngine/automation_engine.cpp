@@ -23,6 +23,11 @@ AutomationEngine::AutomationEngine(QObject* parent) : QObject(parent)
 	_calc_timer->start();
 }
 
+void AutomationEngine::setManualMode()
+{
+	_calc_timer->stop();
+}
+
 void AutomationEngine::onWeatherStationData(const WeatherData& weather_data)
 {
 	addCircularBufferData(_weather_data_history, weather_data, _weather_data_history_length);
@@ -34,7 +39,7 @@ void AutomationEngine::onCalcTimeout()
 		return;
 
 	const auto& calculated_states = RulesProcessor::calculateDeviceStates({}, _weather_data_history);
-	Q_EMIT deviceStatesUpdate(calculated_states);
+	Q_EMIT deviceStatesUpdated(calculated_states);
 }
 
 }

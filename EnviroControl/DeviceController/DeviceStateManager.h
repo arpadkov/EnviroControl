@@ -1,7 +1,21 @@
 #pragma once
 
+#include <QtCore/QString>
+
 namespace Device
 {
+
+enum class DevicePosition : uint
+{
+	Open = 0,
+	Closed = 1,
+};
+
+struct DeviceState
+{
+	QString device_id;
+	DevicePosition position
+};
 
 /*
 * Holds the state of the devices, either the currently active state or the calculated state.
@@ -9,7 +23,7 @@ namespace Device
 */
 class DeviceStates
 {
-
+	// Dynamic list or map of DeviceState objects - with device names
 };
 
 // DeviceStateManager (seperate thread)
@@ -20,6 +34,7 @@ class DeviceStates
 //  tasks are queried, and executed with timing 
 //   send task -> wait for 2 minutes to finish -> send next task
 //  tasks are logged, and current state is stored based on last tasks
+// on manual mode: abort everything
 
 class IDeviceStateManager
 {

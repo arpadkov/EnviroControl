@@ -9,6 +9,7 @@ class WeatherData;
 namespace Device
 {
 class DeviceStates;
+class DeviceState;
 }
 
 namespace Automation
@@ -29,11 +30,16 @@ public:
 	explicit AutomationEngine(QObject* parent = nullptr);
 	~AutomationEngine() = default;
 
+	void setManualMode();
+
 Q_SIGNALS:
-	void deviceStatesUpdate(const Device::DeviceStates& calulated_states);
+	void deviceStatesUpdated(const Device::DeviceStates& calulated_states);
+	void automationModeChanged(bool manual_mode);
+	void manualDeviceRequest(const Device::DeviceState& state);
 
 public Q_SLOTS:
 	void onWeatherStationData(const WeatherData& weather_data);
+	void onManualDeviceRequest(const Device::DeviceState& state);
 
 private:
 	void onCalcTimeout();

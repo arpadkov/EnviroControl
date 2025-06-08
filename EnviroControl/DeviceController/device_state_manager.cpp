@@ -27,7 +27,11 @@ void DeviceStateManager::onManualDeviceRequest(const Device::DeviceState& state)
 		return;
 	}
 
-	// TODO: ABORT ALL CURRENT REQUESTS FOR EVERY DEVICE
+	for (const auto& driver : _device_drivers)
+	{
+		if (driver)
+			driver->reset();
+	}
 
 	switch (state.position)
 	{

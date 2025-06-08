@@ -23,6 +23,7 @@ public:
 	virtual void initialize() const = 0;
 	virtual void open() const = 0;
 	virtual void close() const = 0;
+	virtual void reset() const = 0;
 
 	virtual QString getId() const = 0;
 
@@ -39,6 +40,7 @@ public:
 	void initialize() const override;
 	void open() const override;
 	void close() const override;
+	void reset() const override;
 
 	QString getId() const override;
 };

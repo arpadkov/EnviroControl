@@ -21,12 +21,17 @@ void TestDeviceDriver::initialize() const
 
 void TestDeviceDriver::open() const
 {
-	qDebug(device_log) << "TestDeviceDriver::open() called.";
+	qDebug(device_log) << "TestDeviceDriver::open " << _id << " called.";
 }
 
 void TestDeviceDriver::close() const
 {
-	qDebug(device_log) << "TestDeviceDriver::close() called.";
+	qDebug(device_log) << "TestDeviceDriver::close " << _id << " called.";
+}
+
+void TestDeviceDriver::reset() const
+{
+	qDebug(device_log) << "TestDeviceDriver::reset " << _id << " called.";
 }
 
 QString TestDeviceDriver::getId() const

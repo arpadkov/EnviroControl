@@ -4,6 +4,7 @@
 #include "WeatherForecast.h"
 #include "Logging.h"
 #include "AutomationEngine.h"
+#include "ManualDeviceControlWidget.h"
 
 #include <QtCore/QThread>
 
@@ -14,6 +15,7 @@ MainWindow::MainWindow(const Cfg::Config& cfg, QWidget* parent)
 	ui->setupUi(this);
 
 	initWeatherForecastThread();
+	initAutomationEngine();
 }
 
 MainWindow::~MainWindow()
@@ -37,16 +39,28 @@ void MainWindow::initWeatherForecastThread()
 
 	QObject::connect(forecast, &WFP::WeatherForecast::forecastDataReady, [](const WFP::ForecastData& data)
 		{
-			qDebug(main_win) << "Weather forecast ready:" << data.toString();
+			qDebug(main_win_log) << "Weather forecast ready:" << data.toString();
 		});
 	QObject::connect(forecast, &WFP::WeatherForecast::forecastDataReady, this, &MainWindow::onWeatherDataReady);
 
 	QObject::connect(forecast, &WFP::WeatherForecast::errorOccurred, [](const ErrorDetail& error)
 		{
-			qDebug(main_win) << "Error in weather forecast:" << error.getErrorMessage();
+			qDebug(main_win_log) << "Error in weather forecast:" << error.getErrorMessage();
 		});
 
 	_weather_forecast_thread->start();
+}
+
+void MainWindow::initAutomationEngine()
+{
+	_automation_engine = new Automation::AutomationEngine(_cfg.device_cfg_list, this);
+
+	_manual_device_control_widget = new Automation::ManualDeviceControlWidget(_cfg.device_cfg_list, this);
+	ui->_manual_ctrl_layout->addWidget(_manual_device_control_widget);
+
+	// Connect to widget signals
+	connect(_manual_device_control_widget, &Automation::ManualDeviceControlWidget::deviceUpPressed, _automation_engine, &Automation::AutomationEngine::onManualDeviceUpRequest);
+	connect(_manual_device_control_widget, &Automation::ManualDeviceControlWidget::deviceDownPressed, _automation_engine, &Automation::AutomationEngine::onManualDeviceDownRequest);
 }
 
 void MainWindow::onWeatherDataReady(const WFP::ForecastData& data)

@@ -22,6 +22,9 @@
       </property>
      </widget>
     </item>
+    <item>
+     <layout class="QVBoxLayout" name="_manual_ctrl_layout"/>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">

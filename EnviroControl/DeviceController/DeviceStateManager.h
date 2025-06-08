@@ -1,9 +1,15 @@
 #pragma once
 
+#include "ConfigParser.h"
+
+#include <QtCore/QObject>
 #include <QtCore/QString>
+#include <QtCore/QMetaType>
 
 namespace Device
 {
+
+class IDeviceDriver;
 
 enum class DevicePosition : uint
 {
@@ -14,7 +20,7 @@ enum class DevicePosition : uint
 struct DeviceState
 {
 	QString device_id;
-	DevicePosition position
+	DevicePosition position;
 };
 
 /*
@@ -36,8 +42,26 @@ class DeviceStates
 //  tasks are logged, and current state is stored based on last tasks
 // on manual mode: abort everything
 
-class IDeviceStateManager
+class DeviceStateManager : public QObject
 {
+	Q_OBJECT
 
+public:
+	DeviceStateManager(const Cfg::DeviceConfigList& cfg, QObject* parent = nullptr);
+	~DeviceStateManager();
+
+public Q_SLOTS:
+	void onManualDeviceRequest(const Device::DeviceState& state);
+
+private:
+	void registerDevices();
+	IDeviceDriver* getDeviceDriver(const QString& device_id);
+
+private:
+	std::vector<std::unique_ptr<IDeviceDriver>> _device_drivers;
+	Cfg::DeviceConfigList _devices_cfg;
 };
 }
+
+Q_DECLARE_METATYPE(Device::DeviceState);
+Q_DECLARE_METATYPE(Device::DeviceStates);

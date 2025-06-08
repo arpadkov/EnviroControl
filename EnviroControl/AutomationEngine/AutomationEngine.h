@@ -1,8 +1,12 @@
 #pragma once
 
+#include "ConfigParser.h"
+
 #include <QtCore/QObject>
 #include <QtCore/QTimer>
 #include <QtCore/QPointer>
+
+class QThread;
 
 class WeatherData;
 
@@ -27,7 +31,7 @@ class AutomationEngine : public QObject
 {
 	Q_OBJECT
 public:
-	explicit AutomationEngine(QObject* parent = nullptr);
+	explicit AutomationEngine(const Cfg::DeviceConfigList& cfg, QObject* parent = nullptr);
 	~AutomationEngine() = default;
 
 	void setManualMode();
@@ -39,14 +43,19 @@ Q_SIGNALS:
 
 public Q_SLOTS:
 	void onWeatherStationData(const WeatherData& weather_data);
-	void onManualDeviceRequest(const Device::DeviceState& state);
+	void onManualDeviceUpRequest(const QString& device_id);
+	void onManualDeviceDownRequest(const QString& device_id);
 
 private:
 	void onCalcTimeout();
+	void initStateManagerThread();
 
 private:
 	QPointer<QTimer> _calc_timer = nullptr;
 	std::vector<WeatherData> _weather_data_history; // circular buffer, last is latest
 	int _weather_data_history_length = 3600;
+	Cfg::DeviceConfigList _devices_cfg;
+
+	QPointer<QThread> _state_manager_thread = nullptr;
 };
 }

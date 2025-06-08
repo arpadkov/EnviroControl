@@ -14,9 +14,21 @@ struct WeatherForeCastConfig
 	int update_sec;
 };
 
+struct DeviceConfig
+{
+	QString device_name;
+	QString device_id;
+};
+
+struct DeviceConfigList
+{
+	std::vector<DeviceConfig> device_cfgs;
+};
+
 struct Config
 {
 	WeatherForeCastConfig forecast_cfg;
+	DeviceConfigList device_cfg_list;
 };
 
 class ConfigParser

@@ -2,6 +2,7 @@
 
 #include <QtCore/QStandardPaths>
 #include <QtCore/QDir>
+#include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 
@@ -79,6 +80,69 @@ std::optional<WeatherForeCastConfig> parseWeatherForecastConfig(const QJsonObjec
 
 	return weather_forecast_cfg;
 }
+
+std::optional<DeviceConfigList> parseDeviceConfig(const QJsonObject& root_obj)
+{
+	if (!root_obj.contains("device_config") || !root_obj["device_config"].isObject())
+	{
+		qCritical() << "'weather_forecast_config' object not found or is not an object in config file";
+		return {};
+	}
+
+	QJsonObject device_cfg_obj = root_obj["device_config"].toObject();
+
+	DeviceConfigList config_list;
+	if (!device_cfg_obj.contains("devices") || !device_cfg_obj["devices"].isArray())
+	{
+		qCritical() << "'device_config' object does not contain a 'devices' array.";
+		return {};
+	}
+
+	QJsonArray devices_array = device_cfg_obj["devices"].toArray();
+
+	// Iterate through the devices array and parse each device object
+	for (const QJsonValue& device_value : devices_array)
+	{
+		if (!device_value.isObject())
+		{
+			qCritical() << "Found a non-object element in 'devices' array.";
+			return {};
+		}
+
+		QJsonObject device_obj = device_value.toObject();
+		DeviceConfig device_cfg;
+
+		// Extract "id"
+		if (device_obj.contains("id") && device_obj["id"].isString())
+		{
+			device_cfg.device_id = device_obj["id"].toString();
+		}
+		else
+		{
+			qCritical() << "Device object missing 'id' or 'id' is not a string";
+			return {};
+		}
+
+		// Extract "name"
+		if (device_obj.contains("name") && device_obj["name"].isString())
+		{
+			device_cfg.device_name = device_obj["name"].toString();
+		}
+		else
+		{
+			qCritical() << "Device object with ID '" << device_cfg.device_id << "' missing 'name' or 'name' is not a string.";
+			return {};
+		}
+
+		// Add the successfully parsed DeviceConfig to the list
+		config_list.device_cfgs.push_back(device_cfg);
+	}
+
+	if (config_list.device_cfgs.empty())
+		qWarning() << "No valid device configurations found in the JSON.";
+
+	return config_list;
+}
 }
 
 std::optional<Config> ConfigParser::parseConfigFile()
@@ -113,12 +177,14 @@ std::optional<Config> ConfigParser::parseConfigFile()
 	QJsonObject root_obj = doc.object();
 
 	const auto& weather_forecast_cfg = parseWeatherForecastConfig(root_obj);
+	const auto& devices_cfg = parseDeviceConfig(root_obj);
 
-	if (!weather_forecast_cfg)
+	if (!weather_forecast_cfg || !devices_cfg)
 		return {};
 
 	Config cfg;
 	cfg.forecast_cfg = weather_forecast_cfg.value();
+	cfg.device_cfg_list = devices_cfg.value();
 
 	return cfg;
 }

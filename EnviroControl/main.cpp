@@ -2,13 +2,21 @@
 #include "ConfigParser.h"
 #include "ErrorDetail.h"
 #include "Logging.h"
+#include "DeviceStateManager.h"
 
 #include <QtWidgets/QApplication>
+#include <QtCore/QMetaType>
 
 
 int main(int argc, char* argv[])
 {
+	QApplication app(argc, argv);
+	app.setApplicationName("EnviroControl");
+
 	Log::init();
+
+	qRegisterMetaType<Device::DeviceState>();
+	qRegisterMetaType<Device::DeviceStates>();
 
 	auto cfg = Cfg::ConfigParser::parseConfigFile();
 	if (!cfg)
@@ -19,7 +27,6 @@ int main(int argc, char* argv[])
 
 	qDebug(app_log) << "Application started";
 
-	QApplication app(argc, argv);
 	MainWindow window(*cfg);
 
 	// RulesEngine (GUI thread)

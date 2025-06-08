@@ -16,7 +16,8 @@
 #endif
 
 Q_LOGGING_CATEGORY(app_log, "envirocontrol")
-Q_LOGGING_CATEGORY(main_win, "main_window")
+Q_LOGGING_CATEGORY(main_win_log, "main_window")
+Q_LOGGING_CATEGORY(device_log, "device")
 
 namespace
 {

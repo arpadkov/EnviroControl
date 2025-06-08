@@ -20,6 +20,12 @@ namespace WFP
 class ForecastData;
 }
 
+namespace Automation
+{
+class AutomationEngine;
+class ManualDeviceControlWidget;
+}
+
 class MainWindow : public QMainWindow
 {
 	Q_OBJECT
@@ -33,12 +39,16 @@ public Q_SLOTS:
 
 private:
 	void initWeatherForecastThread();
+	void initAutomationEngine();
 
 private:
 	Ui::MainWindowClass* ui;
 
+	QPointer<Automation::ManualDeviceControlWidget> _manual_device_control_widget;
+
 	Cfg::Config _cfg;
 
 	QPointer<QThread> _weather_forecast_thread;
+	QPointer<Automation::AutomationEngine> _automation_engine;
 };
 

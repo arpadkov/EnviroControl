@@ -7,6 +7,8 @@ qt_add_library(AutomationEngine STATIC
     automation_widget.cpp
     RulesProcessor.h
     rules_processor.cpp
+    ManualDeviceControlWidget.h
+    manual_device_control_widget.cpp
 )
 
 target_include_directories(AutomationEngine PUBLIC

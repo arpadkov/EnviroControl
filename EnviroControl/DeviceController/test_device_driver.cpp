@@ -29,6 +29,9 @@ void TestDeviceDriver::close() const
 	qDebug(device_log) << "TestDeviceDriver::close " << _id << " called.";
 }
 
+/*
+* Stop all motions of the driver.
+*/
 void TestDeviceDriver::reset() const
 {
 	qDebug(device_log) << "TestDeviceDriver::reset " << _id << " called.";

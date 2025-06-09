@@ -22,13 +22,13 @@ ManualDeviceControlWidget::~ManualDeviceControlWidget()
 
 inline void ManualDeviceControlWidget::initLayout()
 {
-	auto layout = new QHBoxLayout(this);
+	auto layout = new QHBoxLayout();
 	setLayout(layout);
 
 	for (const auto& device_cfg : _devices_cfg.device_cfgs)
 	{
-		auto btns_layout = new QVBoxLayout(this);
-		layout->addLayout(btns_layout);
+		auto btns_layout = new QVBoxLayout();
+		layout->addItem(btns_layout);
 
 		auto name_l = new QLabel(device_cfg.device_name);
 		btns_layout->addWidget(name_l);

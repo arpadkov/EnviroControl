@@ -19,6 +19,8 @@ DeviceStateManager::DeviceStateManager(const Cfg::DeviceConfigList& cfg, QObject
 	_reset_timer = new QTimer(this);
 	_reset_timer->setSingleShot(true);
 	_reset_timer->setInterval(3000); // 1 second timeout for resetting the device state
+
+	connect(this, &DeviceStateManager::deviceMovementFinished, this, &DeviceStateManager::calculateAndSetNextState);
 }
 
 DeviceStateManager::~DeviceStateManager()
@@ -31,41 +33,16 @@ void DeviceStateManager::onManualDeviceRequest(const Device::DeviceState& state)
 }
 
 /*
+* Store the desired device states, which are set by the AutomationEngine. Differences are calculated and set one after another.
 * Called periodically, when AutomationEnginge updates the desired device states, based on the WeatherStation.
-* If there is a current movement -> just return, and wait for the next calculation to arrive.
-* Calculate the differences, and start the movement for the first device that has a different state.
-* TODO: This could be made into quing tasks, or allowing simultaneous movements of multiple devices.
+* MUST NOT be called if manual mode is activated
 */
-void DeviceStateManager::onDeviceStatesUpdated(const Device::DeviceStates& state)
+void DeviceStateManager::onDeviceStatesUpdated(const Device::DeviceStates& states)
 {
-	if (!_current_moving_device_id.isEmpty())
-		return; // If there is a current movement, just return
-
-	DeviceStates states_to_update;
-	for (const auto& new_state : state.states)
-	{
-		auto current_state_it = std::find_if(_device_states.states.begin(), _device_states.states.end(),
-			[&new_state](const Device::DeviceState& s)
-			{
-				return s.device_id == new_state.device_id;
-			});
-
-		if (current_state_it == _device_states.states.end())
-		{
-			qCritical(device_log) << "DeviceStateManager::onDeviceStatesUpdated: Device with ID" << new_state.device_id << "not found in current states.";
-			continue;
-		}
-
-		if (current_state_it->position == new_state.position)
-			continue; // No change needed
-
-		states_to_update.states.push_back(new_state);
-	}
-
-	if (states_to_update.states.empty())
-		return;
+	_desired_states = states;
 	
-	setDevicestate(states_to_update.states.front()); // Start with the first device that has a different state
+	if (!isAnyDeviceMoving())
+		calculateAndSetNextState(); // Check if any device needs to be moved
 }
 
 void DeviceStateManager::registerDevices()
@@ -192,6 +169,9 @@ void DeviceStateManager::onResetTimerTimeout(const Device::DeviceState& state)
 		qCritical(device_log) << "DeviceStateManager::setDevicestate: Device driver not found for ID: " << state.device_id;
 }
 
+/*
+*	Update the internal state cache
+*/
 void DeviceStateManager::updateDevicestate(const Device::DeviceState& state)
 {
 	auto state_it = std::find_if(_device_states.states.begin(), _device_states.states.end(),
@@ -207,6 +187,46 @@ void DeviceStateManager::updateDevicestate(const Device::DeviceState& state)
 	}
 	else
 		qCritical(device_log) << "DeviceStateManager::updateDevicestate: Device not found for ID: " << state.device_id;
+}
+
+/*
+* Once a movement has been finished, check if there are any differences between desired and actual states.
+* And execute the next movement if needed.
+*/
+void DeviceStateManager::calculateAndSetNextState()
+{
+	if (isAnyDeviceMoving())
+	{
+		qCritical(device_log) << "DeviceStateManager::calculateAndSetNextState: INTERNAL ERROR: some device is still moving";
+		return;
+	}
+	qCritical(device_log) << "DeviceStateManager::calculateAndSetNextState: TEST - MOVEMENT FINISHED";
+
+	for (const auto& new_state : _desired_states.states)
+	{
+		auto current_state_it = std::find_if(_device_states.states.begin(), _device_states.states.end(),
+			[&new_state](const Device::DeviceState& s)
+			{
+				return s.device_id == new_state.device_id;
+			});
+
+		if (current_state_it == _device_states.states.end())
+		{
+			qCritical(device_log) << "DeviceStateManager::onDeviceStatesUpdated: Device with ID" << new_state.device_id << "not found in current states.";
+			continue;
+		}
+
+		if (current_state_it->position == new_state.position)
+			continue; // No change needed
+
+		setDevicestate(new_state); // Start with the first device that has a different state
+		return; // Only one device at a time for now
+	}
+}
+
+bool DeviceStateManager::isAnyDeviceMoving() const
+{
+	return (!_reset_timer || _reset_timer->isActive() || !_current_moving_device_id.isEmpty());
 }
 
 /*
@@ -251,7 +271,7 @@ void DeviceStateManager::interruptCurrentMovement()
 		return;
 	}
 
-	qInfo(device_log) << "DeviceStateManager::setDevicestate: Interrupting running reset timer.";
+	qDebug(device_log) << "DeviceStateManager::setDevicestate: Interrupting running reset timer.";
 	_reset_timer->stop();
 	_reset_timer->disconnect(); // Remove existing connections to avoid multiple calls
 

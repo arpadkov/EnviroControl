@@ -76,9 +76,10 @@ public:
 //  send tasks to IDeviceDriver
 //  desired states are received every minute, but not always executed based on current state
 //  if there is a difference between desired state and current state, a task is sent to the driver
-//   send task -> wait for 2 minutes to finish -> wait for next desired states
+//   send task -> wait for 2 minutes to finish
 // current state and current movement is stored based on last tasks
 // on manual mode: current task is interrupted and new task is sent to the driver
+// AutomationEngine must ensure, that no updated states are sent in manual mode
 
 class DeviceStateManager : public QObject
 {
@@ -103,12 +104,15 @@ private:
 	void setDevicestate(const Device::DeviceState& state);
 	void onResetTimerTimeout(const Device::DeviceState& state);
 	void updateDevicestate(const Device::DeviceState& state);
+	void calculateAndSetNextState();
+	bool isAnyDeviceMoving() const;
 	void interruptCurrentMovement();
 
 private:
 	std::vector<std::unique_ptr<IDeviceDriver>> _device_drivers;
-	DeviceStates _device_states; // Last desired states
 	Cfg::DeviceConfigList _devices_cfg;
+	DeviceStates _device_states; // Last known states
+	DeviceStates _desired_states;
 
 	// Internal cache for current movement
 	QPointer<QTimer> _reset_timer; // Only send signal to device, for a limited time

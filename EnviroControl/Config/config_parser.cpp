@@ -143,7 +143,72 @@ std::optional<DeviceConfigList> parseDeviceConfig(const QJsonObject& root_obj)
 
 	return config_list;
 }
+
+std::optional<WeatherStationConfig> parseWeatherStationConfig(const QJsonObject& root_obj)
+{
+	if (!root_obj.contains("weather_station_config") || !root_obj["weather_station_config"].isObject())
+	{
+		qCritical() << "'weather_station_config' object not found or is not an object in config file";
+		return {};
+	}
+
+	QJsonObject weather_station_obj = root_obj["weather_station_config"].toObject();
+
+	WeatherStationConfig weather_station_cfg;
+	if (weather_station_obj.contains("port_name") && weather_station_obj["port_name"].isString())
+	{
+		weather_station_cfg.port_name = weather_station_obj["port_name"].toString();
+	}
+	else
+	{
+		qCritical() << "'port_name' not found or is not a string in 'WeatherStation' object of config file:";
+		return {};
+	}
+
+	if (weather_station_obj.contains("baud_rate") && weather_station_obj["baud_rate"].isDouble())
+	{
+		weather_station_cfg.baud_rate = weather_station_obj["baud_rate"].toDouble();
+	}
+	else
+	{
+		qCritical() << "'baud_rate' not found or is not a string in 'WeatherStation' object of config file:";
+		return {};
+	}
+
+	if (weather_station_obj.contains("data_bits") && weather_station_obj["data_bits"].isDouble())
+	{
+		weather_station_cfg.data_bits = weather_station_obj["data_bits"].toDouble();
+	}
+	else
+	{
+		qCritical() << "'data_bits' not found or is not a string in 'WeatherStation' object of config file:";
+		return {};
+	}
+
+	if (weather_station_obj.contains("stop_bits") && weather_station_obj["stop_bits"].isDouble())
+	{
+		weather_station_cfg.stop_bits = weather_station_obj["stop_bits"].toDouble();
+	}
+	else
+	{
+		qCritical() << "'stop_bits' not found or is not a string in 'WeatherStation' object of config file:";
+		return {};
+	}
+
+	if (weather_station_obj.contains("parity") && weather_station_obj["parity"].isBool())
+	{
+		weather_station_cfg.parity = weather_station_obj["parity"].toBool();
+	}
+	else
+	{
+		qCritical() << "'parity' not found or is not a string in 'WeatherStation' object of config file:";
+		return {};
+	}
+
+	return weather_station_cfg;
 }
+
+} // namespace
 
 std::optional<Config> ConfigParser::parseConfigFile()
 {
@@ -178,13 +243,15 @@ std::optional<Config> ConfigParser::parseConfigFile()
 
 	const auto& weather_forecast_cfg = parseWeatherForecastConfig(root_obj);
 	const auto& devices_cfg = parseDeviceConfig(root_obj);
+	const auto& weather_station_cfg = parseWeatherStationConfig(root_obj);
 
-	if (!weather_forecast_cfg || !devices_cfg)
+	if (!weather_forecast_cfg || !devices_cfg || !weather_station_cfg)
 		return {};
 
 	Config cfg;
 	cfg.forecast_cfg = weather_forecast_cfg.value();
 	cfg.device_cfg_list = devices_cfg.value();
+	cfg.weather_station_cfg = weather_station_cfg.value();
 
 	return cfg;
 }

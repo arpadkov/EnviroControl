@@ -23,7 +23,7 @@ AutomationEngine::AutomationEngine(const Cfg::DeviceConfigList& cfg, QObject* pa
 {
 	_calc_timer = new QTimer(this);
 	connect(_calc_timer, &QTimer::timeout, this, &AutomationEngine::onCalcTimeout);
-	_calc_timer->start();
+	_calc_timer->start(5000);
 
 	initStateManagerThread();
 
@@ -34,6 +34,11 @@ void AutomationEngine::setManualMode()
 	_calc_timer->stop();
 }
 
+void AutomationEngine::setAutoMode()
+{
+	_calc_timer->start();
+}
+
 void AutomationEngine::onWeatherStationData(const WeatherData& weather_data)
 {
 	addCircularBufferData(_weather_data_history, weather_data, _weather_data_history_length);
@@ -41,6 +46,8 @@ void AutomationEngine::onWeatherStationData(const WeatherData& weather_data)
 
 void AutomationEngine::onManualDeviceUpRequest(const QString& device_id)
 {
+	setManualMode();
+
 	Device::DeviceState state;
 	state.device_id = device_id;
 	state.position = Device::DevicePosition::Open;
@@ -49,6 +56,8 @@ void AutomationEngine::onManualDeviceUpRequest(const QString& device_id)
 
 void AutomationEngine::onManualDeviceDownRequest(const QString& device_id)
 {
+	setManualMode();
+	
 	Device::DeviceState state;
 	state.device_id = device_id;
 	state.position = Device::DevicePosition::Closed;

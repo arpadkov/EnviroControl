@@ -35,6 +35,7 @@ public:
 	~AutomationEngine() = default;
 
 	void setManualMode();
+	void setAutoMode();
 
 Q_SIGNALS:
 	void deviceStatesUpdated(const Device::DeviceStates& calulated_states);

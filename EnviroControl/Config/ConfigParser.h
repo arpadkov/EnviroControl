@@ -20,6 +20,15 @@ struct DeviceConfig
 	QString device_id;
 };
 
+struct WeatherStationConfig
+{
+	QString port_name;
+	int baud_rate;
+	int data_bits;
+	int stop_bits;
+	bool parity;
+};
+
 struct DeviceConfigList
 {
 	std::vector<DeviceConfig> device_cfgs;
@@ -29,6 +38,7 @@ struct Config
 {
 	WeatherForeCastConfig forecast_cfg;
 	DeviceConfigList device_cfg_list;
+	WeatherStationConfig weather_station_cfg;
 };
 
 class ConfigParser

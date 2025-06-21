@@ -6,14 +6,14 @@
 #include <QtCore/QTimer>
 #include <QtCore/QPointer>
 
-class QThread;
+#include "WeatherStation.h"
 
-class WeatherData;
+class QThread;
 
 namespace Device
 {
 class DeviceStates;
-class DeviceState;
+struct DeviceState;
 }
 
 namespace Automation

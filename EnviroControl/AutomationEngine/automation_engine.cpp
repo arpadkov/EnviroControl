@@ -1,5 +1,4 @@
 #include "AutomationEngine.h"
-#include "WeatherStation.h"
 #include "DeviceStateManager.h"
 #include "RulesProcessor.h"
 

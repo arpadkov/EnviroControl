@@ -7,7 +7,7 @@ namespace Device
 class DeviceStates;
 }
 
-class WeatherData;
+struct WeatherData;
 
 namespace Automation
 {

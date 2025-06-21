@@ -15,6 +15,8 @@ QT_END_NAMESPACE
 
 class QThread;
 
+class WeatherData;
+
 namespace WFP
 {
 class ForecastData;
@@ -35,7 +37,8 @@ public:
 	~MainWindow();
 
 public Q_SLOTS:
-	void onWeatherDataReady(const WFP::ForecastData& data);
+	void onWeatherForecastData(const WFP::ForecastData& data);
+	void onWeatherData(const WeatherData& data);
 
 private:
 	void initWeatherForecastThread();

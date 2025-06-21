@@ -19,6 +19,19 @@ struct WeatherData
 	double daylight;    // Lux
 	double wind;        // m/s
 	bool rain;
+
+	QString toDebugString() const
+	{
+		return QString("Temperature: %1 C\nSun S/E/W : %2/%3/%4 kLux\nTwighlight : %5\nDaylight : %6 Lux\nWind : %7 m/s\nRain : %8")
+			.arg(temperature)
+			.arg(sun_south)
+			.arg(sun_east)
+			.arg(sun_west)
+			.arg(twighlight ? "Yes" : "No")
+			.arg(daylight)
+			.arg(wind)
+			.arg(rain ? "Yes" : "No");
+	};
 };
 
 class WeatherStation : public QObject
@@ -26,7 +39,7 @@ class WeatherStation : public QObject
 	Q_OBJECT
 
 public:
-	WeatherStation(const Cfg::WeatherStationConfig& cfg, QObject* parent);
+	WeatherStation(const Cfg::WeatherStationConfig& cfg, QObject* parent = nullptr);
 	~WeatherStation();
 
 	void startReading();

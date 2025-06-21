@@ -5,6 +5,7 @@
 #include "Logging.h"
 #include "AutomationEngine.h"
 #include "ManualDeviceControlWidget.h"
+#include "WeatherStation.h"
 
 #include <QtCore/QThread>
 
@@ -16,6 +17,7 @@ MainWindow::MainWindow(const Cfg::Config& cfg, QWidget* parent)
 
 	initWeatherForecastThread();
 	initAutomationEngine();
+	initWeatherStationThread();
 }
 
 MainWindow::~MainWindow()
@@ -25,6 +27,16 @@ MainWindow::~MainWindow()
 	// Clean up weatherforecast
 	_weather_forecast_thread->exit();
 	_weather_forecast_thread->wait();
+}
+
+void MainWindow::onWeatherForecastData(const WFP::ForecastData& data)
+{
+	ui->_test_l->setText(data.toString() + " Hellooo");
+}
+
+void MainWindow::onWeatherData(const WeatherData& data)
+{
+	ui->_weather_station_label->setText(data.toDebugString());
 }
 
 void MainWindow::initWeatherForecastThread()
@@ -41,7 +53,7 @@ void MainWindow::initWeatherForecastThread()
 		{
 			qDebug(main_win_log) << "Weather forecast ready:" << data.toString();
 		});
-	QObject::connect(forecast, &WFP::WeatherForecast::forecastDataReady, this, &MainWindow::onWeatherDataReady);
+	QObject::connect(forecast, &WFP::WeatherForecast::forecastDataReady, this, &MainWindow::onWeatherForecastData);
 
 	QObject::connect(forecast, &WFP::WeatherForecast::errorOccurred, [](const ErrorDetail& error)
 		{
@@ -53,6 +65,18 @@ void MainWindow::initWeatherForecastThread()
 
 void MainWindow::initWeatherStationThread()
 {
+	_weather_station_thread = new QThread();
+	auto weather_station = new WeatherStation(_cfg.weather_station_cfg);
+	weather_station->moveToThread(_weather_station_thread);
+
+	// Start & finish signals
+	QObject::connect(_weather_station_thread, &QThread::started, weather_station, &WeatherStation::startReading);
+	QObject::connect(_weather_station_thread, &QThread::finished, weather_station, &QObject::deleteLater);
+
+
+	QObject::connect(weather_station, &WeatherStation::weatherDataReady, this, &MainWindow::onWeatherData);
+
+	_weather_station_thread->start();
 }
 
 void MainWindow::initAutomationEngine()
@@ -67,8 +91,4 @@ void MainWindow::initAutomationEngine()
 	connect(_manual_device_control_widget, &Automation::ManualDeviceControlWidget::deviceDownPressed, _automation_engine, &Automation::AutomationEngine::onManualDeviceDownRequest);
 }
 
-void MainWindow::onWeatherDataReady(const WFP::ForecastData& data)
-{
-	ui->_test_l->setText(data.toString() + " Hellooo");
-}
 

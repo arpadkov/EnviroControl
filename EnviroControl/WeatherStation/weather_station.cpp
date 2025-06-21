@@ -143,11 +143,11 @@ std::optional<WeatherData> WeatherStation::parseWeatherData(const QByteArray& da
 
 	// Temperature parsing
 	QString temp_sign = (data.at(TEMP_SIGN_OFFSET) == '-') ? "-" : "";
-	QString temp = QString("%1%2.%3%4").arg(temp_sign)
-		.arg(data.mid(TEMP_DIGIT1_OFFSET, 1).toInt())
-		.arg(data.mid(TEMP_DIGIT2_OFFSET, 1).toInt())
-		.arg(data.mid(TEMP_DECIMAL_OFFSET, 1).toInt());
-	weather_data.temperature = temp.toDouble();
+	QString temp_str = temp_sign + QString(data.at(TEMP_DIGIT1_OFFSET)) +
+		QString(data.at(TEMP_DIGIT2_OFFSET)) +
+		QString(data.at(TEMP_DECIMAL_OFFSET)) + // This is the '.' character
+		QString(data.at(TEMP_DIGIT3_OFFSET));
+	weather_data.temperature = temp_str.toDouble();
 
 	// Sun intensity parsing
 	weather_data.sun_south = (QString(data.at(SUN_SOUTH_DIGIT1_OFFSET)) + QString(data.at(SUN_SOUTH_DIGIT2_OFFSET))).toDouble();

@@ -114,11 +114,22 @@ void WeatherStation::handleReadyRead()
 	}
 }
 
-std::optional<WeatherData> WeatherStation::parseWeatherData(const QByteArray& data) const
+std::optional<WeatherData> WeatherStation::parseWeatherData(QByteArray data)
 {
 	if (data.size() < PACKET_LENGHT)
 	{
 		qWarning() << "WeatherStation: Data packet too short: " << data.size();
+		Q_EMIT errorOccurred("Data packet too short");
+		return {};
+	}
+
+	int start_index = data.indexOf(START_IDENTIFIER);
+	if (start_index != -1)
+		data = data.mid(start_index, PACKET_LENGHT);
+	else
+	{
+		qWarning() << "WeatherStation: Start identifier not found in packet: " << data.toHex();
+		Q_EMIT errorOccurred(QString("Start identifier not found in packet: %1").arg(data.toHex()));
 		return {};
 	}
 
@@ -126,18 +137,21 @@ std::optional<WeatherData> WeatherStation::parseWeatherData(const QByteArray& da
 	if (data.at(0) != START_IDENTIFIER)
 	{
 		qWarning() << "Invalid start identifier in packet.";
+		Q_EMIT errorOccurred("Invalid start identifier in packet");
 		return {};
 	}
 
 	if (static_cast<unsigned char>(data.at(PACKET_LENGHT - 1)) != END_IDENTIFIER)
 	{
 		qWarning() << "Invalid end identifier in packet.";
+		Q_EMIT errorOccurred("Invalid end identifier in packet");
 		return {};
 	}
 
 	if (!compareChecksum(data))
 	{
 		qWarning() << "Checksum mismatch in packet: " << data;
+		Q_EMIT errorOccurred("Checksum mismatch in packet");
 		return {};
 	}
 

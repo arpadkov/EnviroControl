@@ -52,7 +52,7 @@ Q_SIGNALS:
 private:
 	void configurePort(const Cfg::WeatherStationConfig& cfg);
 	void handleReadyRead();
-	std::optional<WeatherData> parseWeatherData(const QByteArray& data) const;
+	std::optional<WeatherData> parseWeatherData(QByteArray data);
 	bool compareChecksum(const QByteArray& data) const;
 
 	QSerialPort _port;

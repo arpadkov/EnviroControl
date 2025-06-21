@@ -13,11 +13,8 @@ int main(int argc, char* argv[])
 	qDebug(app_log) << "Starting EnviroControl application";
 	QApplication app(argc, argv);
 	app.setApplicationName("EnviroControl");
-	qDebug() << "Application name set to" << app.applicationName();
 
 	Log::init();
-
-	return 0;
 
 	qRegisterMetaType<Device::DeviceState>();
 	qRegisterMetaType<Device::DeviceStates>();

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <QtCore/QObject>
+#include <QtSerialPort/QSerialPort>
+#include <QtCore/QByteArray>
 
 namespace Cfg
 {
@@ -27,6 +29,19 @@ public:
 	WeatherStation(const Cfg::WeatherStationConfig& cfg, QObject* parent);
 	~WeatherStation();
 
+	void startReading();
+	void stopReading();
+
+Q_SIGNALS:
+	void weatherDataReady(const WeatherData& data);
+	void errorOccurred(const QString& error);
+
 private:
 	void configurePort(const Cfg::WeatherStationConfig& cfg);
+	void handleReadyRead();
+	std::optional<WeatherData> parseWeatherData(const QByteArray& data) const;
+	bool compareChecksum(const QByteArray& data) const;
+
+	QSerialPort _port;
+	QByteArray _read_buffer;
 };

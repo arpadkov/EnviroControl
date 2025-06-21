@@ -51,6 +51,10 @@ void MainWindow::initWeatherForecastThread()
 	_weather_forecast_thread->start();
 }
 
+void MainWindow::initWeatherStationThread()
+{
+}
+
 void MainWindow::initAutomationEngine()
 {
 	_automation_engine = new Automation::AutomationEngine(_cfg.device_cfg_list, this);

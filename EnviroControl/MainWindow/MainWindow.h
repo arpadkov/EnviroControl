@@ -39,6 +39,7 @@ public Q_SLOTS:
 
 private:
 	void initWeatherForecastThread();
+	void initWeatherStationThread();
 	void initAutomationEngine();
 
 private:
@@ -49,6 +50,8 @@ private:
 	Cfg::Config _cfg;
 
 	QPointer<QThread> _weather_forecast_thread;
+	QPointer<QThread> _weather_station_thread;
+
 	QPointer<Automation::AutomationEngine> _automation_engine;
 };
 

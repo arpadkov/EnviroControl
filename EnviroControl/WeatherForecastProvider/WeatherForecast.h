@@ -40,7 +40,7 @@ private Q_SLOTS:
 
 private:
 	QPointer<QTimer> _fetch_timer = nullptr;
-	QPointer<QNetworkAccessManager> _network_manager = nullptr; // create in the thread its used in
+	QNetworkAccessManager* _network_manager = nullptr; // create in the thread its used in
 
 	const Cfg::WeatherForeCastConfig _cfg;
 };

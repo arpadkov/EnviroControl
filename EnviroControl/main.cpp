@@ -14,9 +14,10 @@ int main(int argc, char* argv[])
 	QApplication app(argc, argv);
 	app.setApplicationName("EnviroControl");
 	qDebug() << "Application name set to" << app.applicationName();
-	return 0;
 
 	Log::init();
+
+	return 0;
 
 	qRegisterMetaType<Device::DeviceState>();
 	qRegisterMetaType<Device::DeviceStates>();

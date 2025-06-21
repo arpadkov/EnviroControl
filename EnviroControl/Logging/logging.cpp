@@ -71,6 +71,7 @@ void init()
 	// Determine a suitable log file path (e.g., in the user's writable location)
 	QString log_dir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + QDir::separator() + "EnviroControl";
 	QDir().mkpath(log_dir); // Ensure the directory exists
+	qDebug() << "Log directory:" << log_dir;
 	QString log_file_path = log_dir + QDir::separator() + "envirocontrol.log";
 	setLogHandler(log_file_path);
 }

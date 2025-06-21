@@ -52,8 +52,8 @@ private:
 
 	Cfg::Config _cfg;
 
-	QPointer<QThread> _weather_forecast_thread;
-	QPointer<QThread> _weather_station_thread;
+	QThread* _weather_forecast_thread;
+	QThread* _weather_station_thread;
 
 	QPointer<Automation::AutomationEngine> _automation_engine;
 };

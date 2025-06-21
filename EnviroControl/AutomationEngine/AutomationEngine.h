@@ -57,6 +57,6 @@ private:
 	int _weather_data_history_length = 3600;
 	Cfg::DeviceConfigList _devices_cfg;
 
-	QPointer<QThread> _state_manager_thread = nullptr;
+	QThread* _state_manager_thread = nullptr;
 };
 }

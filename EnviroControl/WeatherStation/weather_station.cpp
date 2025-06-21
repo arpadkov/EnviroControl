@@ -98,18 +98,58 @@ void WeatherStation::handleReadyRead()
 {
 	_read_buffer.append(_port.readAll());
 
-	while (_read_buffer.size() >= PACKET_LENGHT)
+	// Loop to process all complete packets found in the buffer
+	while (true)
 	{
+		// 1. Find the start of a potential packet ('W')
+		int start_index = _read_buffer.indexOf(START_IDENTIFIER);
+
+		// 2. If the START_IDENTIFIER is not found at all:
+		//    Clear the buffer if it's getting too large with junk data to prevent memory issues.
+		if (start_index == -1)
+		{
+			if (_read_buffer.size() > (PACKET_LENGHT * 2)) // Example: clear if buffer is twice the packet length and no start found
+			{
+				qWarning() << "WeatherStation: Start identifier not found in buffer. Discarding old data to prevent overflow.";
+				_read_buffer.clear();
+			}
+			break; // No packet start found, wait for more data
+		}
+
+		// 3. If the START_IDENTIFIER is found, but there's leading junk:
+		//    Discard the junk bytes before the actual start of the packet.
+		if (start_index > 0)
+		{
+			qDebug() << "WeatherStation: Discarding " << start_index << " leading junk bytes before packet start.";
+			_read_buffer.remove(0, start_index);
+			// After this, 'W' is now at index 0 of _read_buffer
+		}
+
+		// 4. Now that 'W' is at index 0, check if there's enough data for a full packet.
+		if (_read_buffer.size() < PACKET_LENGHT)
+		{
+			break; // Not enough data for a full packet yet, wait for more
+		}
+
+		// 5. Extract the complete, properly aligned packet.
+		//    Since 'W' is at index 0, take exactly PACKET_LENGHT bytes from the beginning.
 		QByteArray current_packet = _read_buffer.left(PACKET_LENGHT);
+
+		// 6. Remove the processed packet from the buffer.
 		_read_buffer.remove(0, PACKET_LENGHT);
 
+		// 7. Attempt to parse the packet
 		if (auto weather_data = parseWeatherData(current_packet))
 		{
 			Q_EMIT weatherDataReady(weather_data.value());
+			// Packet successfully parsed, continue loop to check for next packet in buffer
 		}
 		else
 		{
-			qWarning() << "WeatherStation: Failed to parse weather data from packet: " << current_packet;
+			// Parsing failed (e.g., checksum mismatch, or internal error in parseWeatherData).
+			// The problematic packet has already been removed.
+			qWarning() << "WeatherStation: Failed to parse weather data from packet: " << current_packet.toHex();
+			// Do NOT break here, continue the loop to try and find the next valid packet in case of a corrupted one.
 		}
 	}
 }
@@ -120,16 +160,6 @@ std::optional<WeatherData> WeatherStation::parseWeatherData(QByteArray data)
 	{
 		qWarning() << "WeatherStation: Data packet too short: " << data.size();
 		Q_EMIT errorOccurred("Data packet too short");
-		return {};
-	}
-
-	int start_index = data.indexOf(START_IDENTIFIER);
-	if (start_index != -1)
-		data = data.mid(start_index, PACKET_LENGHT);
-	else
-	{
-		qWarning() << "WeatherStation: Start identifier not found in packet: " << data.toHex();
-		Q_EMIT errorOccurred(QString("Start identifier not found in packet: %1").arg(data.toHex()));
 		return {};
 	}
 

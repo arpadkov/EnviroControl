@@ -75,6 +75,10 @@ void MainWindow::initWeatherStationThread()
 
 
 	QObject::connect(weather_station, &WeatherStation::weatherDataReady, this, &MainWindow::onWeatherData);
+	QObject::connect(weather_station, &WeatherStation::errorOccurred, this, [this](const QString& error)
+		{
+			ui->_weather_station_label->setText(error);
+		});
 
 	_weather_station_thread->start();
 }

@@ -58,12 +58,14 @@ void WeatherStation::startReading()
 	if (_port.portName().isEmpty())
 	{
 		qWarning() << "WeatherStation: Port name is empty. Cannot start reading.";
+		Q_EMIT errorOccurred("Port name is empty. Cannot start reading.");
 		return;
 	}
 
 	if (!_port.open(QIODevice::ReadOnly))
 	{
 		qWarning() << "WeatherStation: Failed to open port " << _port.portName() << " error:" << _port.errorString();
+		Q_EMIT errorOccurred(QString("Failed to open port %1: %2").arg(_port.portName(), _port.errorString()));
 		return;
 	}
 

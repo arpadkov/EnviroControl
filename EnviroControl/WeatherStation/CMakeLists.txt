@@ -19,4 +19,5 @@ target_link_libraries(WeatherStation PRIVATE
     ErrorDetail
     Config
     Qt6::Core
+    Qt6::SerialPort
 )

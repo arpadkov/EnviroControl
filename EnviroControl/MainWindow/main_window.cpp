@@ -73,6 +73,9 @@ void MainWindow::initWeatherStationThread()
 	QObject::connect(_weather_station_thread, &QThread::started, weather_station, &WeatherStation::startReading);
 	QObject::connect(_weather_station_thread, &QThread::finished, weather_station, &QObject::deleteLater);
 
+	// Notify AutomationEngine when weather data is ready
+	QObject::connect(weather_station, &WeatherStation::weatherDataReady, _automation_engine, &Automation::AutomationEngine::onWeatherStationData);
+
 
 	QObject::connect(weather_station, &WeatherStation::weatherDataReady, this, &MainWindow::onWeatherData);
 	QObject::connect(weather_station, &WeatherStation::errorOccurred, this, [this](const QString& error)

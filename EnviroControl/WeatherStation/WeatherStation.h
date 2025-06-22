@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QtCore/QDateTime>
 #include <QtCore/QObject>
 #include <QtSerialPort/QSerialPort>
 #include <QtCore/QByteArray>
@@ -19,6 +20,7 @@ struct WeatherData
 	double daylight;    // Lux
 	double wind;        // m/s
 	bool rain;
+	QDateTime timestamp;
 
 	QString toDebugString() const
 	{

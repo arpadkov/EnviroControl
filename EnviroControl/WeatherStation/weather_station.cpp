@@ -3,6 +3,8 @@
 
 #include "ConfigParser.h"
 
+#include <QtCore/QTimeZone>
+
 const int PACKET_LENGHT = 40;
 const char START_IDENTIFIER = 'W'; // Start of Weather Data 
 const unsigned char END_IDENTIFIER = 0x03; // End identifier 0x03 
@@ -216,6 +218,9 @@ std::optional<WeatherData> WeatherStation::parseWeatherData(QByteArray data)
 
 	// Rain parsing
 	weather_data.rain = (data.at(RAIN_OFFSET) == 'J');
+
+	// Add current timestamp
+	weather_data.timestamp = QDateTime::currentDateTime(QTimeZone::LocalTime);
 
 	return weather_data;
 }

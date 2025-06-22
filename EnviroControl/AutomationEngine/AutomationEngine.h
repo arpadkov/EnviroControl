@@ -1,12 +1,13 @@
 #pragma once
 
 #include "ConfigParser.h"
+#include "WeatherStation.h"
+#include "IndoorStation.h"
 
 #include <QtCore/QObject>
 #include <QtCore/QTimer>
 #include <QtCore/QPointer>
 
-#include "WeatherStation.h"
 
 class QThread;
 
@@ -44,6 +45,7 @@ Q_SIGNALS:
 
 public Q_SLOTS:
 	void onWeatherStationData(const WeatherData& weather_data);
+	void onIndoorStationData(const IndoorData& indoor_data);
 	void onManualDeviceUpRequest(const QString& device_id);
 	void onManualDeviceDownRequest(const QString& device_id);
 
@@ -53,8 +55,9 @@ private:
 
 private:
 	QPointer<QTimer> _calc_timer = nullptr;
-	std::vector<WeatherData> _weather_data_history; // circular buffer, last is latest
-	int _weather_data_history_length = 3600;
+	std::vector<WeatherData> _weather_data_history;
+	std::vector<IndoorData> _indoor_data_history;
+	int _data_history_secs = 3600;
 	Cfg::DeviceConfigList _devices_cfg;
 
 	QThread* _state_manager_thread = nullptr;

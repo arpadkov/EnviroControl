@@ -3,6 +3,8 @@
 qt_add_library(WeatherStation STATIC
     WeatherStation.h
     weather_station.cpp
+    IndoorStation.h
+    indoor_station.cpp
 )
 
 # Specify include directories for this library.

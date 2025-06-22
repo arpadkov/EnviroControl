@@ -9,11 +9,20 @@ namespace Automation
 
 namespace
 {
-void addCircularBufferData(std::vector<WeatherData>& buffer, const WeatherData& data, int max_size)
+template<typename T>
+void addCircularBufferData(std::vector<T>& buffer, const T& new_data, int max_size_seconds)
 {
-	buffer.insert(buffer.begin(), data);
-	if (buffer.size() > max_size)
+	buffer.insert(buffer.begin(), new_data);
+
+	const QDateTime& newest_time = new_data.timestamp;
+	while (!buffer.empty())
+	{
+		const QDateTime& oldest_time = buffer.back().timestamp;
+		if (oldest_time.secsTo(newest_time) < max_size_seconds)
+			break;
+
 		buffer.pop_back();
+	}
 }
 }
 
@@ -40,7 +49,12 @@ void AutomationEngine::setAutoMode()
 
 void AutomationEngine::onWeatherStationData(const WeatherData& weather_data)
 {
-	addCircularBufferData(_weather_data_history, weather_data, _weather_data_history_length);
+	addCircularBufferData(_weather_data_history, weather_data, _data_history_secs);
+}
+
+void AutomationEngine::onIndoorStationData(const IndoorData& indoor_data)
+{
+	addCircularBufferData(_indoor_data_history, indoor_data, _data_history_secs);
 }
 
 void AutomationEngine::onManualDeviceUpRequest(const QString& device_id)
@@ -56,7 +70,7 @@ void AutomationEngine::onManualDeviceUpRequest(const QString& device_id)
 void AutomationEngine::onManualDeviceDownRequest(const QString& device_id)
 {
 	setManualMode();
-	
+
 	Device::DeviceState state;
 	state.device_id = device_id;
 	state.position = Device::DevicePosition::Closed;

@@ -3,6 +3,7 @@
 #include "ConfigParser.h"
 #include "WeatherStation.h"
 #include "IndoorStation.h"
+#include "RuleSet.h"
 
 #include <QtCore/QObject>
 #include <QtCore/QTimer>
@@ -35,6 +36,7 @@ public:
 	explicit AutomationEngine(const Cfg::DeviceConfigList& cfg, QObject* parent = nullptr);
 	~AutomationEngine() = default;
 
+	void loadRules(const QString& file_path);
 	void setManualMode();
 	void setAutoMode();
 
@@ -59,6 +61,7 @@ private:
 	std::vector<IndoorData> _indoor_data_history;
 	int _data_history_secs = 3600;
 	Cfg::DeviceConfigList _devices_cfg;
+	RuleSet _rule_set;
 
 	QThread* _state_manager_thread = nullptr;
 };

@@ -37,6 +37,11 @@ AutomationEngine::AutomationEngine(const Cfg::DeviceConfigList& cfg, QObject* pa
 
 }
 
+void AutomationEngine::loadRules(const QString& file_path)
+{
+	_rule_set.loadFromJson(file_path);
+}
+
 void AutomationEngine::setManualMode()
 {
 	_calc_timer->stop();
@@ -82,7 +87,11 @@ void AutomationEngine::onCalcTimeout()
 	if (_weather_data_history.empty())
 		return;
 
-	const auto& calculated_states = RulesProcessor::calculateDeviceStates({}, _weather_data_history);
+	std::vector<QString> device_ids;
+	for (const auto& device_cfg : _devices_cfg.device_cfgs)
+		device_ids.push_back(device_cfg.device_id);
+
+	const auto& calculated_states = RulesProcessor::calculateDeviceStates(_rule_set, device_ids, _weather_data_history, _indoor_data_history);
 	Q_EMIT deviceStatesUpdated(calculated_states);
 }
 

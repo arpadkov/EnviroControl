@@ -17,6 +17,7 @@ target_link_libraries(MainWindow PRIVATE
     WeatherForecastProvider
     WeatherStation
     Config
+    DeviceController
     AutomationEngine
     Qt6::Core
     Qt6::Gui

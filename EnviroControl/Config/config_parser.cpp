@@ -9,12 +9,13 @@
 namespace Cfg
 {
 
+static const QString CONFIG_FILE_NAME = "config.json";
+
 namespace
 {
-QString getConfigFile()
+QString getConfigPath()
 {
-	QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-	return path + QDir::separator() + "config.json";
+	return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 }
 
 std::optional<WeatherForeCastConfig> parseWeatherForecastConfig(const QJsonObject& root_obj)
@@ -212,7 +213,7 @@ std::optional<WeatherStationConfig> parseWeatherStationConfig(const QJsonObject&
 
 std::optional<Config> ConfigParser::parseConfigFile()
 {
-	const QString& config_file_path = getConfigFile();
+	const QString& config_file_path = getConfigPath() + QDir::separator() + CONFIG_FILE_NAME;
 	QFile config_file(config_file_path);
 
 	if (!config_file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -245,13 +246,25 @@ std::optional<Config> ConfigParser::parseConfigFile()
 	const auto& devices_cfg = parseDeviceConfig(root_obj);
 	const auto& weather_station_cfg = parseWeatherStationConfig(root_obj);
 
-	if (!weather_forecast_cfg || !devices_cfg || !weather_station_cfg)
+	QString rules_cfg_file;
+	if (root_obj.contains("rules_config_file") && root_obj["rules_config_file"].isString())
+	{
+		rules_cfg_file = root_obj["rules_config_file"].toString();
+	}
+	else
+	{
+		qCritical() << "'rules_config_file' object not found or is not an object in config file";
+		return {};
+	}
+
+	if (!weather_forecast_cfg || !devices_cfg || !weather_station_cfg || rules_cfg_file.isEmpty())
 		return {};
 
 	Config cfg;
 	cfg.forecast_cfg = weather_forecast_cfg.value();
 	cfg.device_cfg_list = devices_cfg.value();
 	cfg.weather_station_cfg = weather_station_cfg.value();
+	cfg.rules_cfg_relative_path = getConfigPath() + QDir::separator() + rules_cfg_file;
 
 	return cfg;
 }

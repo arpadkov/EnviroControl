@@ -39,6 +39,7 @@ struct Config
 	WeatherForeCastConfig forecast_cfg;
 	DeviceConfigList device_cfg_list;
 	WeatherStationConfig weather_station_cfg;
+	QString rules_cfg_relative_path;
 };
 
 class ConfigParser

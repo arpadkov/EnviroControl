@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ConfigParser.h"
+#include "DeviceState.h"
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
@@ -14,13 +15,6 @@ namespace Device
 
 class IDeviceDriver;
 
-enum class DevicePosition : uint
-{
-	Unknown = 0,
-	Open = 1,
-	Closed = 2,
-};
-
 inline QString devicePositionToString(DevicePosition pos)
 {
 	switch (pos)
@@ -30,12 +24,6 @@ inline QString devicePositionToString(DevicePosition pos)
 	case DevicePosition::Closed:  return "Closed";
 	default:                      return "Invalid"; // Handle unexpected values
 	}
-};
-
-struct DeviceState
-{
-	QString device_id;
-	DevicePosition position;
 };
 
 /*
@@ -53,7 +41,7 @@ public:
 	};
 	~DeviceStates() = default;
 
-	std::optional<DevicePosition> getDevicePosition(const QString device_id)
+	std::optional<DevicePosition> getDevicePosition(const QString device_id) const
 	{
 		auto it = std::find_if(states.begin(), states.end(),
 			[&device_id](const DeviceState& state)
@@ -62,10 +50,24 @@ public:
 			});
 
 		if (it != states.end())
-			return {};
+			return DevicePosition::Unknown;
 
 		return it->position;
 	};
+
+	void setDevicePosition(const QString device_id, DevicePosition pos)
+	{
+		auto it = std::find_if(states.begin(), states.end(),
+			[&device_id](const DeviceState& state)
+			{
+				return state.device_id == device_id;
+			});
+
+		if (it != states.end())
+			return;
+
+		it->position = pos;
+	}
 
 	std::vector<DeviceState> states;
 };

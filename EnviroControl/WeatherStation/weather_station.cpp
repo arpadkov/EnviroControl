@@ -220,7 +220,7 @@ std::optional<WeatherData> WeatherStation::parseWeatherData(QByteArray data)
 	weather_data.rain = (data.at(RAIN_OFFSET) == 'J');
 
 	// Add current timestamp
-	weather_data.timestamp = QDateTime::currentDateTime(QTimeZone::systemTimeZone());
+	weather_data.timestamp = QDateTime::currentDateTime();
 
 	return weather_data;
 }

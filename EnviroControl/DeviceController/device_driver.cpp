@@ -36,9 +36,9 @@ DeviceDriver::~DeviceDriver()
 			_open_line->release();
 			qDebug() << "Linux: Released GPIO line" << _open_gpio_line;
 		}
-		catch (const gpiod::error& e)
+		catch (gpiod::error)
 		{
-			qCritical() << "Linux: Error releasing GPIO line" << _open_gpio_line << ":" << e.what();
+			qCritical() << "Linux: Error releasing GPIO line" << _open_gpio_line << ":";
 		}
 	}
 	delete _open_line; // Clean up the dynamically allocated gpiod::line object
@@ -54,9 +54,9 @@ DeviceDriver::~DeviceDriver()
 			_close_line->release();
 			qDebug() << "Linux: Released GPIO line" << _close_gpio_line;
 		}
-		catch (const gpiod::error& e)
+		catch (gpiod::error)
 		{
-			qCritical() << "Linux: Error releasing GPIO line" << _close_gpio_line << ":" << e.what();
+			qCritical() << "Linux: Error releasing GPIO line" << _close_gpio_line << ":";
 		}
 	}
 	delete _close_line; // Clean up the dynamically allocated gpiod::line object
@@ -84,9 +84,9 @@ void DeviceDriver::initialize() const
 			_active_high ? 0 : 1); // Initial value to make it OFF
 		qDebug() << "Linux: Successfully initialized Open GPIO line" << _close_gpio_line << "as output.";
 	}
-	catch (const gpiod::error& e)
+	catch (gpiod::error)
 	{
-		qCritical() << "Linux: Failed to initialize GPIO line for device: " << _id << " : " << e.what();
+		qCritical() << "Linux: Failed to initialize GPIO line for device: " << _id << " : ";
 		delete _open_line;
 		delete _close_line;
 		_open_line = nullptr;
@@ -115,9 +115,9 @@ void DeviceDriver::open() const
 			_open_line->set_value(_active_high ? 1 : 0);
 			qDebug() << "Linux: Set GPIO" << _open_gpio_line << "to" << (_active_high ? "HIGH (ON)" : "LOW (ON)");
 		}
-		catch (const gpiod::error& e)
+		catch (gpiod::error)
 		{
-			qCritical() << "Linux: Failed to turn ON relay on GPIO" << _open_gpio_line << ":" << e.what();
+			qCritical() << "Linux: Failed to turn ON relay on GPIO" << _open_gpio_line << ":";
 		}
 	}
 	else
@@ -149,9 +149,9 @@ void DeviceDriver::close() const
 			_close_line->set_value(_active_high ? 0 : 1);
 			qDebug() << "Linux: Set GPIO" << _close_gpio_line << "to" << (_active_high ? "LOW (OFF)" : "HIGH (OFF)");
 		}
-		catch (const gpiod::error& e)
+		catch (gpiod::error)
 		{
-			qCritical() << "Linux: Failed to turn OFF relay on GPIO" << _close_gpio_line << ":" << e.what();
+			qCritical() << "Linux: Failed to turn OFF relay on GPIO" << _close_gpio_line << ":";
 		}
 	}
 	else
@@ -182,9 +182,9 @@ void DeviceDriver::reset() const
 			_close_line->set_value(_active_high ? 0 : 1); // Set Close pin OFF
 			qDebug() << "Linux: Both GPIOs" << _open_gpio_line << "and" << _close_gpio_line << "set to OFF state.";
 		}
-		catch (const gpiod::error& e)
+		catch (gpiod::error)
 		{
-			qCritical() << "Linux: Failed to reset device on GPIOs" << _open_gpio_line << "and" << _close_gpio_line << ":" << e.what();
+			qCritical() << "Linux: Failed to reset device on GPIOs" << _open_gpio_line << "and" << _close_gpio_line << ":";
 		}
 	}
 	else

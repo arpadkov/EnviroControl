@@ -108,11 +108,11 @@ add_custom_command(
     # MSVC Runtime DLLs: These are typically deployed by the Visual C++ Redistributable.
     # However, if you run into issues, you might need to copy these too,
     # but it's usually better to ensure the redistributable is installed on target systems.
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "C:/Windows/System32/vcruntime140d.dll" "$<TARGET_FILE_DIR:AutomationEngineTests>"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "C:/Windows/System32/ucrtbased.dll" "$<TARGET_FILE_DIR:AutomationEngineTests>"
-    COMMENT "Copying essential Qt DLLs to test executable directory."
+    #COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    #        "C:/Windows/System32/vcruntime140d.dll" "$<TARGET_FILE_DIR:AutomationEngineTests>"
+    #COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    #        "C:/Windows/System32/ucrtbased.dll" "$<TARGET_FILE_DIR:AutomationEngineTests>"
+    #COMMENT "Copying essential Qt DLLs to test executable directory."
 )
 
 # Discover and add tests for this specific test executable to CTest

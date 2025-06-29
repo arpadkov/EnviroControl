@@ -144,9 +144,9 @@ bool NumericThresholdCondition::evaluate(const std::vector<WeatherData>& weather
 {
 	std::optional<double> value_opt = {};
 	if (_source == SensorDataSource::WeatherData && !weather_history.empty())
-		auto value_opt = getNumericFieldValue(weather_history.front(), _field);
+		value_opt = getNumericFieldValue(weather_history.front(), _field);
 	else if (_source == SensorDataSource::IndoorData && !indoor_history.empty())
-		auto value_opt = getNumericFieldValue(indoor_history.front(), _field);
+		value_opt = getNumericFieldValue(indoor_history.front(), _field);
 
 	if (!value_opt.has_value())
 	{
@@ -185,9 +185,9 @@ bool BooleanStateCondition::evaluate(const std::vector<WeatherData>& weather_his
 {
 	std::optional<bool> value_opt = {};
 	if (_source == SensorDataSource::WeatherData && !weather_history.empty())
-		auto value_opt = getBooleanFieldValue(weather_history.front(), _field);
+		value_opt = getBooleanFieldValue(weather_history.front(), _field);
 	else if (_source == SensorDataSource::IndoorData && !indoor_history.empty())
-		auto value_opt = getBooleanFieldValue(indoor_history.front(), _field);
+		value_opt = getBooleanFieldValue(indoor_history.front(), _field);
 
 	if (!value_opt.has_value())
 	{

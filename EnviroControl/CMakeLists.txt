@@ -4,6 +4,11 @@ project(EnviroControl LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# This ensures all executables (main app, tests) go to a predictable location.
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/bin/Debug")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/bin/Release")
+
 find_package(Qt6 REQUIRED COMPONENTS
         Core
         Gui
@@ -12,6 +17,15 @@ find_package(Qt6 REQUIRED COMPONENTS
         SerialPort
 )
 qt_standard_project_setup()
+
+# Fetch and enable google test
+enable_testing()
+include(FetchContent)
+FetchContent_Declare(
+    GoogleTest
+    URL https://github.com/google/googletest/archive/refs/tags/release-1.12.1.zip
+    URL_HASH SHA256=24564e3b712d3eb30ac9a85d92f7d720f60cc0173730ac166f27dda7fed76cb2 # Add SHA256 hash for security/integrity
+)
 
 # Define a macro to add a subdirectory and optionally its generated Qt UI include path
 # Usage: add_component(ComponentName [HAS_UI])
@@ -59,11 +73,6 @@ if(WIN32)
     )
 endif()
 
-set_target_properties(${PROJECT_NAME}
-    PROPERTIES
-        WIN32_EXECUTABLE TRUE
-)
-
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
         Qt6::Core
@@ -81,4 +90,6 @@ target_link_libraries(${PROJECT_NAME}
         DeviceController
         MainWindow
 )
+
+
 

@@ -71,7 +71,7 @@ void DeviceStateManager::registerDevices()
 
 		// Real driver for Raspberry Pi
 #if defined(__linux__) && (defined(__ARM_ARCH) || defined(__arm__))
-		// TODO create actual DeviceDriver for pi
+		driver = std::make_unique<DeviceDriver>(device_id, device_cfg.open_gpio_pin, device_cfg.close_gpio_pin, false);
 #endif
 
 		if (driver)

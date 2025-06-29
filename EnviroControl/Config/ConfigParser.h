@@ -18,6 +18,8 @@ struct DeviceConfig
 {
 	QString device_name;
 	QString device_id;
+	int open_gpio_pin;
+	int close_gpio_pin;
 };
 
 struct WeatherStationConfig

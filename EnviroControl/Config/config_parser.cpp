@@ -135,6 +135,28 @@ std::optional<DeviceConfigList> parseDeviceConfig(const QJsonObject& root_obj)
 			return {};
 		}
 
+		// Extract "open_gpio_pin"
+		if (device_obj.contains("open_gpio_pin") && device_obj["open_gpio_pin"].isDouble())
+		{
+			device_cfg.open_gpio_pin = device_obj["open_gpio_pin"].toInt();
+		}
+		else
+		{
+			qCritical() << "Device object with ID '" << device_cfg.device_id << "' missing 'name' or 'name' is not a string.";
+			return {};
+		}
+
+		// Extract "close_gpio_pin"
+		if (device_obj.contains("close_gpio_pin") && device_obj["close_gpio_pin"].isDouble())
+		{
+			device_cfg.close_gpio_pin = device_obj["close_gpio_pin"].toInt();
+		}
+		else
+		{
+			qCritical() << "Device object with ID '" << device_cfg.device_id << "' missing 'name' or 'name' is not a string.";
+			return {};
+		}
+
 		// Add the successfully parsed DeviceConfig to the list
 		config_list.device_cfgs.push_back(device_cfg);
 	}

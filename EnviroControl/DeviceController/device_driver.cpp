@@ -36,9 +36,9 @@ DeviceDriver::~DeviceDriver()
 			_open_line->release();
 			qDebug() << "Linux: Released GPIO line" << _open_gpio_line;
 		}
-		catch (const gpiod::error& e)
+		catch (...)
 		{
-			qCritical() << "Linux: Error releasing GPIO line" << _open_gpio_line << ":" << e.what();
+			qCritical() << "Linux: Error releasing GPIO line" << _open_gpio_line << ":";
 		}
 	}
 	delete _open_line; // Clean up the dynamically allocated gpiod::line object

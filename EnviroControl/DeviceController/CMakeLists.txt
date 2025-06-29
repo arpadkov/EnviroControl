@@ -4,7 +4,7 @@
 if(NOT WIN32)
     find_package(PkgConfig REQUIRED)
     # Check for libgpiodcxx, which is the C++ binding for libgpiod
-    pkg_check_modules(GPIOD REQUIRED gpiodcxx)
+    pkg_check_modules(GPIOD REQUIRED libgpiodcxx)
     message(STATUS "Building on Linux. Found libgpiodcxx: ${GPIOD_VERSION}")
 else()
     message(STATUS "Building on Windows. Skipping libgpiod dependencies.")

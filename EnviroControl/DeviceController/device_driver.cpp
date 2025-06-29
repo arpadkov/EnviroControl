@@ -159,7 +159,7 @@ void DeviceDriver::close() const
 			// Ensure open pin is OFF before activating close pin
 			_open_line->set_value(_active_high ? 0 : 1); // Set to OFF
 			// Set value to deactivate relay: 0 for active-HIGH OFF, 1 for active-LOW OFF
-			_close_line->set_value(_active_high ? 0 : 1);
+			_close_line->set_value(_active_high ? 1 : 0);
 			qDebug() << "Linux: Set GPIO" << _close_gpio_line << "to" << (_active_high ? "LOW (OFF)" : "HIGH (OFF)");
 		}
 		catch (...)

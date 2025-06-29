@@ -1,6 +1,6 @@
 #include "RuleSet.h"
 
-#include <QtCore/QJSonObject>
+#include <QtCore/QJsonObject>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonArray>
 #include <QtCore/QFile>

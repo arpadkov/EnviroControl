@@ -74,14 +74,22 @@ void DeviceDriver::initialize() const
 
 		// Get the open GPIO line
 		_open_line = new gpiod::line(chip.get_line(_open_gpio_line));
-		_open_line->as_output(QString("qt-gpio-control-open-%1").arg(_id).toStdString(),
-			_active_high ? 0 : 1); // Initial value to make it OFF
+		_open_line->request(gpiod::line_request{
+																		QString("qt-gpio-control-open-%1").arg(_id).toStdString(),
+																		gpiod::line_request::DIRECTION_OUTPUT, // Correct enum for direction
+																		0 // No specific flags needed
+			},
+			_active_high ? 0 : 1); // Initial value (0 for OFF if active high, 1 for OFF if active low)
 		qDebug() << "Linux: Successfully initialized Open GPIO line" << _open_gpio_line << "as output.";
 
 		// Get the close GPIO line
 		_close_line = new gpiod::line(chip.get_line(_close_gpio_line));
-		_close_line->as_output(QString("qt-gpio-control-close-%1").arg(_id).toStdString(),
-			_active_high ? 0 : 1); // Initial value to make it OFF
+		_close_line->request(gpiod::line_request{
+														 QString("qt-gpio-control-close-%1").arg(_id).toStdString(),
+														 gpiod::line_request::DIRECTION_OUTPUT, // Correct enum for direction
+														 0 // No specific flags needed
+			},
+			_active_high ? 0 : 1); // Initial value (0 for OFF if active high, 1 for OFF if active low)
 		qDebug() << "Linux: Successfully initialized Open GPIO line" << _close_gpio_line << "as output.";
 	}
 	catch (...)

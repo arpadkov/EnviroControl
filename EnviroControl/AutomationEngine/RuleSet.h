@@ -23,6 +23,8 @@ public:
 	bool loadFromJson(const QString& file_path);
 	const std::vector<Rule>& getRules() const;
 
+	void setRules(std::vector<Rule>&& rules);
+
 private:
 	std::unique_ptr<AbstractCondition> parseCondition(const QJsonObject& json) const;
 

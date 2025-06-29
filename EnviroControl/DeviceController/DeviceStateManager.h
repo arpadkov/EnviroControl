@@ -49,7 +49,7 @@ public:
 				return state.device_id == device_id;
 			});
 
-		if (it != states.end())
+		if (it == states.end())
 			return DevicePosition::Unknown;
 
 		return it->position;
@@ -63,7 +63,7 @@ public:
 				return state.device_id == device_id;
 			});
 
-		if (it != states.end())
+		if (it == states.end())
 			return;
 
 		it->position = pos;

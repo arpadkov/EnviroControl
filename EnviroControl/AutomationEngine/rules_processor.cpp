@@ -45,7 +45,7 @@ Device::DeviceStates RulesProcessor::calculateDeviceStates(
 	for (const auto& rule : rule_set.getRules())
 	{
 		// If state already set -> skip (lower prio cant override already set state)
-		if (calculated_states.getDevicePosition(rule.device_id) == Device::DevicePosition::Unknown)
+		if (calculated_states.getDevicePosition(rule.device_id) != Device::DevicePosition::Unknown)
 		{
 			qDebug() << "RulesProcessor: Device " << rule.device_id << " state already determined by higher priority rule";
 			continue;

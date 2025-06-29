@@ -27,7 +27,7 @@ struct WeatherDataCreator
 		cond.sun_east = 0;
 		cond.sun_west = 0;
 		cond.twighlight = false;
-		cond.daylight = 0;
+		cond.daylight = 100;
 		cond.wind = wind;
 		cond.rain = false;
 		cond.timestamp = timestamp;

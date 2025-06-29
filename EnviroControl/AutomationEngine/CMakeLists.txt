@@ -52,6 +52,7 @@ endif()
 add_executable(AutomationEngineTests
     tests/test_condition.cpp
     tests/test_rule.cpp
+    tests/test_calculate_device_states.cpp
     tests/WeatherDataCreator.h
 )
 

@@ -148,6 +148,11 @@ const std::vector<Rule>& RuleSet::getRules() const
 	return _rules;
 }
 
+void RuleSet::setRules(std::vector<Rule>&& rules)
+{
+	_rules = std::move(rules);
+}
+
 std::unique_ptr<AbstractCondition> RuleSet::parseCondition(const QJsonObject& json) const
 {
 	if (!json.contains("type") || !json["type"].isString())

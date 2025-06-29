@@ -34,7 +34,7 @@ target_link_libraries(AutomationEngine PRIVATE
 )
 
 # === For GoogleTests ===
-
+if (WIN32)
 # Get the path to Qt's bin directory dynamically
 get_target_property(QT_CORE_LOCATION Qt6::Core LOCATION)
 get_filename_component(QT_BIN_DIR ${QT_CORE_LOCATION} DIRECTORY)
@@ -122,3 +122,4 @@ gtest_discover_tests(AutomationEngineTests
     ENVIRONMENT "PATH=$ENV{PATH};${QT_BIN_DIR}"
     WORKING_DIRECTORY "$<TARGET_FILE_DIR:AutomationEngineTests>"
 )
+endif() # WIN32

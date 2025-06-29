@@ -24,7 +24,7 @@ public:
 	IDeviceDriver(const QString id) : _id(id)	{};
 	virtual ~IDeviceDriver() = default;
 
-	virtual void initialize() const = 0;
+	virtual bool initialize() const = 0;
 	virtual void open() const = 0;
 	virtual void close() const = 0;
 	virtual void reset() const = 0;
@@ -41,7 +41,7 @@ public:
 	TestDeviceDriver(const QString& id);
 	~TestDeviceDriver();
 
-	void initialize() const override;
+	bool initialize() const override;
 	void open() const override;
 	void close() const override;
 	void reset() const override;
@@ -55,7 +55,7 @@ public:
 	DeviceDriver(const QString& id, unsigned int open_gpio_line, unsigned int close_gpio_line, bool active_high);
 	~DeviceDriver();
 
-	void initialize() const override;
+	bool initialize() const override;
 	void open() const override;
 	void close() const override;
 	void reset() const override;

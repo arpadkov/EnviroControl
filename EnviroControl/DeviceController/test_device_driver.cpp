@@ -15,8 +15,9 @@ TestDeviceDriver::~TestDeviceDriver()
 	qDebug(device_log) << "TestDeviceDriver::DESTRUCTOR() called with id:" << _id;
 }
 
-void TestDeviceDriver::initialize() const
+bool TestDeviceDriver::initialize() const
 {
+	return true;
 }
 
 void TestDeviceDriver::open() const

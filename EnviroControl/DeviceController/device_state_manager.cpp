@@ -74,7 +74,7 @@ void DeviceStateManager::registerDevices()
 		driver = std::make_unique<DeviceDriver>(device_id, device_cfg.open_gpio_pin, device_cfg.close_gpio_pin, false);
 #endif
 
-		if (driver)
+		if (driver && driver->initialize())
 		{
 			qInfo(device_log) << "DeviceStateManager::registerDevices: Registering device with ID:" << device_id;
 			_device_drivers.push_back(std::move(driver));

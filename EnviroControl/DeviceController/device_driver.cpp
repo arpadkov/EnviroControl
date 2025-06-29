@@ -64,7 +64,7 @@ DeviceDriver::~DeviceDriver()
 	// No specific cleanup needed for Windows mock
 }
 
-void DeviceDriver::initialize() const
+bool DeviceDriver::initialize() const
 {
 #ifdef __linux__
 	try
@@ -99,13 +99,17 @@ void DeviceDriver::initialize() const
 		delete _close_line;
 		_open_line = nullptr;
 		_close_line = nullptr;
+
+		return false;
 	}
 #elif _WIN32
 	_simulated_open_value = !_active_high; // Ensure mock is in OFF state on init
 	_simulated_close_value = !_active_high; // Ensure mock is in OFF state on init
 	qDebug() << "Windows: Mock GPIO line" << _open_gpio_line << " & " << _close_gpio_line << "initialized. (No actual hardware interaction)";
+	return true;
 #else
 	qWarning() << "Unsupported operating system for GPIO control.";
+	return false;
 #endif
 }
 

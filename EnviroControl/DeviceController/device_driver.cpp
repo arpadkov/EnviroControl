@@ -102,6 +102,7 @@ bool DeviceDriver::initialize() const
 
 		return false;
 	}
+	return true;
 #elif _WIN32
 	_simulated_open_value = !_active_high; // Ensure mock is in OFF state on init
 	_simulated_close_value = !_active_high; // Ensure mock is in OFF state on init

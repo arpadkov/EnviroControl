@@ -37,7 +37,7 @@ Device::DeviceStates RulesProcessor::calculateDeviceStates(
 {
 	Device::DeviceStates calculated_states;
 
-	// Set all to unknown
+	// Set all to closed by default
 	for (const auto& device_id : device_ids)
 		calculated_states.states.push_back({ device_id, Device::DevicePosition::Unknown });
 
@@ -58,6 +58,16 @@ Device::DeviceStates RulesProcessor::calculateDeviceStates(
 		}
 
 	} // Loop over rules
+
+	// If no rule set the state, set to closed
+	for (const auto& device_id : device_ids)
+	{
+		if (calculated_states.getDevicePosition(device_id) == Device::DevicePosition::Unknown)
+		{
+			calculated_states.setDevicePosition(device_id, Device::DevicePosition::Closed);
+			qDebug() << "RulesProcessor: Device " << device_id << " Set position to Closed by default";
+		}
+	}
 
 	return calculated_states;
 }

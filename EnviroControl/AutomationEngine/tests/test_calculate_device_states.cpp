@@ -45,22 +45,13 @@ std::vector<IndoorData> createHotIndoor()
 	return indoor_history;
 }
 
-TEST(CalculateDeviceStateTest, TestDeviceClosedHighWind)
+RuleSet createRuleSetSunblind(const QString& device_id)
 {
-	// Create device (sunblind)
-	QString device_id = "sunblind_1";
-	std::vector<QString> device_ids = { device_id };
-
-	const auto& weather_history = createWindyForLast3Minutes();
-	const auto& indoor_history = createHotIndoor();
 
 	// Create rules
 	// 1. Close sunblinds, when high wind (>25)
 	auto rule_close_on_high = createRuleWithoutConditionWithId(device_id, 999, Device::DevicePosition::Closed);
 	rule_close_on_high.conditions.push_back(std::make_unique<NumericThresholdCondition>(SensorDataSource::WeatherData, "wind_speed", ConditionOperator::GreaterThan, 25));
-
-	// Rule1 should evaluate to false, since currently there is no high wind -> No closed action
-	EXPECT_FALSE(RulesProcessor::evaluateRule(rule_close_on_high, weather_history, indoor_history));
 
 	// 2. Open Sunblinds, when:
 	//	2.1: Low wind (<20) for the past 3 minutes
@@ -73,19 +64,169 @@ TEST(CalculateDeviceStateTest, TestDeviceClosedHighWind)
 	rule_open_sunblind.conditions.push_back(std::make_unique<NumericThresholdCondition>(SensorDataSource::IndoorData, "indoor_temp", ConditionOperator::GreaterThan, 20));
 	rule_open_sunblind.conditions.push_back(std::make_unique<BooleanStateCondition>(SensorDataSource::WeatherData, "is_raining", false)); // Open if NOT raining
 
-	// Rule2 should evaluate to true, since there was no high wind, is light, is hot, no rain -> Open action
-	EXPECT_TRUE(RulesProcessor::evaluateRule(rule_open_sunblind, weather_history, indoor_history));
-
 	std::vector<Rule> rules;
 	rules.push_back(std::move(rule_close_on_high));
 	rules.push_back(std::move(rule_open_sunblind));
 
 	RuleSet rule_set;
 	rule_set.setRules(std::move(rules));
+	return rule_set;
+}
+
+RuleSet createRuleSetWindow(const QString& device_id)
+{
+
+	// Create rules
+	// 1. Close window, when high wind (>25)
+	auto rule_close_on_high = createRuleWithoutConditionWithId(device_id, 999, Device::DevicePosition::Closed);
+	rule_close_on_high.conditions.push_back(std::make_unique<NumericThresholdCondition>(SensorDataSource::WeatherData, "wind_speed", ConditionOperator::GreaterThan, 25));
+
+	// 2. Open window, when:
+	//  2.3: High IndoorTemp
+	//  2.4: No rain
+	auto rule_open_window = createRuleWithoutConditionWithId(device_id, 500, Device::DevicePosition::Open);
+	rule_open_window.conditions.push_back(std::make_unique<NumericThresholdCondition>(SensorDataSource::IndoorData, "indoor_temp", ConditionOperator::GreaterThan, 20));
+	rule_open_window.conditions.push_back(std::make_unique<BooleanStateCondition>(SensorDataSource::WeatherData, "is_raining", false)); // Open if NOT raining
+
+	std::vector<Rule> rules;
+	rules.push_back(std::move(rule_close_on_high));
+	rules.push_back(std::move(rule_open_window));
+
+	RuleSet rule_set;
+	rule_set.setRules(std::move(rules));
+	return rule_set;
+}
+
+TEST(CalculateDeviceStateTest, TestSunblindWasWindOpen)
+{
+	// Create device (sunblind)
+	QString device_id = "sunblind_1";
+	std::vector<QString> device_ids = { device_id };
+	auto now = QDateTime::currentDateTime();
+
+	const auto& rule_set = createRuleSetSunblind(device_id);
+
+
+	std::vector<WeatherData> weather_history;
+	weather_history.push_back(WeatherDataCreator::createWindy(now, 12));
+	weather_history.push_back(WeatherDataCreator::createWindy(now.addSecs(-60 * 1), 19));
+	weather_history.push_back(WeatherDataCreator::createWindy(now.addSecs(-60 * 2), 18));
+	weather_history.push_back(WeatherDataCreator::createWindy(now.addSecs(-60 * 3), 17.5));
+	weather_history.push_back(WeatherDataCreator::createWindy(now.addSecs(-60 * 4), 26));
+
+	std::vector<IndoorData> indoor_history;
+	indoor_history.push_back(WeatherDataCreator::createIndoorData(now, 22));
+	indoor_history.push_back(WeatherDataCreator::createIndoorData(now.addSecs(-60 * 1), 23));
+	indoor_history.push_back(WeatherDataCreator::createIndoorData(now.addSecs(-60 * 2), 21));
+	indoor_history.push_back(WeatherDataCreator::createIndoorData(now.addSecs(-60 * 3), 26));
+	indoor_history.push_back(WeatherDataCreator::createIndoorData(now.addSecs(-60 * 4), 24));
 
 	const auto& device_states = RulesProcessor::calculateDeviceStates(rule_set, device_ids, weather_history, indoor_history);
 	auto sunblind_state = device_states.getDevicePosition(device_id);
 
 	EXPECT_TRUE(sunblind_state == Device::DevicePosition::Open);
+}
 
+TEST(CalculateDeviceStateTest, TestSunblindWasWindClose)
+{
+	// Create device (sunblind)
+	QString device_id = "sunblind_1";
+	std::vector<QString> device_ids = { device_id };
+	auto now = QDateTime::currentDateTime();
+
+	const auto& rule_set = createRuleSetSunblind(device_id);
+
+	std::vector<WeatherData> weather_history;
+	weather_history.push_back(WeatherDataCreator::createWindy(now, 12));
+	weather_history.push_back(WeatherDataCreator::createWindy(now.addSecs(-60 * 1), 21)); // <- this wont allow opening
+	weather_history.push_back(WeatherDataCreator::createWindy(now.addSecs(-60 * 2), 18));
+	weather_history.push_back(WeatherDataCreator::createWindy(now.addSecs(-60 * 3), 17.5));
+	weather_history.push_back(WeatherDataCreator::createWindy(now.addSecs(-60 * 4), 26));
+
+	std::vector<IndoorData> indoor_history;
+	indoor_history.push_back(WeatherDataCreator::createIndoorData(now, 12));
+	indoor_history.push_back(WeatherDataCreator::createIndoorData(now.addSecs(-60 * 1), 23));
+	indoor_history.push_back(WeatherDataCreator::createIndoorData(now.addSecs(-60 * 2), 21));
+	indoor_history.push_back(WeatherDataCreator::createIndoorData(now.addSecs(-60 * 3), 26));
+	indoor_history.push_back(WeatherDataCreator::createIndoorData(now.addSecs(-60 * 4), 24));
+
+	const auto& device_states = RulesProcessor::calculateDeviceStates(rule_set, device_ids, weather_history, indoor_history);
+	auto sunblind_state = device_states.getDevicePosition(device_id);
+
+	EXPECT_TRUE(sunblind_state == Device::DevicePosition::Closed);
+}
+
+TEST(CalculateDeviceStateTest, TestSunblindHighWindClose)
+{
+	// Create device (sunblind)
+	QString device_id = "sunblind_1";
+	std::vector<QString> device_ids = { device_id };
+	auto now = QDateTime::currentDateTime();
+
+	const auto& rule_set = createRuleSetSunblind(device_id);
+
+	std::vector<WeatherData> weather_history;
+	weather_history.push_back(WeatherDataCreator::createWindy(now, 26));
+
+	std::vector<IndoorData> indoor_history;
+	indoor_history.push_back(WeatherDataCreator::createIndoorData(now, 22));
+	indoor_history.push_back(WeatherDataCreator::createIndoorData(now.addSecs(-60 * 1), 23));
+	indoor_history.push_back(WeatherDataCreator::createIndoorData(now.addSecs(-60 * 2), 21));
+	indoor_history.push_back(WeatherDataCreator::createIndoorData(now.addSecs(-60 * 3), 26));
+	indoor_history.push_back(WeatherDataCreator::createIndoorData(now.addSecs(-60 * 4), 24));
+
+	const auto& device_states = RulesProcessor::calculateDeviceStates(rule_set, device_ids, weather_history, indoor_history);
+	auto sunblind_state = device_states.getDevicePosition(device_id);
+
+	EXPECT_TRUE(sunblind_state == Device::DevicePosition::Closed);
+}
+
+TEST(CalculateDeviceStateTest, TestSunblindLowWindLowIndoorClosed)
+{
+	// Create device (sunblind)
+	QString device_id = "sunblind_1";
+	std::vector<QString> device_ids = { device_id };
+	auto now = QDateTime::currentDateTime();
+
+	const auto& rule_set = createRuleSetSunblind(device_id);
+
+	std::vector<WeatherData> weather_history;
+	weather_history.push_back(WeatherDataCreator::createWindy(now, 12));
+	weather_history.push_back(WeatherDataCreator::createWindy(now.addSecs(-60 * 1), 19));
+	weather_history.push_back(WeatherDataCreator::createWindy(now.addSecs(-60 * 2), 18));
+	weather_history.push_back(WeatherDataCreator::createWindy(now.addSecs(-60 * 3), 17.5));
+	weather_history.push_back(WeatherDataCreator::createWindy(now.addSecs(-60 * 4), 26));
+
+	std::vector<IndoorData> indoor_history;
+	indoor_history.push_back(WeatherDataCreator::createIndoorData(now, 12));
+	indoor_history.push_back(WeatherDataCreator::createIndoorData(now.addSecs(-60 * 1), 11));
+	indoor_history.push_back(WeatherDataCreator::createIndoorData(now.addSecs(-60 * 2), 15));
+	indoor_history.push_back(WeatherDataCreator::createIndoorData(now.addSecs(-60 * 3), 14));
+	indoor_history.push_back(WeatherDataCreator::createIndoorData(now.addSecs(-60 * 4), 11));
+
+	const auto& device_states = RulesProcessor::calculateDeviceStates(rule_set, device_ids, weather_history, indoor_history);
+	auto sunblind_state = device_states.getDevicePosition(device_id);
+
+	EXPECT_TRUE(sunblind_state == Device::DevicePosition::Closed);
+}
+
+TEST(CalculateDeviceStateTest, TestWindowHotIndoorOpen)
+{
+	// Create device (sunblind)
+	QString device_id = "window_1";
+	std::vector<QString> device_ids = { device_id };
+	auto now = QDateTime::currentDateTime();
+
+	const auto& rule_set = createRuleSetWindow(device_id);
+
+	std::vector<WeatherData> weather_history;
+	weather_history.push_back(WeatherDataCreator::createWindy(now, 12));
+
+	std::vector<IndoorData> indoor_history;
+	indoor_history.push_back(WeatherDataCreator::createIndoorData(now, 22));
+
+	const auto& device_states = RulesProcessor::calculateDeviceStates(rule_set, device_ids, weather_history, indoor_history);
+	auto window_state = device_states.getDevicePosition(device_id);
+
+	EXPECT_TRUE(window_state == Device::DevicePosition::Open);
 }

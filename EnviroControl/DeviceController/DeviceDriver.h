@@ -5,7 +5,7 @@
 #include <QString>
 
 #ifdef __linux__
-	#include <gpiod.hpp>
+#include <gpiod.hpp>
 #endif
 
 namespace Device
@@ -21,7 +21,9 @@ namespace Device
 class IDeviceDriver
 {
 public:
-	IDeviceDriver(const QString id) : _id(id)	{};
+	IDeviceDriver(const QString id) : _id(id)
+	{
+	};
 	virtual ~IDeviceDriver() = default;
 
 	virtual bool initialize() const = 0;
@@ -49,6 +51,7 @@ public:
 	QString getId() const override;
 };
 
+#ifdef __linux__
 class DeviceDriver : public IDeviceDriver
 {
 public:
@@ -67,16 +70,21 @@ private:
 	unsigned int _close_gpio_line;
 	bool _active_high;
 
-#ifdef __linux__
 	// On Linux, store a pointer to the gpiod::line object
 	// Note: gpiod::line is not copyable, so a pointer is safer for class members.
 	mutable gpiod::line* _open_line; // mutable because initialize() changes it, but method is const
 	mutable gpiod::line* _close_line; // mutable because initialize() changes it, but method is const
-#elif _WIN32
-	// On Windows, we'll simulate the pin state
-	mutable bool _simulated_open_value; // mutable because setValue() changes it
-	mutable bool _simulated_close_value; // mutable because setValue() changes it
-#endif
-};
 
-}
+	inline int activeValue() const
+	{
+		return _active_high ? 1 : 0; // Value for ON state
+	}
+
+	inline int inactiveValue() const
+	{
+		return _active_high ? 0 : 1; // Value for OFF state
+	}
+};
+#endif
+
+} // namespace Device

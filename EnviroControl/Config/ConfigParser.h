@@ -29,7 +29,7 @@ struct WeatherStationConfig
 	int data_bits;
 	int stop_bits;
 	bool parity;
-	int log_frequencs_sec;
+	int log_frequency_sec;
 	QString log_file_path;
 };
 

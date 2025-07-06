@@ -228,13 +228,13 @@ std::optional<WeatherStationConfig> parseWeatherStationConfig(const QJsonObject&
 		return {};
 	}
 
-	if (weather_station_obj.contains("log_frequencs_sec") && weather_station_obj["log_frequencs_sec"].isDouble())
+	if (weather_station_obj.contains("log_frequency_sec") && weather_station_obj["log_frequency_sec"].isDouble())
 	{
-		weather_station_cfg.log_frequencs_sec = weather_station_obj["log_frequencs_sec"].toInt();
+		weather_station_cfg.log_frequency_sec = weather_station_obj["log_frequency_sec"].toInt();
 	}
 	else
 	{
-		qCritical() << "'log_frequencs_sec' not found or is not a string in 'WeatherStation' object of config file:";
+		qCritical() << "'log_frequency_sec' not found or is not a string in 'WeatherStation' object of config file:";
 		return {};
 	}
 

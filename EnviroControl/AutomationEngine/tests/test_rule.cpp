@@ -4,7 +4,7 @@
 
 #include "RuleSet.h"
 #include "RulesProcessor.h"
-#include "WeatherStation.h"
+#include "WeatherData.h"
 #include "IndoorStation.h"
 #include "DeviceState.h"
 

@@ -1,6 +1,6 @@
 #include "RulesProcessor.h"
 #include "DeviceStateManager.h"
-#include "WeatherStation.h"
+#include "WeatherData.h"
 #include "RuleSet.h"
 
 namespace Automation

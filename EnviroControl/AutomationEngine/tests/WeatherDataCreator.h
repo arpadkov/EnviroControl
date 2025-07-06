@@ -1,4 +1,4 @@
-#include "WeatherStation.h"
+#include "WeatherData.h"
 #include "IndoorStation.h"
 
 struct WeatherDataCreator

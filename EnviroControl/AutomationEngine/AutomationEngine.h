@@ -1,9 +1,9 @@
 #pragma once
 
 #include "ConfigParser.h"
-#include "WeatherStation.h"
 #include "IndoorStation.h"
 #include "RuleSet.h"
+#include "WeatherData.h"
 
 #include <QtCore/QObject>
 #include <QtCore/QTimer>

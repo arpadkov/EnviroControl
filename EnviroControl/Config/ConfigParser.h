@@ -29,6 +29,8 @@ struct WeatherStationConfig
 	int data_bits;
 	int stop_bits;
 	bool parity;
+	int log_frequencs_sec;
+	QString log_file_path;
 };
 
 struct DeviceConfigList

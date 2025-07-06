@@ -3,7 +3,7 @@
 #include "WeatherDataCreator.h"
 
 #include "RuleSet.h"
-#include "WeatherStation.h"
+#include "WeatherData.h"
 #include "IndoorStation.h"
 
 using namespace Automation;

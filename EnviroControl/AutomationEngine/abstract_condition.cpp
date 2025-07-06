@@ -1,7 +1,7 @@
 #include "AbstractCondition.h"
 #include "DeviceStateManager.h"
 
-#include "WeatherStation.h"
+#include "WeatherData.h"
 #include "IndoorStation.h"
 
 namespace Automation

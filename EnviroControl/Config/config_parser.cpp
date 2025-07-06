@@ -228,6 +228,26 @@ std::optional<WeatherStationConfig> parseWeatherStationConfig(const QJsonObject&
 		return {};
 	}
 
+	if (weather_station_obj.contains("log_frequencs_sec") && weather_station_obj["log_frequencs_sec"].isDouble())
+	{
+		weather_station_cfg.log_frequencs_sec = weather_station_obj["log_frequencs_sec"].toInt();
+	}
+	else
+	{
+		qCritical() << "'log_frequencs_sec' not found or is not a string in 'WeatherStation' object of config file:";
+		return {};
+	}
+
+	if (weather_station_obj.contains("log_file") && weather_station_obj["log_file"].isString())
+	{
+		weather_station_cfg.log_file_path = getConfigPath() + QDir::separator() + weather_station_obj["log_file"].toString();
+	}
+	else
+	{
+		qCritical() << "'log_file' not found or is not a string in 'WeatherStation' object of config file:";
+		return {};
+	}
+
 	return weather_station_cfg;
 }
 

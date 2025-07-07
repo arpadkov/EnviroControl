@@ -44,12 +44,14 @@ void AutomationEngine::loadRules(const QString& file_path)
 
 void AutomationEngine::setManualMode()
 {
-	_calc_timer->stop();
+	disconnect(_automation_connect);
 }
 
 void AutomationEngine::setAutoMode()
 {
-	_calc_timer->start();
+	// This connection only exists in auto mode, so we can safely disconnect it
+	_automation_connect = connect(this, &AutomationEngine::deviceStatesUpdated,
+		_state_manager, &Device::DeviceStateManager::onDeviceStatesUpdated);
 }
 
 void AutomationEngine::onWeatherStationData(const WeatherData& weather_data)
@@ -98,14 +100,14 @@ void AutomationEngine::onCalcTimeout()
 void AutomationEngine::initStateManagerThread()
 {
 	_state_manager_thread = new QThread();
-	auto state_manager = new Device::DeviceStateManager(_devices_cfg);
-	state_manager->moveToThread(_state_manager_thread);
+	_state_manager = new Device::DeviceStateManager(_devices_cfg);
+	_state_manager->moveToThread(_state_manager_thread);
 
 	// Destruct on finished
-	connect(_state_manager_thread, &QThread::finished, state_manager, &QObject::deleteLater);
+	connect(_state_manager_thread, &QThread::finished, _state_manager, &QObject::deleteLater);
 
-	connect(this, &AutomationEngine::manualDeviceRequest,
-		state_manager, &Device::DeviceStateManager::onManualDeviceRequest);
+	// Manual device request is always active
+	connect(this, &AutomationEngine::manualDeviceRequest, _state_manager, &Device::DeviceStateManager::onManualDeviceRequest);
 
 	_state_manager_thread->start();
 }

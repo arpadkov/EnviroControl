@@ -14,6 +14,7 @@ class QThread;
 
 namespace Device
 {
+class DeviceStateManager;
 class DeviceStates;
 struct DeviceState;
 }
@@ -63,6 +64,9 @@ private:
 	Cfg::DeviceConfigList _devices_cfg;
 	RuleSet _rule_set;
 
+	// State manager thread
 	QThread* _state_manager_thread = nullptr;
+	Device::DeviceStateManager* _state_manager = nullptr;
+	QMetaObject::Connection _automation_connect;
 };
 }

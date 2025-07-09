@@ -18,7 +18,7 @@ DeviceStateManager::DeviceStateManager(const Cfg::DeviceConfigList& cfg, QObject
 	// Configure reset timer
 	_reset_timer = new QTimer(this);
 	_reset_timer->setSingleShot(true);
-	_reset_timer->setInterval(3000); // 1 second timeout for resetting the device state
+	_reset_timer->setInterval(60*1000); // timeout for resetting the device state
 
 	connect(this, &DeviceStateManager::deviceMovementFinished, this, &DeviceStateManager::calculateAndSetNextState);
 }

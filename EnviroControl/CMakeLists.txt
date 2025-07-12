@@ -129,7 +129,17 @@ else()
         # --- Fallback for Linux/UNIX ---
         # On Linux, plugins can be in various locations.
         # We also need QT_INSTALL_PREFIX for some common Linux paths.
-        get_target_property(QT_INSTALL_PREFIX_TEMP Qt6::Core QT_INSTALL_PREFIX) # Use a temp variable for checks
+
+        # Determine the root of the Qt kit installation (this line should already be there)
+        get_filename_component(QT_KIT_ROOT_DIR ${QT_BIN_DIR} DIRECTORY)
+        # Temporary variable for QT_INSTALL_PREFIX for Linux path checks (this line should already be there)
+        get_target_property(QT_INSTALL_PREFIX_TEMP Qt6::Core QT_INSTALL_PREFIX)
+        
+        # DEBUG LINES for Linux: Please provide the output of these
+        message(STATUS "DEBUG LINUX: QT_CORE_LOCATION is: ${QT_CORE_LOCATION}")
+        message(STATUS "DEBUG LINUX: QT_BIN_DIR is: ${QT_BIN_DIR}")
+        message(STATUS "DEBUG LINUX: QT_KIT_ROOT_DIR is: ${QT_KIT_ROOT_DIR}")
+        message(STATUS "DEBUG LINUX: QT_INSTALL_PREFIX_TEMP is: ${QT_INSTALL_PREFIX_TEMP}")
 
         if (EXISTS "${QT_KIT_ROOT_DIR}/plugins") # Common for some custom Qt builds or certain Linux installs
             set(QT_PLUGINS_ROOT_DIR "${QT_KIT_ROOT_DIR}/plugins")

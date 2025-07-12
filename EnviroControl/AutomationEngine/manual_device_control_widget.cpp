@@ -41,7 +41,6 @@ inline void ManualDeviceControlWidget::initLayout()
 	auto main_layout = new QHBoxLayout();
 	setLayout(main_layout);
 
-	int btn_count = 0;
 	for (const auto& device_cfg : _devices_cfg.device_cfgs)
 	{
 		auto btns_layout = new QVBoxLayout();
@@ -66,11 +65,12 @@ inline void ManualDeviceControlWidget::initLayout()
 				Q_EMIT deviceDownPressed(device_cfg.device_id);
 			});
 
-		btn_count++;
-		if (btn_count < _devices_cfg.device_cfgs.size())
-			main_layout->addStretch(1);
+		main_layout->addStretch(1);
 	}
 
+	auto reset_btn = createButton(QStyle::SP_BrowserStop, this);
+	main_layout->addWidget(reset_btn);
+	connect(reset_btn, &QPushButton::clicked, this, &ManualDeviceControlWidget::abortPressed);
 }
 
 

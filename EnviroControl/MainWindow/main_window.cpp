@@ -96,6 +96,7 @@ void MainWindow::initAutomationEngine()
 	// Connect to widget signals
 	connect(_manual_device_control_widget, &Automation::ManualDeviceControlWidget::deviceUpPressed, _automation_engine, &Automation::AutomationEngine::onManualDeviceUpRequest);
 	connect(_manual_device_control_widget, &Automation::ManualDeviceControlWidget::deviceDownPressed, _automation_engine, &Automation::AutomationEngine::onManualDeviceDownRequest);
+	connect(_manual_device_control_widget, &Automation::ManualDeviceControlWidget::abortPressed, _automation_engine, &Automation::AutomationEngine::onAbort);
 
 	_automation_engine->loadRules(_cfg.rules_cfg_relative_path);
 }

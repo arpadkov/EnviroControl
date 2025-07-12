@@ -45,12 +45,14 @@ Q_SIGNALS:
 	void deviceStatesUpdated(const Device::DeviceStates& calulated_states);
 	void automationModeChanged(bool manual_mode);
 	void manualDeviceRequest(const Device::DeviceState& state);
+	void abortMovement();
 
 public Q_SLOTS:
 	void onWeatherStationData(const WeatherData& weather_data);
 	void onIndoorStationData(const IndoorData& indoor_data);
 	void onManualDeviceUpRequest(const QString& device_id);
 	void onManualDeviceDownRequest(const QString& device_id);
+	void onAbort();
 
 private:
 	void onCalcTimeout();

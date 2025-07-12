@@ -99,6 +99,7 @@ Q_SIGNALS:
 public Q_SLOTS:
 	void onManualDeviceRequest(const Device::DeviceState& state);
 	void onDeviceStatesUpdated(const Device::DeviceStates& state);
+	void onAbort();
 
 private:
 	void registerDevices();

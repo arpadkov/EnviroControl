@@ -44,6 +44,11 @@ void DeviceStateManager::onDeviceStatesUpdated(const Device::DeviceStates& state
 		calculateAndSetNextState(); // Check if any device needs to be moved
 }
 
+void DeviceStateManager::onAbort()
+{
+	interruptCurrentMovement();
+}
+
 void DeviceStateManager::registerDevices()
 {
 	for (const auto& device_cfg : _devices_cfg.device_cfgs)

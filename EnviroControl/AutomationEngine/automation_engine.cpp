@@ -84,6 +84,12 @@ void AutomationEngine::onManualDeviceDownRequest(const QString& device_id)
 	Q_EMIT manualDeviceRequest(state);
 }
 
+void AutomationEngine::onAbort()
+{
+	setManualMode();
+	Q_EMIT abortMovement();
+}
+
 void AutomationEngine::onCalcTimeout()
 {
 	if (_weather_data_history.empty())
@@ -108,6 +114,7 @@ void AutomationEngine::initStateManagerThread()
 
 	// Manual device request is always active
 	connect(this, &AutomationEngine::manualDeviceRequest, _state_manager, &Device::DeviceStateManager::onManualDeviceRequest);
+	connect(this, &AutomationEngine::abortMovement, _state_manager, &Device::DeviceStateManager::onAbort);
 
 	_state_manager_thread->start();
 }

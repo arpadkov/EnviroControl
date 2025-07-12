@@ -136,7 +136,6 @@ else()
         elseif (EXISTS "${QT_KIT_ROOT_DIR}/plugins") # -> /usr/lib/plugins (Not found by user)
             set(QT_PLUGINS_ROOT_DIR "${QT_KIT_ROOT_DIR}/plugins")
         endif()
-        # No need for QT_INSTALL_PREFIX_TEMP anymore since it was NOTFOUND and not contributing to the correct path.
     endif()
 endif()
 

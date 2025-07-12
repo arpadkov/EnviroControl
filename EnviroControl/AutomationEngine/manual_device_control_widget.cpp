@@ -15,11 +15,10 @@ static const int BUTTON_SIZE = ICON_SIZE + 8;
 
 namespace
 {
-QPushButton* createButton(QStyle::StandardPixmap icon_pm, QWidget* parent)
+QPushButton* createButton(const QString& icon_name, QWidget* parent)
 {
 	auto button = new QPushButton(parent);
-	//auto icon = parent->style()->standardIcon(icon_pm);
-	auto icon = QIcon(":/manual_ctrl/icons/arrow_up.svg");
+	auto icon = QIcon(QString(":/manual_ctrl/icons/%1.svg").arg(icon_name));
 	button->setIcon(icon);
 	button->setIconSize(QSize(ICON_SIZE, ICON_SIZE));
 	button->setFixedSize(BUTTON_SIZE, BUTTON_SIZE);
@@ -50,7 +49,7 @@ inline void ManualDeviceControlWidget::initLayout()
 		auto name_l = new QLabel(device_cfg.device_name);
 		btns_layout->addWidget(name_l);
 
-		auto up_btn = createButton(QStyle::SP_ArrowUp, this);
+		auto up_btn = createButton("arrow_up", this);
 		btns_layout->addWidget(up_btn);
 		connect(up_btn, &QPushButton::clicked, this, [this, device_cfg]()
 			{
@@ -59,7 +58,7 @@ inline void ManualDeviceControlWidget::initLayout()
 
 		btns_layout->addStretch(1);
 
-		auto down_btn = createButton(QStyle::SP_ArrowDown, this);
+		auto down_btn = createButton("arrow_down", this);
 		btns_layout->addWidget(down_btn);
 		connect(down_btn, &QPushButton::clicked, this, [this, device_cfg]()
 			{
@@ -69,7 +68,7 @@ inline void ManualDeviceControlWidget::initLayout()
 		main_layout->addStretch(1);
 	}
 
-	auto reset_btn = createButton(QStyle::SP_BrowserStop, this);
+	auto reset_btn = createButton("abort_ops", this);
 	main_layout->addWidget(reset_btn);
 	connect(reset_btn, &QPushButton::clicked, this, &ManualDeviceControlWidget::abortPressed);
 }

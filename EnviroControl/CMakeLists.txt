@@ -134,8 +134,21 @@ set(QT_CORE_LIBS
 
 # Construct the list of full paths for Qt core libraries
 set(QT_CORE_LIB_FULL_PATHS "")
-foreach(lib IN ITEMS ${QT_CORE_LIBS})
-    list(APPEND QT_CORE_LIB_FULL_PATHS "${QT_BIN_DIR}/${lib}${QT_LIB_SUFFIX}")
+foreach(lib_target IN ITEMS
+    Qt6::Core
+    Qt6::Gui
+    Qt6::Widgets
+    Qt6::Network
+    Qt6::SerialPort
+    Qt6::Svg
+)
+    get_target_property(lib_location ${lib_target} LOCATION)
+    if(lib_location)
+        list(APPEND QT_CORE_LIB_FULL_PATHS "${lib_location}")
+    else()
+        # This FATAL_ERROR should ideally not be hit if find_package(Qt6...) succeeded
+        message(FATAL_ERROR "Could not find location of linked Qt library: ${lib_target}. Ensure it's correctly installed and find_package found it.")
+    endif()
 endforeach()
 
 # Add a custom command to copy all necessary Qt DLLs/SOs

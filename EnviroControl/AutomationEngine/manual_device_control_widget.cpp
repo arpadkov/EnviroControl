@@ -59,7 +59,7 @@ inline void ManualDeviceControlWidget::initLayout()
 
 		btns_layout->addStretch(1);
 
-		auto down_btn = createButton(QStyle::SP_ArrowUp, this);
+		auto down_btn = createButton(QStyle::SP_ArrowDown, this);
 		btns_layout->addWidget(down_btn);
 		connect(down_btn, &QPushButton::clicked, this, [this, device_cfg]()
 			{

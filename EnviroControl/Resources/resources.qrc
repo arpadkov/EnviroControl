@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/manual_ctrl">
+        <file>icons/arrow_up.svg</file>
+    </qresource>
+</RCC>

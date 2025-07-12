@@ -18,7 +18,8 @@ namespace
 QPushButton* createButton(QStyle::StandardPixmap icon_pm, QWidget* parent)
 {
 	auto button = new QPushButton(parent);
-	auto icon = parent->style()->standardIcon(icon_pm);
+	//auto icon = parent->style()->standardIcon(icon_pm);
+	auto icon = QIcon(":/manual_ctrl/icons/arrow_up.svg");
 	button->setIcon(icon);
 	button->setIconSize(QSize(ICON_SIZE, ICON_SIZE));
 	button->setFixedSize(BUTTON_SIZE, BUTTON_SIZE);

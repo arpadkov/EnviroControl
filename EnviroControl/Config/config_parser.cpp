@@ -18,6 +18,35 @@ QString getConfigPath()
 	return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 }
 
+QString extractString(const QJsonObject& obj, const QString& key)
+{
+	if (!obj.contains(key) || !obj[key].isString())
+		throw std::runtime_error(QString("Key '%1' not found or is not a string in config file").arg(key).toStdString());
+
+	return obj[key].toString();
+}
+
+double extractDouble(const QJsonObject& obj, const QString& key)
+{
+	if (!obj.contains(key) || !obj[key].isDouble())
+		throw std::runtime_error(QString("Key '%1' not found or is not a double in config file").arg(key).toStdString());
+	return obj[key].toDouble();
+}
+
+int extractInt(const QJsonObject& obj, const QString& key)
+{
+	if (!obj.contains(key) || !obj[key].isDouble())
+		throw std::runtime_error(QString("Key '%1' not found or is not a double in config file").arg(key).toStdString());
+	return obj[key].toInt();
+}
+
+bool extractBool(const QJsonObject& obj, const QString& key)
+{
+	if (!obj.contains(key) || !obj[key].isBool())
+		throw std::runtime_error(QString("Key '%1' not found or is not a boolean in config file").arg(key).toStdString());
+	return obj[key].toBool();
+}
+
 std::optional<WeatherForeCastConfig> parseWeatherForecastConfig(const QJsonObject& root_obj)
 {
 	if (!root_obj.contains("weather_forecast_config") || !root_obj["weather_forecast_config"].isObject())
@@ -29,55 +58,11 @@ std::optional<WeatherForeCastConfig> parseWeatherForecastConfig(const QJsonObjec
 	QJsonObject weather_obj = root_obj["weather_forecast_config"].toObject();
 
 	WeatherForeCastConfig weather_forecast_cfg;
-	if (weather_obj.contains("api_url") && weather_obj["api_url"].isString())
-	{
-		weather_forecast_cfg.api_url = weather_obj["api_url"].toString();
-	}
-	else
-	{
-		qCritical() << "'api_url' not found or is not a string in 'Weather' object of config file:";
-		return {};
-	}
-
-	if (weather_obj.contains("api_key") && weather_obj["api_key"].isString())
-	{
-		weather_forecast_cfg.api_key = weather_obj["api_key"].toString();
-	}
-	else
-	{
-		qCritical() << "'api_key' not found or is not a string in 'Weather' object of config file";
-		return {}; // Return an invalid/empty config
-	}
-
-	if (weather_obj.contains("lat") && weather_obj["lat"].isDouble())
-	{
-		weather_forecast_cfg.lat = weather_obj["lat"].toDouble();
-	}
-	else
-	{
-		qCritical() << "'lat' not found or is not a string in 'Weather' object of config file";
-		return {}; // Return an invalid/empty config
-	}
-
-	if (weather_obj.contains("lon") && weather_obj["lon"].isDouble())
-	{
-		weather_forecast_cfg.lon = weather_obj["lon"].toDouble();
-	}
-	else
-	{
-		qCritical() << "'lon' not found or is not a string in 'Weather' object of config file";
-		return {}; // Return an invalid/empty config
-	}
-
-	if (weather_obj.contains("update_sec") && weather_obj["update_sec"].isDouble())
-	{
-		weather_forecast_cfg.update_sec = weather_obj["update_sec"].toDouble();
-	}
-	else
-	{
-		qCritical() << "'update_sec' not found or is not a string in 'Weather' object of config file";
-		return {}; // Return an invalid/empty config
-	}
+	weather_forecast_cfg.api_url = extractString(weather_obj, "api_url");
+	weather_forecast_cfg.api_key = extractString(weather_obj, "api_key");
+	weather_forecast_cfg.lat = extractDouble(weather_obj, "lat");
+	weather_forecast_cfg.lon = extractDouble(weather_obj, "lon");
+	weather_forecast_cfg.update_sec = extractInt(weather_obj, "update_sec");
 
 	return weather_forecast_cfg;
 }
@@ -112,50 +97,10 @@ std::optional<DeviceConfigList> parseDeviceConfig(const QJsonObject& root_obj)
 
 		QJsonObject device_obj = device_value.toObject();
 		DeviceConfig device_cfg;
-
-		// Extract "id"
-		if (device_obj.contains("id") && device_obj["id"].isString())
-		{
-			device_cfg.device_id = device_obj["id"].toString();
-		}
-		else
-		{
-			qCritical() << "Device object missing 'id' or 'id' is not a string";
-			return {};
-		}
-
-		// Extract "name"
-		if (device_obj.contains("name") && device_obj["name"].isString())
-		{
-			device_cfg.device_name = device_obj["name"].toString();
-		}
-		else
-		{
-			qCritical() << "Device object with ID '" << device_cfg.device_id << "' missing 'name' or 'name' is not a string.";
-			return {};
-		}
-
-		// Extract "open_gpio_pin"
-		if (device_obj.contains("open_gpio_pin") && device_obj["open_gpio_pin"].isDouble())
-		{
-			device_cfg.open_gpio_pin = device_obj["open_gpio_pin"].toInt();
-		}
-		else
-		{
-			qCritical() << "Device object with ID '" << device_cfg.device_id << "' missing 'name' or 'name' is not a string.";
-			return {};
-		}
-
-		// Extract "close_gpio_pin"
-		if (device_obj.contains("close_gpio_pin") && device_obj["close_gpio_pin"].isDouble())
-		{
-			device_cfg.close_gpio_pin = device_obj["close_gpio_pin"].toInt();
-		}
-		else
-		{
-			qCritical() << "Device object with ID '" << device_cfg.device_id << "' missing 'name' or 'name' is not a string.";
-			return {};
-		}
+		device_cfg.device_id = extractString(device_obj, "id");
+		device_cfg.device_name = extractString(device_obj, "name");
+		device_cfg.open_gpio_pin = extractInt(device_obj, "open_gpio_pin");
+		device_cfg.close_gpio_pin = extractInt(device_obj, "close_gpio_pin");
 
 		// Add the successfully parsed DeviceConfig to the list
 		config_list.device_cfgs.push_back(device_cfg);
@@ -178,75 +123,13 @@ std::optional<WeatherStationConfig> parseWeatherStationConfig(const QJsonObject&
 	QJsonObject weather_station_obj = root_obj["weather_station_config"].toObject();
 
 	WeatherStationConfig weather_station_cfg;
-	if (weather_station_obj.contains("port_name") && weather_station_obj["port_name"].isString())
-	{
-		weather_station_cfg.port_name = weather_station_obj["port_name"].toString();
-	}
-	else
-	{
-		qCritical() << "'port_name' not found or is not a string in 'WeatherStation' object of config file:";
-		return {};
-	}
-
-	if (weather_station_obj.contains("baud_rate") && weather_station_obj["baud_rate"].isDouble())
-	{
-		weather_station_cfg.baud_rate = weather_station_obj["baud_rate"].toDouble();
-	}
-	else
-	{
-		qCritical() << "'baud_rate' not found or is not a string in 'WeatherStation' object of config file:";
-		return {};
-	}
-
-	if (weather_station_obj.contains("data_bits") && weather_station_obj["data_bits"].isDouble())
-	{
-		weather_station_cfg.data_bits = weather_station_obj["data_bits"].toDouble();
-	}
-	else
-	{
-		qCritical() << "'data_bits' not found or is not a string in 'WeatherStation' object of config file:";
-		return {};
-	}
-
-	if (weather_station_obj.contains("stop_bits") && weather_station_obj["stop_bits"].isDouble())
-	{
-		weather_station_cfg.stop_bits = weather_station_obj["stop_bits"].toDouble();
-	}
-	else
-	{
-		qCritical() << "'stop_bits' not found or is not a string in 'WeatherStation' object of config file:";
-		return {};
-	}
-
-	if (weather_station_obj.contains("parity") && weather_station_obj["parity"].isBool())
-	{
-		weather_station_cfg.parity = weather_station_obj["parity"].toBool();
-	}
-	else
-	{
-		qCritical() << "'parity' not found or is not a string in 'WeatherStation' object of config file:";
-		return {};
-	}
-
-	if (weather_station_obj.contains("log_frequency_sec") && weather_station_obj["log_frequency_sec"].isDouble())
-	{
-		weather_station_cfg.log_frequency_sec = weather_station_obj["log_frequency_sec"].toInt();
-	}
-	else
-	{
-		qCritical() << "'log_frequency_sec' not found or is not a string in 'WeatherStation' object of config file:";
-		return {};
-	}
-
-	if (weather_station_obj.contains("log_file") && weather_station_obj["log_file"].isString())
-	{
-		weather_station_cfg.log_file_path = getConfigPath() + QDir::separator() + weather_station_obj["log_file"].toString();
-	}
-	else
-	{
-		qCritical() << "'log_file' not found or is not a string in 'WeatherStation' object of config file:";
-		return {};
-	}
+	weather_station_cfg.port_name = extractString(weather_station_obj, "port_name");
+	weather_station_cfg.baud_rate = extractInt(weather_station_obj, "baud_rate");
+	weather_station_cfg.data_bits = extractInt(weather_station_obj, "data_bits");
+	weather_station_cfg.stop_bits = extractInt(weather_station_obj, "stop_bits");
+	weather_station_cfg.parity = extractBool(weather_station_obj, "parity");
+	weather_station_cfg.log_frequency_sec = extractInt(weather_station_obj, "log_frequency_sec");
+	weather_station_cfg.log_file_path = extractString(weather_station_obj, "log_file");
 
 	return weather_station_cfg;
 }
@@ -284,31 +167,26 @@ std::optional<Config> ConfigParser::parseConfigFile()
 
 	QJsonObject root_obj = doc.object();
 
-	const auto& weather_forecast_cfg = parseWeatherForecastConfig(root_obj);
-	const auto& devices_cfg = parseDeviceConfig(root_obj);
-	const auto& weather_station_cfg = parseWeatherStationConfig(root_obj);
+	try
+	{
+		const auto& weather_forecast_cfg = parseWeatherForecastConfig(root_obj);
+		const auto& devices_cfg = parseDeviceConfig(root_obj);
+		const auto& weather_station_cfg = parseWeatherStationConfig(root_obj);
+		QString rules_cfg_file = extractString(root_obj, "rules_config_file");
 
-	QString rules_cfg_file;
-	if (root_obj.contains("rules_config_file") && root_obj["rules_config_file"].isString())
-	{
-		rules_cfg_file = root_obj["rules_config_file"].toString();
+		Config cfg;
+		cfg.forecast_cfg = weather_forecast_cfg.value();
+		cfg.device_cfg_list = devices_cfg.value();
+		cfg.weather_station_cfg = weather_station_cfg.value();
+		cfg.rules_cfg_relative_path = getConfigPath() + QDir::separator() + rules_cfg_file;
+
+		return cfg;
 	}
-	else
+	catch (const std::runtime_error& e)
 	{
-		qCritical() << "'rules_config_file' object not found or is not an object in config file";
+		qCritical() << "Error parsing config file:" << e.what();
 		return {};
 	}
-
-	if (!weather_forecast_cfg || !devices_cfg || !weather_station_cfg || rules_cfg_file.isEmpty())
-		return {};
-
-	Config cfg;
-	cfg.forecast_cfg = weather_forecast_cfg.value();
-	cfg.device_cfg_list = devices_cfg.value();
-	cfg.weather_station_cfg = weather_station_cfg.value();
-	cfg.rules_cfg_relative_path = getConfigPath() + QDir::separator() + rules_cfg_file;
-
-	return cfg;
 }
 
 }

@@ -115,9 +115,8 @@ if (QT_PLUGINS_ROOT_DIR_PROP)
 else()
     message(STATUS "Qt6::Core QT_PLUGINS_DIR property not directly available, attempting platform-specific fallback.")
 
-    # Determine the root of the Qt kit installation
-    # This takes QT_BIN_DIR (e.g., C:/Qt/6.8.3/msvc2022_64/bin) and gets its parent (e.g., C:/Qt/6.8.3/msvc2022_64)
-    get_filename_component(QT_KIT_ROOT_DIR ${QT_BIN_DIR} DIRECTORY)
+    # Determine the root of the Qt kit installation (e.g., C:/Qt/6.8.3/msvc2022_64 or /usr/lib/aarch64-linux-gnu)
+    get_filename_component(QT_KIT_ROOT_DIR ${QT_BIN_DIR} DIRECTORY) # This gives parent of bin
 
     if (WIN32)
         # --- Fallback for Windows ---
@@ -127,29 +126,17 @@ else()
         endif()
     else() # Assume UNIX/Linux for Raspberry Pi
         # --- Fallback for Linux/UNIX ---
-        # On Linux, plugins can be in various locations.
-        # We also need QT_INSTALL_PREFIX for some common Linux paths.
-
-        # Determine the root of the Qt kit installation (this line should already be there)
-        get_filename_component(QT_KIT_ROOT_DIR ${QT_BIN_DIR} DIRECTORY)
-        # Temporary variable for QT_INSTALL_PREFIX for Linux path checks (this line should already be there)
-        get_target_property(QT_INSTALL_PREFIX_TEMP Qt6::Core QT_INSTALL_PREFIX)
-        
-        # DEBUG LINES for Linux: Please provide the output of these
-        message(STATUS "DEBUG LINUX: QT_CORE_LOCATION is: ${QT_CORE_LOCATION}")
-        message(STATUS "DEBUG LINUX: QT_BIN_DIR is: ${QT_BIN_DIR}")
-        message(STATUS "DEBUG LINUX: QT_KIT_ROOT_DIR is: ${QT_KIT_ROOT_DIR}")
-        message(STATUS "DEBUG LINUX: QT_INSTALL_PREFIX_TEMP is: ${QT_INSTALL_PREFIX_TEMP}")
-
-        if (EXISTS "${QT_KIT_ROOT_DIR}/plugins") # Common for some custom Qt builds or certain Linux installs
-            set(QT_PLUGINS_ROOT_DIR "${QT_KIT_ROOT_DIR}/plugins")
-        elseif (EXISTS "${QT_KIT_ROOT_DIR}/qt6/plugins") # Common on Debian/Ubuntu (e.g. /usr/lib/aarch64-linux-gnu/qt6/plugins)
+        # Prioritize the most likely correct path based on user's 'find' output
+        if (EXISTS "${QT_BIN_DIR}/qt6/plugins") # THIS IS THE ONE! -> /usr/lib/aarch64-linux-gnu/qt6/plugins
+            set(QT_PLUGINS_ROOT_DIR "${QT_BIN_DIR}/qt6/plugins")
+        elseif (EXISTS "${QT_KIT_ROOT_DIR}/qt6/plugins") # -> /usr/lib/qt6/plugins (Less common for this user)
             set(QT_PLUGINS_ROOT_DIR "${QT_KIT_ROOT_DIR}/qt6/plugins")
-        elseif (EXISTS "${QT_INSTALL_PREFIX_TEMP}/lib/qt6/plugins") # Another common Linux structure (e.g., /usr/lib/qt6/plugins)
-            set(QT_PLUGINS_ROOT_DIR "${QT_INSTALL_PREFIX_TEMP}/lib/qt6/plugins")
-        elseif (EXISTS "${QT_INSTALL_PREFIX_TEMP}/lib/aarch64-linux-gnu/qt6/plugins") # Specific to arm64 on some systems
-             set(QT_PLUGINS_ROOT_DIR "${QT_INSTALL_PREFIX_TEMP}/lib/aarch64-linux-gnu/qt6/plugins")
+        elseif (EXISTS "${QT_BIN_DIR}/plugins") # -> /usr/lib/aarch64-linux-gnu/plugins (Possible, but not found by user)
+            set(QT_PLUGINS_ROOT_DIR "${QT_BIN_DIR}/plugins")
+        elseif (EXISTS "${QT_KIT_ROOT_DIR}/plugins") # -> /usr/lib/plugins (Not found by user)
+            set(QT_PLUGINS_ROOT_DIR "${QT_KIT_ROOT_DIR}/plugins")
         endif()
+        # No need for QT_INSTALL_PREFIX_TEMP anymore since it was NOTFOUND and not contributing to the correct path.
     endif()
 endif()
 

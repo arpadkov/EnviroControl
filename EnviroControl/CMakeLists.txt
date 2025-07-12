@@ -107,12 +107,47 @@ get_target_property(QT_CORE_LOCATION Qt6::Core LOCATION)
 get_filename_component(QT_BIN_DIR ${QT_CORE_LOCATION} DIRECTORY) # e.g., C:/Qt/6.8.0/msvc2019_64/bin or /opt/Qt/6.8.0/gcc_64/lib
 
 # Try to get the official Qt plugin directory property. This is the most reliable.
+set(QT_PLUGINS_ROOT_DIR "") # Initialize to empty
 get_target_property(QT_PLUGINS_ROOT_DIR Qt6::Core QT_PLUGINS_DIR)
-if (NOT QT_PLUGINS_ROOT_DIR)
-    # Fallback if QT_PLUGINS_DIR property is not set (less common for Qt6, but good for robustness)
-    # This assumes plugins are typically in a 'plugins' folder one level up from the 'bin' directory.
-    get_filename_component(QT_INSTALL_PREFIX ${QT_BIN_DIR} DIRECTORY)
-    set(QT_PLUGINS_ROOT_DIR "${QT_INSTALL_PREFIX}/plugins")
+if (QT_PLUGINS_ROOT_DIR_PROP)
+    set(QT_PLUGINS_ROOT_DIR "${QT_PLUGINS_ROOT_DIR_PROP}")
+    message(STATUS "Resolved Qt Plugin Root Directory using QT_PLUGINS_DIR property: ${QT_PLUGINS_ROOT_DIR}")
+else()
+    message(STATUS "Qt6::Core QT_PLUGINS_DIR property not directly available, attempting platform-specific fallback.")
+
+    # Determine the root of the Qt kit installation
+    # This takes QT_BIN_DIR (e.g., C:/Qt/6.8.3/msvc2022_64/bin) and gets its parent (e.g., C:/Qt/6.8.3/msvc2022_64)
+    get_filename_component(QT_KIT_ROOT_DIR ${QT_BIN_DIR} DIRECTORY)
+
+    if (WIN32)
+        # --- Fallback for Windows ---
+        # Based on your feedback, plugins are directly under QT_KIT_ROOT_DIR + /plugins
+        if (EXISTS "${QT_KIT_ROOT_DIR}/plugins")
+            set(QT_PLUGINS_ROOT_DIR "${QT_KIT_ROOT_DIR}/plugins")
+        endif()
+    else() # Assume UNIX/Linux for Raspberry Pi
+        # --- Fallback for Linux/UNIX ---
+        # On Linux, plugins can be in various locations.
+        # We also need QT_INSTALL_PREFIX for some common Linux paths.
+        get_target_property(QT_INSTALL_PREFIX_TEMP Qt6::Core QT_INSTALL_PREFIX) # Use a temp variable for checks
+
+        if (EXISTS "${QT_KIT_ROOT_DIR}/plugins") # Common for some custom Qt builds or certain Linux installs
+            set(QT_PLUGINS_ROOT_DIR "${QT_KIT_ROOT_DIR}/plugins")
+        elseif (EXISTS "${QT_KIT_ROOT_DIR}/qt6/plugins") # Common on Debian/Ubuntu (e.g. /usr/lib/aarch64-linux-gnu/qt6/plugins)
+            set(QT_PLUGINS_ROOT_DIR "${QT_KIT_ROOT_DIR}/qt6/plugins")
+        elseif (EXISTS "${QT_INSTALL_PREFIX_TEMP}/lib/qt6/plugins") # Another common Linux structure (e.g., /usr/lib/qt6/plugins)
+            set(QT_PLUGINS_ROOT_DIR "${QT_INSTALL_PREFIX_TEMP}/lib/qt6/plugins")
+        elseif (EXISTS "${QT_INSTALL_PREFIX_TEMP}/lib/aarch64-linux-gnu/qt6/plugins") # Specific to arm64 on some systems
+             set(QT_PLUGINS_ROOT_DIR "${QT_INSTALL_PREFIX_TEMP}/lib/aarch64-linux-gnu/qt6/plugins")
+        endif()
+    endif()
+endif()
+
+# Important: Add a check and a message to see what it resolved to
+if (NOT QT_PLUGINS_ROOT_DIR OR NOT EXISTS "${QT_PLUGINS_ROOT_DIR}/platforms")
+    message(FATAL_ERROR "Could not determine Qt plugin directory or '${QT_PLUGINS_ROOT_DIR}/platforms' does not exist. Please check your Qt installation paths. QT_PLUGINS_ROOT_DIR found as: '${QT_PLUGINS_ROOT_DIR}'")
+else()
+    message(STATUS "Resolved Qt Plugin Root Directory to: ${QT_PLUGINS_ROOT_DIR}")
 endif()
 
 # Define the destination directory for the deployed files (where your .exe or executable is)

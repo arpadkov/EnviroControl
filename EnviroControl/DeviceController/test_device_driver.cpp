@@ -5,7 +5,7 @@
 
 namespace Device
 {
-TestDeviceDriver::TestDeviceDriver(const QString& id) : IDeviceDriver(id)
+TestDeviceDriver::TestDeviceDriver(const QString& id, int timeout_sec) : IDeviceDriver(id, timeout_sec)
 {
 	qDebug(device_log) << "TestDeviceDriver::CONSTRUCTOR() called with id:" << id;
 }
@@ -36,11 +36,6 @@ void TestDeviceDriver::close() const
 void TestDeviceDriver::reset() const
 {
 	qDebug(device_log) << "TestDeviceDriver::reset " << _id << " called.";
-}
-
-QString TestDeviceDriver::getId() const
-{
-	return _id;
 }
 
 }

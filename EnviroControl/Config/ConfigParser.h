@@ -20,6 +20,7 @@ struct DeviceConfig
 	QString device_id;
 	int open_gpio_pin;
 	int close_gpio_pin;
+	int reset_time_sec;
 };
 
 struct WeatherStationConfig

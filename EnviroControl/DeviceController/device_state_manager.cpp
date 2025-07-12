@@ -18,7 +18,6 @@ DeviceStateManager::DeviceStateManager(const Cfg::DeviceConfigList& cfg, QObject
 	// Configure reset timer
 	_reset_timer = new QTimer(this);
 	_reset_timer->setSingleShot(true);
-	_reset_timer->setInterval(60*1000); // timeout for resetting the device state
 
 	connect(this, &DeviceStateManager::deviceMovementFinished, this, &DeviceStateManager::calculateAndSetNextState);
 }
@@ -66,12 +65,12 @@ void DeviceStateManager::registerDevices()
 
 		// TestDriver for Windows
 #ifdef _WIN32
-		driver = std::make_unique<TestDeviceDriver>(device_id);
+		driver = std::make_unique<TestDeviceDriver>(device_id, device_cfg.reset_time_sec);
 #endif
 
 		// Real driver for Raspberry Pi
 #if defined(__linux__) && (defined(__ARM_ARCH) || defined(__arm__))
-		driver = std::make_unique<DeviceDriver>(device_id, device_cfg.open_gpio_pin, device_cfg.close_gpio_pin, false);
+		driver = std::make_unique<DeviceDriver>(device_id, device_cfg.reset_time_sec, device_cfg.open_gpio_pin, device_cfg.close_gpio_pin, false);
 #endif
 
 		if (driver && driver->initialize())
@@ -146,6 +145,7 @@ void DeviceStateManager::setDevicestate(const Device::DeviceState& state)
 		{
 			onResetTimerTimeout(state);
 		}, Qt::SingleShotConnection); // After fired, delete the connection to avoid multiple calls
+	_reset_timer->setInterval(device->getTimeoutSec() * 1000);
 	_reset_timer->start();
 }
 

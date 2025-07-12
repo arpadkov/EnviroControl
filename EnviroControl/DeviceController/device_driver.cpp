@@ -55,8 +55,8 @@ void inactivateAndRelaseLine(gpiod::line* line, int off_value, unsigned int line
 }
 }
 
-DeviceDriver::DeviceDriver(const QString& device_id, unsigned int open_gpio_line, unsigned int close_gpio_line, bool active_high) :
-	IDeviceDriver(device_id), _open_gpio_line(open_gpio_line), _close_gpio_line(close_gpio_line), _active_high(active_high)
+DeviceDriver::DeviceDriver(const QString& device_id, int timeout_sec, unsigned int open_gpio_line, unsigned int close_gpio_line, bool active_high) :
+	IDeviceDriver(device_id, timeout_sec), _open_gpio_line(open_gpio_line), _close_gpio_line(close_gpio_line), _active_high(active_high)
 	, _open_line(nullptr)	, _close_line(nullptr)
 {
 }
@@ -126,11 +126,6 @@ void DeviceDriver::reset() const
 {
 	gpioOperation(_open_line, inactiveValue(), _open_gpio_line);
 	gpioOperation(_close_line, inactiveValue(), _close_gpio_line);
-}
-
-QString DeviceDriver::getId() const
-{
-	return _id;
 }
 
 }

@@ -21,7 +21,7 @@ namespace Device
 class IDeviceDriver
 {
 public:
-	IDeviceDriver(const QString id) : _id(id)
+	IDeviceDriver(const QString& id, int timeout_sec) : _id(id), _timeout_sec(timeout_sec)
 	{
 	};
 	virtual ~IDeviceDriver() = default;
@@ -31,39 +31,44 @@ public:
 	virtual void close() const = 0;
 	virtual void reset() const = 0;
 
-	virtual QString getId() const = 0;
+	QString getId() const
+	{
+		return _id;
+	};
+
+	int getTimeoutSec() const
+	{
+		return _timeout_sec;
+	};
 
 protected:
-	QString _id;
+	const QString _id;
+	const int _timeout_sec;
 };
 
 class TestDeviceDriver : public IDeviceDriver
 {
 public:
-	TestDeviceDriver(const QString& id);
+	TestDeviceDriver(const QString& id, int timeout_sec);
 	~TestDeviceDriver();
 
 	bool initialize() const override;
 	void open() const override;
 	void close() const override;
 	void reset() const override;
-
-	QString getId() const override;
 };
 
 #ifdef __linux__
 class DeviceDriver : public IDeviceDriver
 {
 public:
-	DeviceDriver(const QString& id, unsigned int open_gpio_line, unsigned int close_gpio_line, bool active_high);
+	DeviceDriver(const QString& id, int timeout_sec, unsigned int open_gpio_line, unsigned int close_gpio_line, bool active_high);
 	~DeviceDriver();
 
 	bool initialize() const override;
 	void open() const override;
 	void close() const override;
 	void reset() const override;
-
-	QString getId() const override;
 
 private:
 	unsigned int _open_gpio_line;

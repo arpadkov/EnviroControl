@@ -49,7 +49,7 @@ inline void ManualDeviceControlWidget::initLayout()
 		auto name_l = new QLabel(device_cfg.device_name);
 		btns_layout->addWidget(name_l);
 
-		auto up_btn = createButton("arrow_up", this);
+		auto up_btn = createButton(device_cfg.open_icon, this);
 		btns_layout->addWidget(up_btn);
 		connect(up_btn, &QPushButton::clicked, this, [this, device_cfg]()
 			{
@@ -58,7 +58,7 @@ inline void ManualDeviceControlWidget::initLayout()
 
 		btns_layout->addStretch(1);
 
-		auto down_btn = createButton("arrow_down", this);
+		auto down_btn = createButton(device_cfg.close_icon, this);
 		btns_layout->addWidget(down_btn);
 		connect(down_btn, &QPushButton::clicked, this, [this, device_cfg]()
 			{

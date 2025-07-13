@@ -21,6 +21,8 @@ struct DeviceConfig
 	int open_gpio_pin;
 	int close_gpio_pin;
 	int reset_time_sec;
+	QString open_icon;
+	QString close_icon;
 };
 
 struct WeatherStationConfig

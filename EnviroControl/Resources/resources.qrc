@@ -1,7 +1,9 @@
 <RCC>
     <qresource prefix="/manual_ctrl">
-        <file>icons/arrow_up.svg</file>
-        <file>icons/arrow_down.svg</file>
         <file>icons/abort_ops.svg</file>
+        <file>icons/sunblind_close.svg</file>
+        <file>icons/sunblind_open.svg</file>
+        <file>icons/window_close.svg</file>
+        <file>icons/window_open.svg</file>
     </qresource>
 </RCC>

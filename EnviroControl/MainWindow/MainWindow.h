@@ -25,7 +25,6 @@ class ForecastData;
 namespace Automation
 {
 class AutomationEngine;
-class ManualDeviceControlWidget;
 }
 
 class MainWindow : public QMainWindow
@@ -47,8 +46,6 @@ private:
 
 private:
 	Ui::MainWindowClass* ui;
-
-	QPointer<Automation::ManualDeviceControlWidget> _manual_device_control_widget;
 
 	Cfg::Config _cfg;
 

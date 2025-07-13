@@ -4,7 +4,7 @@
 #include "WeatherForecast.h"
 #include "Logging.h"
 #include "AutomationEngine.h"
-#include "ManualDeviceControlWidget.h"
+#include "AutomationWidget.h"
 #include "WeatherStation.h"
 
 #include <QtCore/QThread>
@@ -90,13 +90,8 @@ void MainWindow::initAutomationEngine()
 {
 	_automation_engine = new Automation::AutomationEngine(_cfg.device_cfg_list, this);
 
-	_manual_device_control_widget = new Automation::ManualDeviceControlWidget(_cfg.device_cfg_list, this);
-	ui->_manual_ctrl_layout->addWidget(_manual_device_control_widget);
-
-	// Connect to widget signals
-	connect(_manual_device_control_widget, &Automation::ManualDeviceControlWidget::deviceUpPressed, _automation_engine, &Automation::AutomationEngine::onManualDeviceUpRequest);
-	connect(_manual_device_control_widget, &Automation::ManualDeviceControlWidget::deviceDownPressed, _automation_engine, &Automation::AutomationEngine::onManualDeviceDownRequest);
-	connect(_manual_device_control_widget, &Automation::ManualDeviceControlWidget::abortPressed, _automation_engine, &Automation::AutomationEngine::onAbort);
+	auto manual_device_control_widget = new Automation::AutomationWidget(_cfg.device_cfg_list, _automation_engine, this);
+	ui->_manual_ctrl_layout->addWidget(manual_device_control_widget);
 
 	_automation_engine->loadRules(_cfg.rules_cfg_relative_path);
 }

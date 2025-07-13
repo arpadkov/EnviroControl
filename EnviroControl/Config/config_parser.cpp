@@ -102,6 +102,8 @@ std::optional<DeviceConfigList> parseDeviceConfig(const QJsonObject& root_obj)
 		device_cfg.open_gpio_pin = extractInt(device_obj, "open_gpio_pin");
 		device_cfg.close_gpio_pin = extractInt(device_obj, "close_gpio_pin");
 		device_cfg.reset_time_sec = extractInt(device_obj, "reset_time_sec");
+		device_cfg.open_icon = extractString(device_obj, "open_icon");
+		device_cfg.close_icon = extractString(device_obj, "close_icon");
 
 		// Add the successfully parsed DeviceConfig to the list
 		config_list.device_cfgs.push_back(device_cfg);

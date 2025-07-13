@@ -90,8 +90,8 @@ void MainWindow::initAutomationEngine()
 {
 	_automation_engine = new Automation::AutomationEngine(_cfg.device_cfg_list, this);
 
-	auto manual_device_control_widget = new Automation::AutomationWidget(_cfg.device_cfg_list, _automation_engine, this);
-	ui->_manual_ctrl_layout->addWidget(manual_device_control_widget);
+	auto automation_widget = new Automation::AutomationWidget(_cfg.device_cfg_list, _automation_engine, this);
+	ui->_manual_ctrl_layout->addWidget(automation_widget);
 
 	_automation_engine->loadRules(_cfg.rules_cfg_relative_path);
 }

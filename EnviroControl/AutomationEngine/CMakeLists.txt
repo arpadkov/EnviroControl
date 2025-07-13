@@ -7,6 +7,8 @@ qt_add_library(AutomationEngine STATIC
     automation_widget.cpp
     AbstractCondition.h
     abstract_condition.cpp
+    DeviceStateWidget.h
+    device_state_widget.cpp
     RuleSet.h
     rule_set.cpp
     RulesProcessor.h

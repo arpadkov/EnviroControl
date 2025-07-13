@@ -1,7 +1,6 @@
 #include "ManualDeviceControlWidget.h"
 
 #include <QtWidgets/QHBoxLayout>
-#include <QtWidgets/QStyle>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QLabel>
 

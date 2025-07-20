@@ -36,6 +36,13 @@ struct WeatherStationConfig
 	QString log_file_path;
 };
 
+struct IndoorStationConfig
+{
+	QString python_venv_path;
+	int polling_interval_sec;
+	int data_gpio_pin;
+};
+
 struct DeviceConfigList
 {
 	std::vector<DeviceConfig> device_cfgs;
@@ -47,6 +54,7 @@ struct Config
 	DeviceConfigList device_cfg_list;
 	WeatherStationConfig weather_station_cfg;
 	QString rules_cfg_relative_path;
+	IndoorStationConfig indoor_station_cfg;
 };
 
 class ConfigParser

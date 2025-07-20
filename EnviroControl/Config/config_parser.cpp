@@ -47,15 +47,12 @@ bool extractBool(const QJsonObject& obj, const QString& key)
 	return obj[key].toBool();
 }
 
-std::optional<WeatherForeCastConfig> parseWeatherForecastConfig(const QJsonObject& root_obj)
+WeatherForeCastConfig parseWeatherForecastConfig(const QJsonObject& root_obj, const QString& obj_name)
 {
-	if (!root_obj.contains("weather_forecast_config") || !root_obj["weather_forecast_config"].isObject())
-	{
-		qCritical() << "'weather_forecast_config' object not found or is not an object in config file";
-		return {};
-	}
+	if (!root_obj.contains(obj_name) || !root_obj[obj_name].isObject())
+		throw std::runtime_error(QString("%1 object not found or is not an object in config file").arg(obj_name).toStdString());
 
-	QJsonObject weather_obj = root_obj["weather_forecast_config"].toObject();
+	QJsonObject weather_obj = root_obj[obj_name].toObject();
 
 	WeatherForeCastConfig weather_forecast_cfg;
 	weather_forecast_cfg.api_url = extractString(weather_obj, "api_url");
@@ -67,22 +64,16 @@ std::optional<WeatherForeCastConfig> parseWeatherForecastConfig(const QJsonObjec
 	return weather_forecast_cfg;
 }
 
-std::optional<DeviceConfigList> parseDeviceConfig(const QJsonObject& root_obj)
+DeviceConfigList parseDeviceConfig(const QJsonObject& root_obj, const QString& obj_name)
 {
-	if (!root_obj.contains("device_config") || !root_obj["device_config"].isObject())
-	{
-		qCritical() << "'weather_forecast_config' object not found or is not an object in config file";
-		return {};
-	}
+	if (!root_obj.contains(obj_name) || !root_obj[obj_name].isObject())
+		throw std::runtime_error(QString("%1 object not found or is not an object in config file").arg(obj_name).toStdString());
 
-	QJsonObject device_cfg_obj = root_obj["device_config"].toObject();
+	QJsonObject device_cfg_obj = root_obj[obj_name].toObject();
 
 	DeviceConfigList config_list;
 	if (!device_cfg_obj.contains("devices") || !device_cfg_obj["devices"].isArray())
-	{
-		qCritical() << "'device_config' object does not contain a 'devices' array.";
-		return {};
-	}
+		throw std::runtime_error("'device_config' object does not contain a 'devices' array.");
 
 	QJsonArray devices_array = device_cfg_obj["devices"].toArray();
 
@@ -90,10 +81,7 @@ std::optional<DeviceConfigList> parseDeviceConfig(const QJsonObject& root_obj)
 	for (const QJsonValue& device_value : devices_array)
 	{
 		if (!device_value.isObject())
-		{
-			qCritical() << "Found a non-object element in 'devices' array.";
-			return {};
-		}
+			throw std::runtime_error("Found a non-object element in 'devices' array.");
 
 		QJsonObject device_obj = device_value.toObject();
 		DeviceConfig device_cfg;
@@ -115,15 +103,12 @@ std::optional<DeviceConfigList> parseDeviceConfig(const QJsonObject& root_obj)
 	return config_list;
 }
 
-std::optional<WeatherStationConfig> parseWeatherStationConfig(const QJsonObject& root_obj)
+WeatherStationConfig parseWeatherStationConfig(const QJsonObject& root_obj, const QString& obj_name)
 {
-	if (!root_obj.contains("weather_station_config") || !root_obj["weather_station_config"].isObject())
-	{
-		qCritical() << "'weather_station_config' object not found or is not an object in config file";
-		return {};
-	}
+	if (!root_obj.contains(obj_name) || !root_obj[obj_name].isObject())
+		throw std::runtime_error(QString("%1 object not found or is not an object in config file").arg(obj_name).toStdString());
 
-	QJsonObject weather_station_obj = root_obj["weather_station_config"].toObject();
+	QJsonObject weather_station_obj = root_obj[obj_name].toObject();
 
 	WeatherStationConfig weather_station_cfg;
 	weather_station_cfg.port_name = extractString(weather_station_obj, "port_name");
@@ -135,6 +120,21 @@ std::optional<WeatherStationConfig> parseWeatherStationConfig(const QJsonObject&
 	weather_station_cfg.log_file_path = extractString(weather_station_obj, "log_file");
 
 	return weather_station_cfg;
+}
+
+IndoorStationConfig parseIndoorStationConfig(const QJsonObject& root_obj, const QString& obj_name)
+{
+	if (!root_obj.contains(obj_name) || !root_obj[obj_name].isObject())
+		throw std::runtime_error(QString("%1 object not found or is not an object in config file").arg(obj_name).toStdString());
+
+	QJsonObject indoor_station_obj = root_obj[obj_name].toObject();
+
+	IndoorStationConfig indoor_station_cfg;
+	indoor_station_cfg.python_venv_path = extractString(indoor_station_obj, "python_venv_path");
+	indoor_station_cfg.polling_interval_sec = extractInt(indoor_station_obj, "polling_interval_sec");
+	indoor_station_cfg.data_gpio_pin = extractInt(indoor_station_obj, "data_gpio_pin");
+
+	return indoor_station_cfg;
 }
 
 } // namespace
@@ -172,16 +172,12 @@ std::optional<Config> ConfigParser::parseConfigFile()
 
 	try
 	{
-		const auto& weather_forecast_cfg = parseWeatherForecastConfig(root_obj);
-		const auto& devices_cfg = parseDeviceConfig(root_obj);
-		const auto& weather_station_cfg = parseWeatherStationConfig(root_obj);
-		QString rules_cfg_file = extractString(root_obj, "rules_config_file");
-
 		Config cfg;
-		cfg.forecast_cfg = weather_forecast_cfg.value();
-		cfg.device_cfg_list = devices_cfg.value();
-		cfg.weather_station_cfg = weather_station_cfg.value();
-		cfg.rules_cfg_relative_path = getConfigPath() + QDir::separator() + rules_cfg_file;
+		cfg.forecast_cfg = parseWeatherForecastConfig(root_obj, "weather_forecast_config");
+		cfg.device_cfg_list = parseDeviceConfig(root_obj, "device_config");
+		cfg.weather_station_cfg = parseWeatherStationConfig(root_obj, "weather_station_config");
+		cfg.rules_cfg_relative_path = getConfigPath() + QDir::separator() + extractString(root_obj, "rules_config_file");
+		cfg.indoor_station_cfg = parseIndoorStationConfig(root_obj, "indoor_station_cfg");
 
 		return cfg;
 	}

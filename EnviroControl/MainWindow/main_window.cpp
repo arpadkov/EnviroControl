@@ -8,6 +8,8 @@
 #include "WeatherStation.h"
 
 #include <QtCore/QThread>
+#include <QtCore/QDir>
+#include <QtCore/QProcess>
 
 MainWindow::MainWindow(const Cfg::Config& cfg, QWidget* parent)
 	: QMainWindow(parent), _cfg(cfg)
@@ -18,6 +20,74 @@ MainWindow::MainWindow(const Cfg::Config& cfg, QWidget* parent)
 	initWeatherForecastThread();
 	initAutomationEngine();
 	initWeatherStationThread();
+
+	// TESTING PYTHON EXECUTION
+	QString python_venv_path = _cfg.indoor_station_cfg.python_venv_path;
+	QString python_interpreter_path;
+
+	QString script_name = "main.py";
+	QString sript_path = QCoreApplication::applicationDirPath() + QDir::separator() + script_name;
+
+#ifdef Q_OS_WIN // If compiling for Windows
+	python_interpreter_path = QDir(python_venv_path).absoluteFilePath("Scripts/python.exe");
+#else // Assume Linux
+	pythonInterpreterPath = QDir(venvBasePath).absoluteFilePath("bin/python"); // or "bin/python3"
+#endif
+
+	if (!QFile::exists(python_interpreter_path))
+	{
+		qWarning() << "Error: Python interpreter not found at:" << python_interpreter_path;
+		return;
+	}
+
+	if (!QFile::exists(sript_path))
+	{
+		qWarning() << "Error: Python script not found at:" << sript_path;
+		return;
+	}
+
+	QProcess* process = new QProcess(this);
+	process->setWorkingDirectory(QFileInfo(sript_path).absoluteDir().path());
+	process->start(python_interpreter_path, QStringList() << script_name);
+
+	connect(process, &QProcess::readyReadStandardOutput, [=]()
+		{
+			QString output = process->readAllStandardOutput().trimmed();
+			if (!output.isEmpty())
+			{
+				qDebug() << "Python STDOUT:" << output;
+				ui->_python_test_l->setText(output);
+			}
+		});
+
+	connect(process, &QProcess::readyReadStandardError, [=]()
+		{
+			QString error = process->readAllStandardError().trimmed();
+			if (!error.isEmpty())
+			{
+				qWarning() << "Python STDERR:" << error;
+			}
+		});
+
+	connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+		[=](int exit_code, QProcess::ExitStatus exit_status)
+		{
+			if (exit_status == QProcess::NormalExit && exit_code == 0)
+			{
+				qDebug() << "Python script finished successfully.";
+			}
+			else
+			{
+				qWarning() << "Python script finished with error or abnormal exit. Exit code:" << exit_code;
+				qWarning() << "Error string (QProcess):" << process->errorString();
+			}
+			process->deleteLater(); // Clean up the QProcess object
+		});
+
+	connect(process, &QProcess::errorOccurred, [=](QProcess::ProcessError error)
+		{
+			qWarning() << "QProcess Error occurred:" << error << process->errorString();
+		});
 }
 
 MainWindow::~MainWindow()

@@ -363,3 +363,13 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# PyCharm IDE files
+.idea/
+
+# Python virtual environments
+.venv/
+venv/ # Common alternative name for virtual environments
+env/  # Another common alternative
+__pycache__/ # Python bytecode cache, also good to ignore
+*.pyc        # Compiled Python files

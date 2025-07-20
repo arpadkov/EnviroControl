@@ -69,9 +69,9 @@ RuleSet createRuleSetSunblind(const QString& device_id)
 	auto rule_default_close_sunblind = createRuleWithoutConditionWithId(device_id, 1, Device::DevicePosition::Open);
 
 	std::vector<Rule> rules;
+	rules.push_back(std::move(rule_default_close_sunblind)); // <- push lowet prio first to ensure prio sorting is correct
 	rules.push_back(std::move(rule_open_on_high));
 	rules.push_back(std::move(rule_close_sunblind));
-	rules.push_back(std::move(rule_default_close_sunblind));
 
 	RuleSet rule_set;
 	rule_set.setRules(std::move(rules));

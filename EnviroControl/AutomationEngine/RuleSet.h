@@ -27,6 +27,7 @@ public:
 
 private:
 	std::unique_ptr<AbstractCondition> parseCondition(const QJsonObject& json) const;
+	void sortRuleByPriority();
 
 	std::vector<Rule> _rules;
 

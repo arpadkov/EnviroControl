@@ -131,8 +131,9 @@ bool RuleSet::loadFromJson(const QString& file_path)
 		}
 
 		_rules.push_back(std::move(rule));
-
 	}
+
+	sortRuleByPriority();
 
 	return true;
 }
@@ -145,6 +146,7 @@ const std::vector<Rule>& RuleSet::getRules() const
 void RuleSet::setRules(std::vector<Rule>&& rules)
 {
 	_rules = std::move(rules);
+	sortRuleByPriority();
 }
 
 std::unique_ptr<AbstractCondition> RuleSet::parseCondition(const QJsonObject& json) const
@@ -249,6 +251,16 @@ std::unique_ptr<AbstractCondition> RuleSet::parseCondition(const QJsonObject& js
 		qWarning() << "Unknown condition type:" << type_str;
 		return nullptr;
 	}
+}
+
+void RuleSet::sortRuleByPriority()
+{
+	// Sort rules by priority (higher priority first)
+	std::sort(_rules.begin(), _rules.end(),
+		[](const Rule& a, const Rule& b)
+		{
+			return a.priority > b.priority;
+		});
 }
 
 

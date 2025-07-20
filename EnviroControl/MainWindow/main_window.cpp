@@ -31,7 +31,7 @@ MainWindow::MainWindow(const Cfg::Config& cfg, QWidget* parent)
 #ifdef Q_OS_WIN // If compiling for Windows
 	python_interpreter_path = QDir(python_venv_path).absoluteFilePath("Scripts/python.exe");
 #else // Assume Linux
-	pythonInterpreterPath = QDir(venvBasePath).absoluteFilePath("bin/python"); // or "bin/python3"
+	python_interpreter_path = QDir(python_venv_path).absoluteFilePath("bin/python"); // or "bin/python3"
 #endif
 
 	if (!QFile::exists(python_interpreter_path))

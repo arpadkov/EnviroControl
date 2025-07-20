@@ -47,26 +47,31 @@ std::vector<IndoorData> createHotIndoor()
 
 RuleSet createRuleSetSunblind(const QString& device_id)
 {
+	// SUNBLIND: OPEN = RETRACTED, CLOSE = EXTENDED
 
 	// Create rules
-	// 1. Close sunblinds, when high wind (>25)
-	auto rule_close_on_high = createRuleWithoutConditionWithId(device_id, 999, Device::DevicePosition::Closed);
-	rule_close_on_high.conditions.push_back(std::make_unique<NumericThresholdCondition>(SensorDataSource::WeatherData, "wind_speed", ConditionOperator::GreaterThan, 25));
+	// 1. Open sunblinds, when high wind (>25)
+	auto rule_open_on_high = createRuleWithoutConditionWithId(device_id, 999, Device::DevicePosition::Open);
+	rule_open_on_high.conditions.push_back(std::make_unique<NumericThresholdCondition>(SensorDataSource::WeatherData, "wind_speed", ConditionOperator::GreaterThan, 25));
 
-	// 2. Open Sunblinds, when:
+	// 2. Close Sunblinds, when:
 	//	2.1: Low wind (<20) for the past 3 minutes
 	//  2.2: High sunlight
 	//  2.3: High IndoorTemp
 	//  2.4: No rain
-	auto rule_open_sunblind = createRuleWithoutConditionWithId(device_id, 500, Device::DevicePosition::Open);
-	rule_open_sunblind.conditions.push_back(std::make_unique<NumericTimeDurationCondition>(SensorDataSource::WeatherData, "wind_speed", ConditionOperator::LessThan, 20, 3 * 60));
-	rule_open_sunblind.conditions.push_back(std::make_unique<NumericThresholdCondition>(SensorDataSource::WeatherData, "daylight", ConditionOperator::GreaterThan, 80));
-	rule_open_sunblind.conditions.push_back(std::make_unique<NumericThresholdCondition>(SensorDataSource::IndoorData, "indoor_temp", ConditionOperator::GreaterThan, 20));
-	rule_open_sunblind.conditions.push_back(std::make_unique<BooleanStateCondition>(SensorDataSource::WeatherData, "is_raining", false)); // Open if NOT raining
+	auto rule_close_sunblind = createRuleWithoutConditionWithId(device_id, 500, Device::DevicePosition::Closed);
+	rule_close_sunblind.conditions.push_back(std::make_unique<NumericTimeDurationCondition>(SensorDataSource::WeatherData, "wind_speed", ConditionOperator::LessThan, 20, 3 * 60));
+	rule_close_sunblind.conditions.push_back(std::make_unique<NumericThresholdCondition>(SensorDataSource::WeatherData, "daylight", ConditionOperator::GreaterThan, 80));
+	rule_close_sunblind.conditions.push_back(std::make_unique<NumericThresholdCondition>(SensorDataSource::IndoorData, "indoor_temp", ConditionOperator::GreaterThan, 20));
+	rule_close_sunblind.conditions.push_back(std::make_unique<BooleanStateCondition>(SensorDataSource::WeatherData, "is_raining", false)); // Open if NOT raining
+
+	// 3. Default open
+	auto rule_default_close_sunblind = createRuleWithoutConditionWithId(device_id, 1, Device::DevicePosition::Open);
 
 	std::vector<Rule> rules;
-	rules.push_back(std::move(rule_close_on_high));
-	rules.push_back(std::move(rule_open_sunblind));
+	rules.push_back(std::move(rule_open_on_high));
+	rules.push_back(std::move(rule_close_sunblind));
+	rules.push_back(std::move(rule_default_close_sunblind));
 
 	RuleSet rule_set;
 	rule_set.setRules(std::move(rules));
@@ -88,16 +93,20 @@ RuleSet createRuleSetWindow(const QString& device_id)
 	rule_open_window.conditions.push_back(std::make_unique<NumericThresholdCondition>(SensorDataSource::IndoorData, "indoor_temp", ConditionOperator::GreaterThan, 20));
 	rule_open_window.conditions.push_back(std::make_unique<BooleanStateCondition>(SensorDataSource::WeatherData, "is_raining", false)); // Open if NOT raining
 
+	// 3. Default close
+	auto rule_default_close_window = createRuleWithoutConditionWithId(device_id, 1, Device::DevicePosition::Closed);
+
 	std::vector<Rule> rules;
 	rules.push_back(std::move(rule_close_on_high));
 	rules.push_back(std::move(rule_open_window));
+	rules.push_back(std::move(rule_default_close_window));
 
 	RuleSet rule_set;
 	rule_set.setRules(std::move(rules));
 	return rule_set;
 }
 
-TEST(CalculateDeviceStateTest, TestSunblindWasWindOpen)
+TEST(CalculateDeviceStateTest, TestSunblindWasWindClose)
 {
 	// Create device (sunblind)
 	QString device_id = "sunblind_1";
@@ -112,7 +121,7 @@ TEST(CalculateDeviceStateTest, TestSunblindWasWindOpen)
 	weather_history.push_back(WeatherDataCreator::createWindy(now.addSecs(-60 * 1), 19));
 	weather_history.push_back(WeatherDataCreator::createWindy(now.addSecs(-60 * 2), 18));
 	weather_history.push_back(WeatherDataCreator::createWindy(now.addSecs(-60 * 3), 17.5));
-	weather_history.push_back(WeatherDataCreator::createWindy(now.addSecs(-60 * 4), 26));
+	weather_history.push_back(WeatherDataCreator::createWindy(now.addSecs(-60 * 4), 26)); // <- this allows closing, because older than 3 minutes
 
 	std::vector<IndoorData> indoor_history;
 	indoor_history.push_back(WeatherDataCreator::createIndoorData(now, 22));
@@ -124,10 +133,10 @@ TEST(CalculateDeviceStateTest, TestSunblindWasWindOpen)
 	const auto& device_states = RulesProcessor::calculateDeviceStates(rule_set, device_ids, weather_history, indoor_history);
 	auto sunblind_state = device_states.getDevicePosition(device_id);
 
-	EXPECT_TRUE(sunblind_state == Device::DevicePosition::Open);
+	EXPECT_TRUE(sunblind_state == Device::DevicePosition::Closed);
 }
 
-TEST(CalculateDeviceStateTest, TestSunblindWasWindClose)
+TEST(CalculateDeviceStateTest, TestSunblindWasWindOpen)
 {
 	// Create device (sunblind)
 	QString device_id = "sunblind_1";
@@ -138,7 +147,7 @@ TEST(CalculateDeviceStateTest, TestSunblindWasWindClose)
 
 	std::vector<WeatherData> weather_history;
 	weather_history.push_back(WeatherDataCreator::createWindy(now, 12));
-	weather_history.push_back(WeatherDataCreator::createWindy(now.addSecs(-60 * 1), 21)); // <- this wont allow opening
+	weather_history.push_back(WeatherDataCreator::createWindy(now.addSecs(-60 * 1), 21)); // <- this wont allow closing
 	weather_history.push_back(WeatherDataCreator::createWindy(now.addSecs(-60 * 2), 18));
 	weather_history.push_back(WeatherDataCreator::createWindy(now.addSecs(-60 * 3), 17.5));
 	weather_history.push_back(WeatherDataCreator::createWindy(now.addSecs(-60 * 4), 26));
@@ -153,10 +162,10 @@ TEST(CalculateDeviceStateTest, TestSunblindWasWindClose)
 	const auto& device_states = RulesProcessor::calculateDeviceStates(rule_set, device_ids, weather_history, indoor_history);
 	auto sunblind_state = device_states.getDevicePosition(device_id);
 
-	EXPECT_TRUE(sunblind_state == Device::DevicePosition::Closed);
+	EXPECT_TRUE(sunblind_state == Device::DevicePosition::Open);
 }
 
-TEST(CalculateDeviceStateTest, TestSunblindHighWindClose)
+TEST(CalculateDeviceStateTest, TestSunblindHighWindOpen)
 {
 	// Create device (sunblind)
 	QString device_id = "sunblind_1";
@@ -178,10 +187,10 @@ TEST(CalculateDeviceStateTest, TestSunblindHighWindClose)
 	const auto& device_states = RulesProcessor::calculateDeviceStates(rule_set, device_ids, weather_history, indoor_history);
 	auto sunblind_state = device_states.getDevicePosition(device_id);
 
-	EXPECT_TRUE(sunblind_state == Device::DevicePosition::Closed);
+	EXPECT_TRUE(sunblind_state == Device::DevicePosition::Open);
 }
 
-TEST(CalculateDeviceStateTest, TestSunblindLowWindLowIndoorClosed)
+TEST(CalculateDeviceStateTest, TestSunblindLowWindLowIndoorOpen)
 {
 	// Create device (sunblind)
 	QString device_id = "sunblind_1";
@@ -207,7 +216,7 @@ TEST(CalculateDeviceStateTest, TestSunblindLowWindLowIndoorClosed)
 	const auto& device_states = RulesProcessor::calculateDeviceStates(rule_set, device_ids, weather_history, indoor_history);
 	auto sunblind_state = device_states.getDevicePosition(device_id);
 
-	EXPECT_TRUE(sunblind_state == Device::DevicePosition::Closed);
+	EXPECT_TRUE(sunblind_state == Device::DevicePosition::Open);
 }
 
 TEST(CalculateDeviceStateTest, TestWindowHotIndoorOpen)

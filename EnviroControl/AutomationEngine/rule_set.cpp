@@ -130,14 +130,8 @@ bool RuleSet::loadFromJson(const QString& file_path)
 			qWarning() << "Rule '" << rule.id << "' missing 'conditions' array. Skipping."; continue;
 		}
 
-		if (!rule.conditions.empty())
-		{ // Only add rules with at least one valid condition
-			_rules.push_back(std::move(rule));
-		}
-		else
-		{
-			qWarning() << "Rule '" << rule.id << "' has no valid conditions. Skipping.";
-		}
+		_rules.push_back(std::move(rule));
+
 	}
 
 	return true;

@@ -64,7 +64,7 @@ void AutomationEngine::onIndoorStationData(const IndoorData& indoor_data)
 	addCircularBufferData(_indoor_data_history, indoor_data, _data_history_secs);
 }
 
-void AutomationEngine::onManualDeviceUpRequest(const QString& device_id)
+void AutomationEngine::onManualDeviceOpenRequest(const QString& device_id)
 {
 	setManualMode();
 
@@ -74,7 +74,7 @@ void AutomationEngine::onManualDeviceUpRequest(const QString& device_id)
 	Q_EMIT manualDeviceRequest(state);
 }
 
-void AutomationEngine::onManualDeviceDownRequest(const QString& device_id)
+void AutomationEngine::onManualDeviceCloseRequest(const QString& device_id)
 {
 	setManualMode();
 
@@ -99,8 +99,16 @@ void AutomationEngine::onCalcTimeout()
 	for (const auto& device_cfg : _devices_cfg.device_cfgs)
 		device_ids.push_back(device_cfg.device_id);
 
-	const auto& calculated_states = RulesProcessor::calculateDeviceStates(_rule_set, device_ids, _weather_data_history, _indoor_data_history);
-	Q_EMIT deviceStatesUpdated(calculated_states);
+	try
+	{
+		const auto& calculated_states = RulesProcessor::calculateDeviceStates(_rule_set, device_ids, _weather_data_history, _indoor_data_history);
+		Q_EMIT deviceStatesUpdated(calculated_states);
+	}
+	catch (const std::runtime_error& e)
+	{
+		qCritical() << "AutomationEngine: Failed to calculate device states:" << e.what();
+		return;
+	}
 }
 
 void AutomationEngine::initStateManagerThread()

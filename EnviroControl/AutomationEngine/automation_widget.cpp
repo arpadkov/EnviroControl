@@ -16,8 +16,8 @@ AutomationWidget::AutomationWidget(const Cfg::DeviceConfigList& cfg, AutomationE
 	initLayout();
 
 	// Connect ManualControlWidget
-	connect(_manual_ctrl_w, &Automation::ManualDeviceControlWidget::deviceUpPressed, _automation_engine, &Automation::AutomationEngine::onManualDeviceUpRequest);
-	connect(_manual_ctrl_w, &Automation::ManualDeviceControlWidget::deviceDownPressed, _automation_engine, &Automation::AutomationEngine::onManualDeviceDownRequest);
+	connect(_manual_ctrl_w, &Automation::ManualDeviceControlWidget::deviceOpenPressed, _automation_engine, &Automation::AutomationEngine::onManualDeviceOpenRequest);
+	connect(_manual_ctrl_w, &Automation::ManualDeviceControlWidget::deviceClosePressed, _automation_engine, &Automation::AutomationEngine::onManualDeviceCloseRequest);
 	connect(_manual_ctrl_w, &Automation::ManualDeviceControlWidget::abortPressed, _automation_engine, &Automation::AutomationEngine::onAbort);
 }
 

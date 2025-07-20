@@ -52,7 +52,7 @@ inline void ManualDeviceControlWidget::initLayout()
 		btns_layout->addWidget(up_btn);
 		connect(up_btn, &QPushButton::clicked, this, [this, device_cfg]()
 			{
-				Q_EMIT deviceUpPressed(device_cfg.device_id);
+				Q_EMIT deviceOpenPressed(device_cfg.device_id);
 			});
 
 		btns_layout->addStretch(1);
@@ -61,7 +61,7 @@ inline void ManualDeviceControlWidget::initLayout()
 		btns_layout->addWidget(down_btn);
 		connect(down_btn, &QPushButton::clicked, this, [this, device_cfg]()
 			{
-				Q_EMIT deviceDownPressed(device_cfg.device_id);
+				Q_EMIT deviceClosePressed(device_cfg.device_id);
 			});
 
 		main_layout->addStretch(1);

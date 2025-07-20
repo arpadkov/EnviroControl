@@ -22,8 +22,8 @@ public:
 	~AutomationWidget() override;
 
 Q_SIGNALS:
-	void deviceUpPressed(QString device_id);
-	void deviceDownPressed(QString device_id);
+	void deviceOpenPressed(QString device_id);
+	void deviceClosePressed(QString device_id);
 	void abortPressed();
 
 private:

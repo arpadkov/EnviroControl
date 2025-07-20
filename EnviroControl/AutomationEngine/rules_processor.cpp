@@ -29,6 +29,9 @@ bool RulesProcessor::evaluateRule(const Rule& rule, const std::vector<WeatherDat
 	return all_conditions_met;
 }
 
+/*
+* @throws std::runtime_error if at least one device state could not be determined
+*/
 Device::DeviceStates RulesProcessor::calculateDeviceStates(
 	const RuleSet& rule_set,
 	std::vector<QString> device_ids,
@@ -64,8 +67,8 @@ Device::DeviceStates RulesProcessor::calculateDeviceStates(
 	{
 		if (calculated_states.getDevicePosition(device_id) == Device::DevicePosition::Unknown)
 		{
-			calculated_states.setDevicePosition(device_id, Device::DevicePosition::Closed);
-			qDebug() << "RulesProcessor: Device " << device_id << " Set position to Closed by default";
+			qCritical() << "RulesProcessor: Device " << device_id << " position could not be determined";
+			throw std::runtime_error("Device position could not be determined for device: " + device_id.toStdString());
 		}
 	}
 

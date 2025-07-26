@@ -22,6 +22,7 @@ public:
 	WeatherStation(const Cfg::WeatherStationConfig& cfg, QObject* parent = nullptr);
 	~WeatherStation();
 
+public Q_SLOTS:
 	void startReading();
 	void stopReading();
 
@@ -30,12 +31,14 @@ Q_SIGNALS:
 	void errorOccurred(const QString& error);
 
 private:
-	void configurePort(const Cfg::WeatherStationConfig& cfg);
+	void initSerialPort();
 	void handleReadyRead();
 	std::optional<WeatherData> parseWeatherData(QByteArray data);
 	bool compareChecksum(const QByteArray& data) const;
 
-	QSerialPort _port;
+	Cfg::WeatherStationConfig _cfg;
+
+	QSerialPort* _port;
 	QByteArray _read_buffer;
 
 	WeatherDataLogger _data_logger;

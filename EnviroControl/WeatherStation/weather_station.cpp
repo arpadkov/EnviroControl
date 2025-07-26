@@ -44,12 +44,8 @@ const int CHECKSUM_DIGIT4_OFFSET = 38; // Units digit
 const int CHECKSUM_CALC_MAX_BYTE = 35; // Checksum is calculated up to byte 35 
 
 WeatherStation::WeatherStation(const Cfg::WeatherStationConfig& cfg, QObject* parent) :
-	QObject(parent), _data_logger(cfg.log_file_path, cfg.log_frequency_sec, this)
+	QObject(parent), _cfg(cfg), _data_logger(cfg.log_file_path, cfg.log_frequency_sec, this)
 {
-	configurePort(cfg);
-
-	connect(&_port, &QSerialPort::readyRead, this, &WeatherStation::handleReadyRead);
-
 	connect(this, &WeatherStation::weatherDataReady, &_data_logger, &WeatherDataLogger::onWeatherDataReady);
 }
 
@@ -60,48 +56,54 @@ WeatherStation::~WeatherStation()
 
 void WeatherStation::startReading()
 {
-	if (_port.portName().isEmpty())
+	initSerialPort();
+
+	if (_port->portName().isEmpty())
 	{
 		qWarning() << "WeatherStation: Port name is empty. Cannot start reading.";
 		Q_EMIT errorOccurred("Port name is empty. Cannot start reading.");
 		return;
 	}
 
-	if (!_port.open(QIODevice::ReadOnly))
+	if (!_port->open(QIODevice::ReadOnly))
 	{
-		qWarning() << "WeatherStation: Failed to open port " << _port.portName() << " error:" << _port.errorString();
-		Q_EMIT errorOccurred(QString("Failed to open port %1: %2").arg(_port.portName(), _port.errorString()));
+		qWarning() << "WeatherStation: Failed to open port " << _port->portName() << " error:" << _port->errorString();
+		Q_EMIT errorOccurred(QString("Failed to open port %1: %2").arg(_port->portName(), _port->errorString()));
 		return;
 	}
 
-	qDebug() << "WeatherStation: Port " << _port.portName() << " opened successfully.";
+	qDebug() << "WeatherStation: Port " << _port->portName() << " opened successfully.";
 }
 
 void WeatherStation::stopReading()
 {
-	if (_port.isOpen())
+	if (_port->isOpen())
 	{
-		_port.close();
-		qDebug() << "WeatherStation: Port " << _port.portName() << " closed.";
+		_port->close();
+		qDebug() << "WeatherStation: Port " << _port->portName() << " closed.";
 	}
 	else
 	{
-		qWarning() << "WeatherStation: Port " << _port.portName() << " is not open.";
+		qWarning() << "WeatherStation: Port " << _port->portName() << " is not open.";
 	}
 }
 
-void WeatherStation::configurePort(const Cfg::WeatherStationConfig& cfg)
+void WeatherStation::initSerialPort()
 {
-	_port.setPortName(cfg.port_name);
-	_port.setBaudRate(cfg.baud_rate);
-	_port.setDataBits(QSerialPort::DataBits(cfg.data_bits));
-	_port.setStopBits(QSerialPort::StopBits(cfg.stop_bits));
-	_port.setParity(QSerialPort::Parity(cfg.parity));
+	_port = new QSerialPort(this);
+
+	_port->setPortName(_cfg.port_name);
+	_port->setBaudRate(_cfg.baud_rate);
+	_port->setDataBits(QSerialPort::DataBits(_cfg.data_bits));
+	_port->setStopBits(QSerialPort::StopBits(_cfg.stop_bits));
+	_port->setParity(QSerialPort::Parity(_cfg.parity));
+
+	connect(_port, &QSerialPort::readyRead, this, &WeatherStation::handleReadyRead);
 }
 
 void WeatherStation::handleReadyRead()
 {
-	_read_buffer.append(_port.readAll());
+	_read_buffer.append(_port->readAll());
 
 	// Loop to process all complete packets found in the buffer
 	while (true)

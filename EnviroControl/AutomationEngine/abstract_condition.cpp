@@ -75,7 +75,7 @@ bool evaluateInHistoryDuration(const std::vector<T>& history, const QString& fie
 		int history_duration_secs = history.back().timestamp.secsTo(newest_timestamp);
 		if (history_duration_secs < duration_secs)
 		{
-			qWarning() << "History does not cover the required duration: " << history_duration_secs << " < " << duration_secs;
+			qDebug() << "History does not cover the required duration: " << history_duration_secs << " < " << duration_secs;
 			return false;
 		}
 	}

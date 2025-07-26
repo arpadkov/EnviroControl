@@ -22,13 +22,11 @@ WeatherDataLogger::~WeatherDataLogger()
 
 void WeatherDataLogger::onWeatherDataReady(const WeatherData& data)
 {
-	qDebug() << "WeatherDataLogger: Received new weather data for logging:" << data.toDebugString();
 	_last_logged_data = data;
 }
 
 void WeatherDataLogger::logCurrentData()
 {
-	qDebug() << "WeatherDataLogger: Logging current weather data...";
 	if (!_last_logged_data.has_value())
 	{
 		qDebug() << "WeatherDataLogger: No new data to log.";

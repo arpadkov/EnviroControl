@@ -44,9 +44,8 @@ const int CHECKSUM_DIGIT4_OFFSET = 38; // Units digit
 const int CHECKSUM_CALC_MAX_BYTE = 35; // Checksum is calculated up to byte 35 
 
 WeatherStation::WeatherStation(const Cfg::WeatherStationConfig& cfg, QObject* parent) :
-	QObject(parent), _cfg(cfg), _data_logger(cfg.log_file_path, cfg.log_frequency_sec, this)
+	IWeatherStation(cfg, parent)
 {
-	connect(this, &WeatherStation::weatherDataReady, &_data_logger, &WeatherDataLogger::onWeatherDataReady);
 }
 
 WeatherStation::~WeatherStation()

@@ -3,6 +3,8 @@
 qt_add_library(WeatherStation STATIC
     WeatherStation.h
     weather_station.cpp
+    WeatherStationMock.h
+    weather_station_mock.cpp
     WeatherDataLogger.h
     WeatherDataFormat.h
     WeatherData.h

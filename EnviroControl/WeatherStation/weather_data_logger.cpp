@@ -9,6 +9,7 @@
 WeatherDataLogger::WeatherDataLogger(const QString& file_path, int log_frequency_sec, QObject* parent) :
 	QObject(parent), _log_file_path(file_path)
 {
+	qDebug() << "WeatherDataLogger: Initializing with frequency: " << log_frequency_sec << " log file: " << _log_file_path;
 	_log_timer = new QTimer(this);
 	_log_timer->setInterval(log_frequency_sec * 1000); // Convert seconds to milliseconds
 	connect(_log_timer, &QTimer::timeout, this, &WeatherDataLogger::logCurrentData);
@@ -21,13 +22,18 @@ WeatherDataLogger::~WeatherDataLogger()
 
 void WeatherDataLogger::onWeatherDataReady(const WeatherData& data)
 {
+	qDebug() << "WeatherDataLogger: Received new weather data for logging:" << data.toDebugString();
 	_last_logged_data = data;
 }
 
 void WeatherDataLogger::logCurrentData()
 {
+	qDebug() << "WeatherDataLogger: Logging current weather data...";
 	if (!_last_logged_data.has_value())
+	{
+		qDebug() << "WeatherDataLogger: No new data to log.";
 		return;
+	}
 
 	QJsonObject entry;
 	entry[WeatherDataFormat::TIMESTAMP] = _last_logged_data->timestamp.toString(Qt::ISODate);

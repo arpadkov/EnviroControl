@@ -9,6 +9,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/bin/Debug")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/bin/Release")
 
+set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose build type: Debug, Release, RelWithDebInfo, MinSizeRel" FORCE)
+
 find_package(Qt6 REQUIRED COMPONENTS
         Core
         Gui
@@ -61,6 +63,7 @@ set(PROJECT_SOURCES
 )
 
 qt_add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
+target_link_options(${PROJECT_NAME} PRIVATE -rdynamic)
 
 add_component(Logging)
 add_component(Config)

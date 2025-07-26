@@ -1,11 +1,13 @@
 #pragma once
 
+#include "WeatherDataLogger.h"
+#include "ConfigParser.h"
+
 #include <QtCore/QDateTime>
 #include <QtCore/QObject>
 #include <QtSerialPort/QSerialPort>
 #include <QtCore/QByteArray>
 
-#include "WeatherDataLogger.h"
 
 namespace Cfg
 {

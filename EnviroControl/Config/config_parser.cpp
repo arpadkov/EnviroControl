@@ -117,7 +117,7 @@ WeatherStationConfig parseWeatherStationConfig(const QJsonObject& root_obj, cons
 	weather_station_cfg.stop_bits = extractInt(weather_station_obj, "stop_bits");
 	weather_station_cfg.parity = extractBool(weather_station_obj, "parity");
 	weather_station_cfg.log_frequency_sec = extractInt(weather_station_obj, "log_frequency_sec");
-	weather_station_cfg.log_file_path = extractString(weather_station_obj, "log_file");
+	weather_station_cfg.log_file_path = getConfigPath() + QDir::separator() + extractString(weather_station_obj, "log_file");
 
 	return weather_station_cfg;
 }

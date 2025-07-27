@@ -34,7 +34,6 @@ AutomationEngine::AutomationEngine(const Cfg::DeviceConfigList& cfg, QObject* pa
 	_calc_timer->start(5000);
 
 	initStateManagerThread();
-
 }
 
 void AutomationEngine::loadRules(const QString& file_path)
@@ -44,11 +43,14 @@ void AutomationEngine::loadRules(const QString& file_path)
 
 void AutomationEngine::setManualMode()
 {
+	qDebug() << "AutomationEngine: Switching to manual mode";
 	disconnect(_automation_connect);
 }
 
 void AutomationEngine::setAutoMode()
 {
+	qDebug() << "AutomationEngine: Switching to auto mode";
+
 	// This connection only exists in auto mode, so we can safely disconnect it
 	_automation_connect = connect(this, &AutomationEngine::deviceStatesUpdated,
 		_state_manager, &Device::DeviceStateManager::onDeviceStatesUpdated);
@@ -88,6 +90,12 @@ void AutomationEngine::onAbort()
 {
 	setManualMode();
 	Q_EMIT abortMovement();
+}
+
+void AutomationEngine::onError(const QString& error)
+{
+	setManualMode();
+	_state_manager->onError();
 }
 
 void AutomationEngine::onCalcTimeout()

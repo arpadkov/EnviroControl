@@ -46,6 +46,7 @@ Q_SIGNALS:
 	void automationModeChanged(bool manual_mode);
 	void manualDeviceRequest(const Device::DeviceState& state);
 	void abortMovement();
+	void errorOccurred(const QString& error);
 
 public Q_SLOTS:
 	void onWeatherStationData(const WeatherData& weather_data);
@@ -53,6 +54,7 @@ public Q_SLOTS:
 	void onManualDeviceOpenRequest(const QString& device_id);
 	void onManualDeviceCloseRequest(const QString& device_id);
 	void onAbort();
+	void onError(const QString& error);
 
 private:
 	void onCalcTimeout();

@@ -67,10 +67,21 @@ inline void ManualDeviceControlWidget::initLayout()
 		main_layout->addStretch(1);
 	}
 
+	// Reset and auto buttons
+	auto ctrl_layout = new QVBoxLayout();
+	main_layout->addLayout(ctrl_layout);
+
 	auto reset_btn = createButton("abort_ops", this);
-	main_layout->addWidget(reset_btn);
+	ctrl_layout->addWidget(reset_btn);
 	connect(reset_btn, &QPushButton::clicked, this, &ManualDeviceControlWidget::abortPressed);
+
+	auto auto_btn = createButton("auto_mode", this);
+	ctrl_layout->addWidget(auto_btn);
+	auto_btn->setCheckable(true);
+	auto_btn->setChecked(false);
+	connect(auto_btn, &QPushButton::toggled, this, [this](bool checked)
+		{
+			Q_EMIT automationModeChanged(checked);
+		});
 }
-
-
 }

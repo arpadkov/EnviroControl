@@ -19,10 +19,21 @@ AutomationWidget::AutomationWidget(const Cfg::DeviceConfigList& cfg, AutomationE
 	connect(_manual_ctrl_w, &Automation::ManualDeviceControlWidget::deviceOpenPressed, _automation_engine, &Automation::AutomationEngine::onManualDeviceOpenRequest);
 	connect(_manual_ctrl_w, &Automation::ManualDeviceControlWidget::deviceClosePressed, _automation_engine, &Automation::AutomationEngine::onManualDeviceCloseRequest);
 	connect(_manual_ctrl_w, &Automation::ManualDeviceControlWidget::abortPressed, _automation_engine, &Automation::AutomationEngine::onAbort);
+
+	connect(_manual_ctrl_w, &Automation::ManualDeviceControlWidget::automationModeChanged, this, &AutomationWidget::onAutomationModeChanged);
 }
 
 AutomationWidget::~AutomationWidget()
 {
+}
+
+void AutomationWidget::onAutomationModeChanged(bool auto_mode)
+{
+	if (auto_mode)
+		_automation_engine->setAutoMode();
+
+	else
+		_automation_engine->setManualMode();
 }
 
 void AutomationWidget::initLayout()

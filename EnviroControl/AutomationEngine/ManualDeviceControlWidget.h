@@ -18,6 +18,7 @@ Q_SIGNALS:
 	void deviceOpenPressed(QString device_id);
 	void deviceClosePressed(QString device_id);
 	void abortPressed();
+	void automationModeChanged(bool auto_mode);
 
 private:
 	void initLayout();

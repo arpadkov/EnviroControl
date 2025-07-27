@@ -35,7 +35,7 @@ void TestDeviceDriver::close() const
 */
 void TestDeviceDriver::reset() const
 {
-	qDebug(device_log) << "TestDeviceDriver::reset " << _id << " called.";
+	//qDebug(device_log) << "TestDeviceDriver::reset " << _id << " called.";
 }
 
 }

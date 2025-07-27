@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ConfigParser.h"
+#include "DeviceState.h"
 
 #include <QString>
 
@@ -21,7 +22,7 @@ namespace Device
 class IDeviceDriver
 {
 public:
-	IDeviceDriver(const QString& id, int timeout_sec) : _id(id), _timeout_sec(timeout_sec)
+	IDeviceDriver(const QString& id, int timeout_sec, DevicePosition safety_pos_) : _id(id), _timeout_sec(timeout_sec), safety_pos(safety_pos_)
 	{
 	};
 	virtual ~IDeviceDriver() = default;
@@ -41,6 +42,8 @@ public:
 		return _timeout_sec;
 	};
 
+	DevicePosition safety_pos;
+
 protected:
 	const QString _id;
 	const int _timeout_sec;
@@ -49,7 +52,7 @@ protected:
 class TestDeviceDriver : public IDeviceDriver
 {
 public:
-	TestDeviceDriver(const QString& id, int timeout_sec);
+	TestDeviceDriver(const QString& id, int timeout_sec, DevicePosition safety_pos_);
 	~TestDeviceDriver();
 
 	bool initialize() const override;
@@ -62,7 +65,7 @@ public:
 class DeviceDriver : public IDeviceDriver
 {
 public:
-	DeviceDriver(const QString& id, int timeout_sec, unsigned int open_gpio_line, unsigned int close_gpio_line, bool active_high);
+	DeviceDriver(const QString& id, int timeout_sec, DevicePosition safety_pos_, unsigned int open_gpio_line, unsigned int close_gpio_line, bool active_high);
 	~DeviceDriver();
 
 	bool initialize() const override;

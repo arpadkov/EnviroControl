@@ -5,7 +5,7 @@
 
 namespace Device
 {
-TestDeviceDriver::TestDeviceDriver(const QString& id, int timeout_sec) : IDeviceDriver(id, timeout_sec)
+TestDeviceDriver::TestDeviceDriver(const QString& id, int timeout_sec, DevicePosition safety_pos_) : IDeviceDriver(id, timeout_sec, safety_pos_)
 {
 	qDebug(device_log) << "TestDeviceDriver::CONSTRUCTOR() called with id:" << id;
 }

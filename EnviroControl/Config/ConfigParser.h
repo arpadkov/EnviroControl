@@ -23,6 +23,7 @@ struct DeviceConfig
 	int reset_time_sec;
 	QString open_icon;
 	QString close_icon;
+	int safety_pos; // 1 = Open, 2 = Close (keep in sync with DevicePosition)
 };
 
 struct WeatherStationConfig

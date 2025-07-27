@@ -39,7 +39,7 @@ void DeviceStateManager::onManualDeviceRequest(const Device::DeviceState& state)
 void DeviceStateManager::onDeviceStatesUpdated(const Device::DeviceStates& states)
 {
 	_desired_states = states;
-	
+
 	if (!isAnyDeviceMoving())
 		calculateAndSetNextState(); // Check if any device needs to be moved
 }
@@ -47,6 +47,55 @@ void DeviceStateManager::onDeviceStatesUpdated(const Device::DeviceStates& state
 void DeviceStateManager::onAbort()
 {
 	interruptCurrentMovement();
+}
+
+/*
+* If an error occured, set everything to the safety position. and deinitilize all devices.
+*/
+void DeviceStateManager::onError()
+{
+	qWarning(device_log) << "DeviceStateManager::onError: An error occurred, resetting all devices to safety position.";
+	interruptCurrentMovement();
+
+	// Set all devices to safety position
+	for (const auto& device_cfg : _devices_cfg.device_cfgs)
+	{
+		auto device = getDeviceDriver(device_cfg.device_id);
+		if (device)
+		{
+			switch (device->safety_pos)
+			{
+			case DevicePosition::Open:
+				device->open();
+				break;
+			case DevicePosition::Closed:
+				device->close();
+				break;
+			}
+
+			// Create a timer for each device to reset it after the timeout
+			QTimer::singleShot(device->getTimeoutSec() * 1000, this, [this, device]()
+				{
+					if (!device)
+						return;
+
+					qDebug(device_log) << "DeviceStateManager::onError: Resetting and deleting device with ID:" << device->getId();
+					device->reset();
+
+					// Also set the devices state internally to safety position
+					Device::DeviceState safety_state;
+					safety_state.device_id = device->getId();
+					safety_state.position = device->safety_pos;
+					updateDevicestate(safety_state);
+
+					removeDeviceDriver(device->getId());
+				});
+		}
+		else
+		{
+			qCritical(device_log) << "DeviceStateManager::onError: Device driver not found for ID:" << device_cfg.device_id;
+		}
+	} // Loop over devices
 }
 
 void DeviceStateManager::registerDevices()
@@ -70,12 +119,12 @@ void DeviceStateManager::registerDevices()
 
 		// TestDriver for Windows
 #ifdef _WIN32
-		driver = std::make_unique<TestDeviceDriver>(device_id, device_cfg.reset_time_sec);
+		driver = std::make_unique<TestDeviceDriver>(device_id, device_cfg.reset_time_sec, DevicePosition(device_cfg.safety_pos));
 #endif
 
 		// Real driver for Raspberry Pi
 #if defined(__linux__) && (defined(__ARM_ARCH) || defined(__arm__))
-		driver = std::make_unique<DeviceDriver>(device_id, device_cfg.reset_time_sec, device_cfg.open_gpio_pin, device_cfg.close_gpio_pin, false);
+		driver = std::make_unique<DeviceDriver>(device_id, device_cfg.reset_time_sec, DevicePosition(device_cfg.safety_pos), device_cfg.open_gpio_pin, device_cfg.close_gpio_pin, false);
 #endif
 
 		if (driver && driver->initialize())
@@ -205,7 +254,6 @@ void DeviceStateManager::calculateAndSetNextState()
 		qCritical(device_log) << "DeviceStateManager::calculateAndSetNextState: INTERNAL ERROR: some device is still moving";
 		return;
 	}
-	qCritical(device_log) << "DeviceStateManager::calculateAndSetNextState: TEST - MOVEMENT FINISHED";
 
 	for (const auto& new_state : _desired_states.states)
 	{
@@ -283,6 +331,26 @@ void DeviceStateManager::interruptCurrentMovement()
 	_current_moving_device_id.clear(); // Clear the current moving device ID
 
 	Q_EMIT deviceMovementInterrupted(_current_moving_device_id);
+}
+
+void DeviceStateManager::removeDeviceDriver(const QString& device_id)
+{
+	auto it = std::remove_if(_device_drivers.begin(), _device_drivers.end(),
+		[&device_id](const std::unique_ptr<IDeviceDriver>& driver)
+		{
+			return driver && driver->getId() == device_id;
+		});
+
+	if (it != _device_drivers.end())
+	{
+		qDebug(device_log) << "DeviceStateManager::removeDeviceDriver: Removing device with ID:" << device_id;
+		_device_drivers.erase(it, _device_drivers.end());
+	}
+	else
+	{
+		qWarning(device_log) << "DeviceStateManager::removeDeviceDriver: Device with ID" << device_id << "not found.";
+	}
+
 }
 
 }

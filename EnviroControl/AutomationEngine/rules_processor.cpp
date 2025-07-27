@@ -49,16 +49,10 @@ Device::DeviceStates RulesProcessor::calculateDeviceStates(
 	{
 		// If state already set -> skip (lower prio cant override already set state)
 		if (calculated_states.getDevicePosition(rule.device_id) != Device::DevicePosition::Unknown)
-		{
-			qDebug() << "RulesProcessor: Device " << rule.device_id << " state already determined by higher priority rule";
 			continue;
-		}
 
 		if (evaluateRule(rule, weather_history, indoor_history))
-		{
 			calculated_states.setDevicePosition(rule.device_id, rule.position);
-			qDebug() << "RulesProcessor: Device " << rule.device_id << " Set position: " << devicePositionToString(rule.position);
-		}
 
 	} // Loop over rules
 

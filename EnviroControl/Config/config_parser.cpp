@@ -92,6 +92,7 @@ DeviceConfigList parseDeviceConfig(const QJsonObject& root_obj, const QString& o
 		device_cfg.reset_time_sec = extractInt(device_obj, "reset_time_sec");
 		device_cfg.open_icon = extractString(device_obj, "open_icon");
 		device_cfg.close_icon = extractString(device_obj, "close_icon");
+		device_cfg.safety_pos = extractInt(device_obj, "safety_pos");
 
 		// Add the successfully parsed DeviceConfig to the list
 		config_list.device_cfgs.push_back(device_cfg);

@@ -100,6 +100,7 @@ public Q_SLOTS:
 	void onManualDeviceRequest(const Device::DeviceState& state);
 	void onDeviceStatesUpdated(const Device::DeviceStates& state);
 	void onAbort();
+	void onError();
 
 private:
 	void registerDevices();
@@ -110,6 +111,7 @@ private:
 	void calculateAndSetNextState();
 	bool isAnyDeviceMoving() const;
 	void interruptCurrentMovement();
+	void removeDeviceDriver(const QString& device_id);
 
 private:
 	std::vector<std::unique_ptr<IDeviceDriver>> _device_drivers;

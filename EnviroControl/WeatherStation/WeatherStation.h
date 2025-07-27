@@ -55,10 +55,6 @@ public Q_SLOTS:
 	void startReading() override;
 	void stopReading() override;
 
-Q_SIGNALS:
-	void weatherDataReady(const WeatherData& data);
-	void errorOccurred(const QString& error);
-
 private:
 	void initSerialPort();
 	void handleReadyRead();

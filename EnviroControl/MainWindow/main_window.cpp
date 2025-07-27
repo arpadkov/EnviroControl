@@ -6,6 +6,7 @@
 #include "AutomationEngine.h"
 #include "AutomationWidget.h"
 #include "WeatherStation.h"
+#include "WeatherStationMock.h"
 
 #include <QtCore/QThread>
 #include <QtCore/QDir>
@@ -136,19 +137,31 @@ void MainWindow::initWeatherForecastThread()
 void MainWindow::initWeatherStationThread()
 {
 	_weather_station_thread = new QThread();
-	auto weather_station = new WeatherStation(_cfg.weather_station_cfg);
+	IWeatherStation* weather_station = nullptr;
+	if (_cfg.weather_station_cfg.port_name.isEmpty())
+	{
+	// Create MockWeatherStation, if Port config is empty
+		qDebug(main_win_log) << "Weather station port name is empty, using mock weather station.";
+		weather_station = new WeatherStationMock(_cfg.weather_station_cfg);
+	}
+	else
+	{
+		qDebug(main_win_log) << "Weather station port name is set, using real WeatherStation.";
+		weather_station = new WeatherStation(_cfg.weather_station_cfg);
+	}
+
 	weather_station->moveToThread(_weather_station_thread);
 
 	// Start & finish signals
-	QObject::connect(_weather_station_thread, &QThread::started, weather_station, &WeatherStation::startReading);
+	QObject::connect(_weather_station_thread, &QThread::started, weather_station, &IWeatherStation::startReading);
 	QObject::connect(_weather_station_thread, &QThread::finished, weather_station, &QObject::deleteLater);
 
 	// Notify AutomationEngine when weather data is ready
-	QObject::connect(weather_station, &WeatherStation::weatherDataReady, _automation_engine, &Automation::AutomationEngine::onWeatherStationData);
+	QObject::connect(weather_station, &IWeatherStation::weatherDataReady, _automation_engine, &Automation::AutomationEngine::onWeatherStationData);
 
 
-	QObject::connect(weather_station, &WeatherStation::weatherDataReady, this, &MainWindow::onWeatherData);
-	QObject::connect(weather_station, &WeatherStation::errorOccurred, this, [this](const QString& error)
+	QObject::connect(weather_station, &IWeatherStation::weatherDataReady, this, &MainWindow::onWeatherData);
+	QObject::connect(weather_station, &IWeatherStation::errorOccurred, this, [this](const QString& error)
 		{
 			ui->_weather_station_label->setText(error);
 		});

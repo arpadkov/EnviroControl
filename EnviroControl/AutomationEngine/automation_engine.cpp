@@ -45,6 +45,7 @@ void AutomationEngine::setManualMode()
 {
 	qDebug() << "AutomationEngine: Switching to manual mode";
 	disconnect(_automation_connect);
+	Q_EMIT abortMovement();
 }
 
 void AutomationEngine::setAutoMode()

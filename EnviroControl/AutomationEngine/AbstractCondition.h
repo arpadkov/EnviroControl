@@ -60,6 +60,7 @@ public:
 		NumericThreshold,
 		BooleanState,
 		NumericTimeDuration,
+		BooleanTimeDuration
 	};
 
 	AbstractCondition(Type type) : _type(type)
@@ -117,6 +118,20 @@ private:
 	QString _field;
 	ConditionOperator _op;
 	double _value;
+	int _duration_secs;
+};
+
+class BooleanTimeDurationCondition : public AbstractCondition
+{
+public:
+	BooleanTimeDurationCondition(SensorDataSource source, const QString& field, bool expected_value, int duration_secs);
+
+	bool evaluate(const std::vector<WeatherData>& weather_history, const std::vector<IndoorData>& indoor_history) const override;
+
+private:
+	SensorDataSource _source;
+	QString _field;
+	bool _expected_value;
 	int _duration_secs;
 };
 

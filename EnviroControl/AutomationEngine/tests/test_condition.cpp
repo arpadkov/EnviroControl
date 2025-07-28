@@ -72,3 +72,26 @@ TEST(ConditionTest, NumericTimeDurationCondition)
 	EXPECT_FALSE(pass_low_wind_10_min.evaluate(weather_history, indoor_history));
 	EXPECT_TRUE(pass_low_wind_3_min.evaluate(weather_history, indoor_history));
 }
+
+TEST(ConditionTest, BooleanTimeDurationCondition)
+{
+	// Weather data for 5 minutes (last 4 minutes NO rain)
+	// one condition requires more than 10 minutes no wind -> fail
+	// one condition requires more than 3 minutes no wind -> pass
+	std::vector<WeatherData> weather_history;
+	std::vector<IndoorData> indoor_history;
+
+	// First one is newest
+	auto now = QDateTime::currentDateTime();
+	weather_history.push_back(WeatherDataCreator::createWindy(now, 24)); // No rain
+	weather_history.push_back(WeatherDataCreator::createWindy(now.addSecs(-60 * 1), 24)); // No rain
+	weather_history.push_back(WeatherDataCreator::createWindy(now.addSecs(-60 * 2), 24)); // No rain
+	weather_history.push_back(WeatherDataCreator::createWindy(now.addSecs(-60 * 3), 24)); // No rain
+	weather_history.push_back(WeatherDataCreator::createRainy(now.addSecs(-60 * 4)));
+
+	auto pass_no_rain_10_min = BooleanTimeDurationCondition(SensorDataSource::WeatherData, "is_raining", false, 60 * 10);
+	auto pass_no_rain_3_min = BooleanTimeDurationCondition(SensorDataSource::WeatherData, "is_raining", false, 60 * 3);
+
+	EXPECT_FALSE(pass_no_rain_10_min.evaluate(weather_history, indoor_history));
+	EXPECT_TRUE(pass_no_rain_3_min.evaluate(weather_history, indoor_history));
+}

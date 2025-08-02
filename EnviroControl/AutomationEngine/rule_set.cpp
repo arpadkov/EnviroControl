@@ -202,7 +202,8 @@ std::unique_ptr<AbstractCondition> RuleSet::parseCondition(const QJsonObject& js
 		}
 		else
 		{
-			qWarning() << "Numeric condition missing 'operator'."; return nullptr;
+			qWarning() << "Numeric condition missing 'operator'."; 
+			return nullptr;
 		}
 
 		if (json.contains("value") && json["value"].isDouble())
@@ -211,11 +212,12 @@ std::unique_ptr<AbstractCondition> RuleSet::parseCondition(const QJsonObject& js
 		}
 		else
 		{
-			qWarning() << "Numeric condition missing 'value'."; return nullptr;
+			qWarning() << "Numeric condition missing 'value'.";
+			return nullptr;
 		}
 	}
 
-
+	// Numeric threshold
 	if (type_str == "numeric_threshold")
 	{
 		return std::make_unique<NumericThresholdCondition>(sensor_source, field, op, value);
@@ -233,6 +235,7 @@ std::unique_ptr<AbstractCondition> RuleSet::parseCondition(const QJsonObject& js
 			return nullptr;
 		}
 	}
+	// Numeric time duration
 	else if (type_str == "numeric_time_duration")
 	{
 		if (json.contains("duration_seconds") && json["duration_seconds"].isDouble())
@@ -243,6 +246,30 @@ std::unique_ptr<AbstractCondition> RuleSet::parseCondition(const QJsonObject& js
 		else
 		{
 			qWarning() << "Numeric time duration condition missing 'duration_seconds'.";
+			return nullptr;
+		}
+	}
+	// Boolean time duration
+	else if (type_str == "boolean_time_duration")
+	{
+		int duration_seconds = 0;
+		if (json.contains("duration_seconds") && json["duration_seconds"].isDouble())
+		{
+			duration_seconds = static_cast<int>(json["duration_seconds"].toDouble());
+		}
+		else
+		{
+			qWarning() << "Boolean time duration condition missing 'duration_seconds'.";
+			return nullptr;
+		}
+		if (json.contains("expected_value") && json["expected_value"].isBool())
+		{
+			bool expected_value = json["expected_value"].toBool();
+			return std::make_unique<BooleanTimeDurationCondition>(sensor_source, field, expected_value, duration_seconds);
+		}
+		else
+		{
+			qWarning() << "Boolean time duration condition missing 'expected_value'.";
 			return nullptr;
 		}
 	}

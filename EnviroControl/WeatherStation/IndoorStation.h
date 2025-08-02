@@ -16,7 +16,7 @@ struct IndoorData
 
 	QString toString() const
 	{
-		return QString("IndoorData(temperature: %1, humidity: %2, timestamp: %3)")
+		return QString("Temperature: %1 C\nHumidity: %2 %\nTimestamp: %3")
 			.arg(temperature)
 			.arg(humidity)
 			.arg(timestamp.toString(Qt::ISODate));

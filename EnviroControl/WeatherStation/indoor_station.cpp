@@ -115,5 +115,35 @@ void IndoorStation::initPyDHT22Process()
 
 std::optional<IndoorData> IndoorStation::parseData(const QString& data_str) const
 {
-	return IndoorData();
+	static const QString DATA_PREFIX = "DATA:";
+
+	// If the line is not a data message, it's a log message.
+	if (!data_str.startsWith(DATA_PREFIX))
+	{
+		// Log the message using qDebug()
+		qDebug() << "PyDHT22 Log:" << data_str;
+		return std::nullopt; // Return an empty optional
+	}
+
+	QString values_str = data_str.mid(DATA_PREFIX.length() + 1);
+	QStringList values = values_str.split(',');
+
+	if (values.size() != 2)
+	{
+		qWarning() << "PyDHT22 Parsing Error: Expected 2 values, but got" << values.size();
+		return std::nullopt;
+	}
+
+	bool ok_temp_c, ok_humidity;
+	double temp_celsius = values[0].toDouble(&ok_temp_c);
+	double humidity = values[1].toDouble(&ok_humidity);
+
+	if (!ok_temp_c || !ok_humidity)
+	{
+		qWarning() << "PyDHT22 Parsing Error: Failed to convert one or more values to double. Input:" << data_str;
+		return std::nullopt;
+	}
+
+	IndoorData data{ temp_celsius, humidity, QDateTime::currentDateTime()};
+	return data;
 }

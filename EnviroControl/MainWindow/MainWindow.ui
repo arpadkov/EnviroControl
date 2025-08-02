@@ -30,7 +30,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QLabel" name="_python_test_l">
+     <widget class="QLabel" name="_indoor_data_l">
       <property name="text">
        <string>TextLabel</string>
       </property>

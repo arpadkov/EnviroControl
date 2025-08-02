@@ -101,7 +101,7 @@ void AutomationEngine::onError(const QString& error)
 
 void AutomationEngine::onCalcTimeout()
 {
-	if (_weather_data_history.empty())
+	if (_weather_data_history.empty() || _indoor_data_history.empty())
 		return;
 
 	std::vector<QString> device_ids;

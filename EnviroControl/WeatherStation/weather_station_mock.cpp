@@ -39,7 +39,7 @@ void WeatherStationMock::startReading()
   // 2. Start the timer
   if (!_read_timer->isActive())
   {
-    int interval_ms = 1000;
+    int interval_ms = 5000;
 
     _read_timer->start(interval_ms);
     qInfo() << QString("WeatherStationMock: Started polling mock data file %1 with interval %2 ms.").arg(_mock_file_path).arg(interval_ms);

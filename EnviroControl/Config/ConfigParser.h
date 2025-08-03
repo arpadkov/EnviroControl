@@ -34,6 +34,7 @@ struct WeatherStationConfig
 	int stop_bits;
 	bool parity;
 	int log_frequency_sec;
+	int watchdog_timeout_sec;
 	QString log_file_path;
 };
 

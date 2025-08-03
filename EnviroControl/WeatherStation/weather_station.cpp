@@ -51,6 +51,8 @@ WeatherStation::WeatherStation(const Cfg::WeatherStationConfig& cfg, QObject* pa
 WeatherStation::~WeatherStation()
 {
 	stopReading();
+	if (_port)
+		delete _port;
 }
 
 void WeatherStation::startReading()
@@ -148,7 +150,7 @@ void WeatherStation::handleReadyRead()
 		if (auto weather_data = parseWeatherData(current_packet))
 		{
 			Q_EMIT weatherDataReady(weather_data.value());
-			qDebug() << "WeatherStation: Successfully parsed weather data from packet: " << current_packet.toHex();
+			//qDebug() << "WeatherStation: Successfully parsed weather data from packet: " << current_packet.toHex();
 			// Packet successfully parsed, continue loop to check for next packet in buffer
 		}
 		else

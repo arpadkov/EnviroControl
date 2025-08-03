@@ -21,14 +21,8 @@ class IWeatherStation : public QObject
 	Q_OBJECT
 
 public:
-	IWeatherStation(const Cfg::WeatherStationConfig& cfg, QObject* parent = nullptr)
-		: QObject(parent), _cfg(cfg), _data_logger(cfg.log_file_path, cfg.log_frequency_sec, this)
-	{
-		connect(this, &IWeatherStation::weatherDataReady, &_data_logger, &WeatherDataLogger::onWeatherDataReady);
-	};
-	~IWeatherStation()
-	{
-	};
+	IWeatherStation(const Cfg::WeatherStationConfig& cfg, QObject* parent = nullptr);
+	~IWeatherStation();
 
 public Q_SLOTS:
 	virtual void startReading() = 0;
@@ -41,6 +35,12 @@ Q_SIGNALS:
 protected:
 	Cfg::WeatherStationConfig _cfg;
 	WeatherDataLogger _data_logger;
+
+private:
+	void initWatchdog();
+
+	QTimer* _watchdog;
+	QDateTime _last_data_timestamp;
 };
 
 class WeatherStation : public IWeatherStation

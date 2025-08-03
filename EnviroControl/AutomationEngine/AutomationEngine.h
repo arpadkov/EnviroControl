@@ -35,7 +35,7 @@ class AutomationEngine : public QObject
 	Q_OBJECT
 public:
 	explicit AutomationEngine(const Cfg::DeviceConfigList& cfg, QObject* parent = nullptr);
-	~AutomationEngine() = default;
+	~AutomationEngine();
 
 	void loadRules(const QString& file_path);
 	void setManualMode();

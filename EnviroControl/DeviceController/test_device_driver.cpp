@@ -12,6 +12,7 @@ TestDeviceDriver::TestDeviceDriver(const QString& id, int timeout_sec, DevicePos
 
 TestDeviceDriver::~TestDeviceDriver()
 {
+	reset();
 	qDebug(device_log) << "TestDeviceDriver::DESTRUCTOR() called with id:" << _id;
 }
 

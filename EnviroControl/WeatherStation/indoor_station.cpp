@@ -17,6 +17,7 @@ void IndoorStation::startReading()
 		return;
 	}
 
+	// TODO: implement retrying mechanism if the process fails to start
 	initPyDHT22Process();
 }
 

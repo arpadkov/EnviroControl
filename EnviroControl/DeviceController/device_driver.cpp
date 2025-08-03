@@ -63,6 +63,8 @@ DeviceDriver::DeviceDriver(const QString& device_id, int timeout_sec, DevicePosi
 
 DeviceDriver::~DeviceDriver()
 {
+	reset(); // Ensure GPIO lines are reset before destruction
+
 	// Release lines and delete ptrs
 	inactivateAndRelaseLine(_open_line, inactiveValue(), _open_gpio_line);
 	inactivateAndRelaseLine(_close_line, inactiveValue(), _close_gpio_line);

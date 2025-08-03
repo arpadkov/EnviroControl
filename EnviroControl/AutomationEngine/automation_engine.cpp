@@ -36,6 +36,19 @@ AutomationEngine::AutomationEngine(const Cfg::DeviceConfigList& cfg, QObject* pa
 	initStateManagerThread();
 }
 
+AutomationEngine::~AutomationEngine()
+{
+	if (_calc_timer)
+		_calc_timer->stop();
+	if (_state_manager_thread)
+	{
+		_state_manager_thread->quit();
+		_state_manager_thread->wait();
+		delete _state_manager_thread;
+	}
+	qDebug() << "AutomationEngine: Destructor called, resources cleaned up.";
+}
+
 void AutomationEngine::loadRules(const QString& file_path)
 {
 	_rule_set.loadFromJson(file_path);

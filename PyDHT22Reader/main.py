@@ -42,7 +42,6 @@ if not IS_WINDOWS:
                 print(f"Error: Reading error: {error.args[0]}", file=sys.stderr, flush=True)
             except Exception as error:
                 print(f"Error: An unexpected error occurred: {error}", file=sys.stderr, flush=True)
-                break
             time.sleep(log_interval_sec)
 
 

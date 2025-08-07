@@ -96,8 +96,10 @@ void IndoorStation::initPyDHT22Process()
 			{
 				qWarning() << "(IndoorStation) PyDHT22 script finished with error or abnormal exit. Exit code:" << exit_code;
 				qWarning() << "Error string (QProcess):" << _dht_reader_process->errorString();
+				Q_EMIT errorOccurred(QString("PyDHT22 script finished with exit code %1 and status %2").arg(exit_code).arg(exit_status));
 			}
 			_dht_reader_process->deleteLater(); // Clean up the QProcess object
+
 		});
 
 	connect(_dht_reader_process, &QProcess::errorOccurred, [this](QProcess::ProcessError error)

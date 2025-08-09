@@ -16,6 +16,11 @@ ErrorDetailsWidget::~ErrorDetailsWidget()
 {
 }
 
+void ErrorDetailsWidget::onErrorOccurred(const QString& error)
+{
+	addError(error);
+}
+
 void ErrorDetailsWidget::addError(const QString& error)
 {
 	_error_list_w->addItem(error);

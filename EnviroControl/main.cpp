@@ -86,6 +86,12 @@ int main(int argc, char* argv[])
 	//  -> RulesWidget (expandable, add/edit/delete rules)
 	//  -> DeviceStateManagerWidget (expandable (last sent cmd, current cmd etc))
 
+#ifdef Q_OS_LINUX
+		// Check if the application is running on Linux (e.g., a Raspberry Pi)
+	window.showFullScreen();
+#else
+		// For other platforms, show the window in its normal state
 	window.show();
+#endif
 	return app.exec();
 }

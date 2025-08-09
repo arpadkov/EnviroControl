@@ -17,5 +17,6 @@ target_link_libraries(WeatherForecastProvider PRIVATE
     Logging
     ErrorDetail
     Qt6::Core
+    Qt6::Charts
     Qt6::Network
 )

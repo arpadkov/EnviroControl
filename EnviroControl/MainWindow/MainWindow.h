@@ -16,6 +16,7 @@ QT_END_NAMESPACE
 class QThread;
 
 class WeatherData;
+class ErrorDetailsWidget;
 
 namespace WFP
 {
@@ -54,6 +55,8 @@ private:
 	QThread* _weather_forecast_thread;
 	QThread* _weather_station_thread;
 	QThread* _indoor_station_thread;
+
+	QPointer<ErrorDetailsWidget> _error_details_widget;
 
 	QPointer<Automation::AutomationEngine> _automation_engine;
 };

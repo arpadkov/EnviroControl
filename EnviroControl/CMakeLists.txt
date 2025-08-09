@@ -13,6 +13,7 @@ set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose build type: Debug, Release, RelW
 
 find_package(Qt6 REQUIRED COMPONENTS
         Core
+        Charts
         Gui
         Widgets
         Network

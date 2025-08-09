@@ -13,10 +13,11 @@ public:
 	~ErrorDetailsWidget();
 
 public Q_SLOTS:
-	void addError(const QString& error);
+	void onErrorOccurred(const QString& error);
 
 private:
 	void initLayout();
+	void addError(const QString& error);
 	void toggleDetails();
 
 	QListWidget* _error_list_w;

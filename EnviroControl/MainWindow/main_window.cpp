@@ -7,6 +7,7 @@
 #include "AutomationWidget.h"
 #include "WeatherStation.h"
 #include "WeatherStationMock.h"
+#include "WeatherStationWidget.h"
 #include "ErrorDetailsWidget.h"
 
 #include <QtCore/QThread>
@@ -17,12 +18,12 @@ MainWindow::MainWindow(const Cfg::Config& cfg, QWidget* parent)
 {
 	ui->setupUi(this);
 
+	initErrorDisplyaWidget();
+
 	initWeatherForecastThread();
 	initAutomationEngine();
 	initWeatherStationThread();
 	initIndoorStationThread();
-
-	initErrorDisplyaWidget();
 }
 
 MainWindow::~MainWindow()
@@ -74,7 +75,7 @@ void MainWindow::initWeatherStationThread()
 	IWeatherStation* weather_station = nullptr;
 	if (_cfg.weather_station_cfg.port_name.isEmpty())
 	{
-	// Create MockWeatherStation, if Port config is empty
+		// Create MockWeatherStation, if Port config is empty
 		qDebug(main_win_log) << "Weather station port name is empty, using mock weather station.";
 		weather_station = new WeatherStationMock(_cfg.weather_station_cfg);
 	}
@@ -105,6 +106,12 @@ void MainWindow::initWeatherStationThread()
 			ui->_weather_station_label->setText(error);
 		});
 
+	QObject::connect(weather_station, &IWeatherStation::errorOccurred, _error_details_widget, &ErrorDetailsWidget::onErrorOccurred);
+
+	auto weather_station_widget = new WeatherStationWidget(this);
+	ui->_weather_station_layout->addWidget(weather_station_widget);
+	QObject::connect(weather_station, &IWeatherStation::weatherDataReady, weather_station_widget, &WeatherStationWidget::onWeatherData);
+
 	_weather_station_thread->start();
 }
 
@@ -128,6 +135,9 @@ void MainWindow::initIndoorStationThread()
 		{
 			ui->_indoor_data_l->setText(data.toString());
 		});
+
+	QObject::connect(indoor_station, &IndoorStation::errorOccurred, _error_details_widget, &ErrorDetailsWidget::onErrorOccurred);
+
 	_indoor_station_thread->start();
 }
 
@@ -143,8 +153,8 @@ void MainWindow::initAutomationEngine()
 
 void MainWindow::initErrorDisplyaWidget()
 {
-	auto error_display_widget = new ErrorDetailsWidget(this);
-	ui->_error_display_l->addWidget(error_display_widget);
+	_error_details_widget = new ErrorDetailsWidget(this);
+	ui->_error_display_l->addWidget(_error_details_widget);
 }
 
 

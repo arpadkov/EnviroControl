@@ -109,7 +109,7 @@ void WindRainChartWidget::updateCharts()
 	}
 
 	// Adjust axes ranges
-	auto x_axis = qobject_cast<QDateTimeAxis*>(_chart->axisX());
+	auto x_axis = qobject_cast<QDateTimeAxis*>(_chart->axes(Qt::Horizontal).at(0));
 	if (x_axis)
 	{
 		if (!_weather_history.empty())

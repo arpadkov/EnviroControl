@@ -32,6 +32,7 @@ target_link_libraries(WeatherStation PRIVATE
     ErrorDetail
     Config
 
+    Qt6::Charts
     Qt6::Core
     Qt6::Gui
     Qt6::Widgets

@@ -5,6 +5,8 @@ qt_add_library(MainWindow STATIC
     MainWindow.ui
     MainWindow.h
     main_window.cpp
+    ErrorDetailsWidget.h
+    error_details_widget.cpp
 )
 
 target_include_directories(MainWindow PUBLIC

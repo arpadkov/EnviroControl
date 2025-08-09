@@ -7,6 +7,7 @@
 #include "AutomationWidget.h"
 #include "WeatherStation.h"
 #include "WeatherStationMock.h"
+#include "ErrorDetailsWidget.h"
 
 #include <QtCore/QThread>
 
@@ -20,6 +21,8 @@ MainWindow::MainWindow(const Cfg::Config& cfg, QWidget* parent)
 	initAutomationEngine();
 	initWeatherStationThread();
 	initIndoorStationThread();
+
+	initErrorDisplyaWidget();
 }
 
 MainWindow::~MainWindow()
@@ -136,6 +139,12 @@ void MainWindow::initAutomationEngine()
 	ui->_manual_ctrl_layout->addWidget(automation_widget);
 
 	_automation_engine->loadRules(_cfg.rules_cfg_relative_path);
+}
+
+void MainWindow::initErrorDisplyaWidget()
+{
+	auto error_display_widget = new ErrorDetailsWidget(this);
+	ui->_error_display_l->addWidget(error_display_widget);
 }
 
 

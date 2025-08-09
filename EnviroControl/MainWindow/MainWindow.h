@@ -44,6 +44,7 @@ private:
 	void initWeatherStationThread();
 	void initIndoorStationThread();
 	void initAutomationEngine();
+	void initErrorDisplyaWidget();
 
 private:
 	Ui::MainWindowClass* ui;

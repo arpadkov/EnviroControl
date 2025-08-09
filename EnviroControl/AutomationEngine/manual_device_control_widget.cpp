@@ -35,6 +35,11 @@ ManualDeviceControlWidget::~ManualDeviceControlWidget()
 {
 }
 
+void ManualDeviceControlWidget::onAutomationModeChanged(bool auto_mode)
+{
+	_auto_mode_btn->setChecked(auto_mode);
+}
+
 inline void ManualDeviceControlWidget::initLayout()
 {
 	auto main_layout = new QHBoxLayout();
@@ -75,13 +80,14 @@ inline void ManualDeviceControlWidget::initLayout()
 	ctrl_layout->addWidget(reset_btn);
 	connect(reset_btn, &QPushButton::clicked, this, &ManualDeviceControlWidget::abortPressed);
 
-	auto auto_btn = createButton("auto_mode", this);
-	ctrl_layout->addWidget(auto_btn);
-	auto_btn->setCheckable(true);
-	auto_btn->setChecked(false);
-	connect(auto_btn, &QPushButton::toggled, this, [this](bool checked)
+	_auto_mode_btn = createButton("auto_mode", this);
+	ctrl_layout->addWidget(_auto_mode_btn);
+	_auto_mode_btn->setCheckable(true);
+	_auto_mode_btn->setChecked(false);
+	connect(_auto_mode_btn, &QPushButton::clicked, this, [this]()
 		{
-			Q_EMIT automationModeChanged(checked);
+			// Just emit the signal, the buttons state is changed, once AutomationEngine is set to auto mode
+			Q_EMIT automationModeChangeRequest(_auto_mode_btn->isChecked());
 		});
 }
 }

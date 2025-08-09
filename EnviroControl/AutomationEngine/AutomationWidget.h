@@ -26,9 +26,6 @@ Q_SIGNALS:
 	void deviceClosePressed(QString device_id);
 	void abortPressed();
 
-private Q_SLOTS:
-	void onAutomationModeChanged(bool auto_mode);
-
 private:
 	void initLayout();
 

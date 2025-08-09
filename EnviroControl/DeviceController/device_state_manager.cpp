@@ -18,8 +18,6 @@ DeviceStateManager::DeviceStateManager(const Cfg::DeviceConfigList& cfg, QObject
 	// Configure reset timer
 	_reset_timer = new QTimer(this);
 	_reset_timer->setSingleShot(true);
-
-	connect(this, &DeviceStateManager::deviceMovementFinished, this, &DeviceStateManager::calculateAndSetNextState);
 }
 
 DeviceStateManager::~DeviceStateManager()
@@ -28,6 +26,7 @@ DeviceStateManager::~DeviceStateManager()
 
 void DeviceStateManager::onManualDeviceRequest(const Device::DeviceState& state)
 {
+	disconnect(_automation_connect);
 	setDevicestate(state);
 }
 
@@ -40,12 +39,20 @@ void DeviceStateManager::onDeviceStatesUpdated(const Device::DeviceStates& state
 {
 	_desired_states = states;
 
+	if (!_automation_connect)
+	{
+		// Connect to the automation engine to receive device state updates
+		_automation_connect = connect(this, &DeviceStateManager::deviceMovementFinished,
+			this, &DeviceStateManager::calculateAndSetNextState);
+	}
+
 	if (!isAnyDeviceMoving())
 		calculateAndSetNextState(); // Check if any device needs to be moved
 }
 
 void DeviceStateManager::onAbort()
 {
+	disconnect(_automation_connect);
 	interruptCurrentMovement();
 }
 
@@ -55,6 +62,7 @@ void DeviceStateManager::onAbort()
 void DeviceStateManager::onError()
 {
 	qWarning(device_log) << "DeviceStateManager::onError: An error occurred, resetting all devices to safety position.";
+	disconnect(_automation_connect);
 	interruptCurrentMovement();
 
 	// Set all devices to safety position

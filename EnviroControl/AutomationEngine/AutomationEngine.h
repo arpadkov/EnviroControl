@@ -43,7 +43,7 @@ public:
 
 Q_SIGNALS:
 	void deviceStatesUpdated(const Device::DeviceStates& calulated_states);
-	void automationModeChanged(bool manual_mode);
+	void automationModeChanged(bool automatic_mode);
 	void manualDeviceRequest(const Device::DeviceState& state);
 	void abortMovement();
 	void errorOccurred(const QString& error);
@@ -55,6 +55,7 @@ public Q_SLOTS:
 	void onManualDeviceCloseRequest(const QString& device_id);
 	void onAbort();
 	void onError(const QString& error);
+	void onAutomationModeChangeRequest(bool auto_mode);
 
 private:
 	void onCalcTimeout();

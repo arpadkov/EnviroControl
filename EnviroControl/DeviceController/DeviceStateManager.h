@@ -119,6 +119,9 @@ private:
 	DeviceStates _device_states; // Last known states
 	DeviceStates _desired_states;
 
+	// Continues calculation: if active, once a device finishes movement, the next device is calculated and set
+	QMetaObject::Connection _automation_connect;
+
 	// Internal cache for current movement
 	QPointer<QTimer> _reset_timer; // Only send signal to device, for a limited time
 	QString _current_moving_device_id; // Device that is currently moving

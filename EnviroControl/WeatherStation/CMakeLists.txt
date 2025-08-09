@@ -31,6 +31,9 @@ target_link_libraries(WeatherStation PRIVATE
     Logging    
     ErrorDetail
     Config
+
     Qt6::Core
+    Qt6::Gui
+    Qt6::Widgets
     Qt6::SerialPort
 )

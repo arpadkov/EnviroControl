@@ -19,6 +19,8 @@ find_package(Qt6 REQUIRED COMPONENTS
         Network
         SerialPort
         Svg
+        Qml
+        Quick
         QuickWidgets
 )
 qt_standard_project_setup()

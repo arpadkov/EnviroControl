@@ -85,7 +85,7 @@
       <item>
        <widget class="QStackedWidget" name="_main_stack">
         <property name="currentIndex">
-         <number>2</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="_home_page">
          <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -97,11 +97,18 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="_weather_station_label">
-            <property name="text">
-             <string>TextLabel</string>
-            </property>
-           </widget>
+           <layout class="QHBoxLayout" name="_weather_station_layout">
+            <item>
+             <widget class="QLabel" name="_weather_station_label">
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="WeatherStationWidget" name="_weather_station_widget" native="true"/>
+            </item>
+           </layout>
           </item>
           <item>
            <spacer name="verticalSpacer_2">
@@ -154,6 +161,14 @@
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>WeatherStationWidget</class>
+   <extends>QWidget</extends>
+   <header>WeatherStationWidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

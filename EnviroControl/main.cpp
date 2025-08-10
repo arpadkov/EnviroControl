@@ -95,5 +95,7 @@ int main(int argc, char* argv[])
 	window.show();
 	window.setFixedSize(1280, 720); // Set the size of the pi display
 #endif
-	return app.exec();
+
+	bool ok = app.exec();
+	return ok;
 }

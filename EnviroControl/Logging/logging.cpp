@@ -31,11 +31,7 @@ Q_LOGGING_CATEGORY(app_log, "envirocontrol")
 Q_LOGGING_CATEGORY(main_win_log, "main_window")
 Q_LOGGING_CATEGORY(device_log, "device")
 
-namespace
-{
-QFile info_log_file;
-QFile debug_log_file;
-}
+
 
 namespace Log
 {
@@ -175,24 +171,51 @@ QString getStackTrace()
   return stackTrace;
 }
 
+static Logger* logger_instance = nullptr;
+
+Logger* Logger::instance()
+{
+  if (!logger_instance)
+  {
+    logger_instance = new Logger();
+    qDebug() << "Logger instance created.";
+  }
+	return logger_instance;
+}
+
+Logger::Logger()
+{
+  // Determine a suitable log file path (e.g., in the user's writable location)
+  QString log_dir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + QDir::separator() + "EnviroControl";
+  QDir().mkpath(log_dir); // Ensure the directory exists
+  qDebug() << "Log directory:" << log_dir;
+
+  // INFO file
+  QString info_log_file_path = log_dir + QDir::separator() + "envirocontrol_info.log";
+  info_log_file.setFileName(info_log_file_path);
+  if (!info_log_file.open(QIODevice::Append | QIODevice::Text))
+    qWarning() << "Failed to open info log file:" << info_log_file_path;
+
+  // DEBUG file
+  QString debug_log_file_path = log_dir + QDir::separator() + "envirocontrol_debug.log";
+  debug_log_file.setFileName(debug_log_file_path);
+  if (!debug_log_file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
+    qWarning() << "Failed to open debug log file:" << debug_log_file_path;
+}
+
+Logger::~Logger()
+{
+  if (Logger::instance()->info_log_file.isOpen())
+		Logger::instance()->info_log_file.close();
+	if (Logger::instance()->debug_log_file.isOpen())
+    Logger::instance()->debug_log_file.close();
+  logger_instance = nullptr; // Clear the instance pointer
+	qDebug() << "Logger instance destroyed and files closed.";
+}
+
 void init()
 {
-	// Determine a suitable log file path (e.g., in the user's writable location)
-	QString log_dir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + QDir::separator() + "EnviroControl";
-	QDir().mkpath(log_dir); // Ensure the directory exists
-	qDebug() << "Log directory:" << log_dir;
-
-	// INFO file
-	QString info_log_file_path = log_dir + QDir::separator() + "envirocontrol_info.log";
-	info_log_file.setFileName(info_log_file_path);
-	if (!info_log_file.open(QIODevice::Append | QIODevice::Text))
-		qWarning() << "Failed to open info log file:" << info_log_file_path;
-
-	// DEBUG file
-	QString debug_log_file_path = log_dir + QDir::separator() + "envirocontrol_debug.log";
-	debug_log_file.setFileName(debug_log_file_path);
-	if (!debug_log_file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
-		qWarning() << "Failed to open debug log file:" << debug_log_file_path;
+	logger_instance = Logger::instance();
 
 	qSetMessagePattern(
 		"%{time system} %{type} %{category}: %{message}"
@@ -201,6 +224,12 @@ void init()
 
 	auto handler = [](QtMsgType type, const QMessageLogContext& context, const QString& msg)
 		{
+      if (!Logger::instance())
+      {
+        qWarning() << "Logger instance is not initialized!";
+        return;
+			}
+
       QString formatted_msg;
       QTextStream log_stream(&formatted_msg);
 
@@ -237,6 +266,7 @@ void init()
       log_stream << "\n";
 
       // Write to info log only for Info, Warn, Critical, Fatal
+			auto& info_log_file = Logger::instance()->info_log_file;
       if (type >= QtInfoMsg && info_log_file.isOpen())
       {
         QTextStream file_out(&info_log_file);
@@ -245,6 +275,7 @@ void init()
       }
 
       // Write all message types to the debug log
+			auto& debug_log_file = Logger::instance()->debug_log_file;
       if (debug_log_file.isOpen())
       {
         QTextStream debug_file_out(&debug_log_file);
@@ -262,14 +293,6 @@ void init()
 		}; // handler
 
 	qInstallMessageHandler(handler);
-}
-
-void shutdown()
-{
-	if (info_log_file.isOpen())
-		info_log_file.close();
-	if (debug_log_file.isOpen())
-		debug_log_file.close();
 }
 
 }

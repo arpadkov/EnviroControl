@@ -6,6 +6,10 @@ qt_add_library(WeatherStation STATIC
     weather_station_if.cpp
     WeatherStationMock.h
     weather_station_mock.cpp
+    WeatherStationWidget.h
+    weather_station_widget.cpp
+    WindWheelWidget.h
+    wind_wheel_widget.cpp
     WeatherHistoryWidget.h
     weather_history_widget.cpp
     WindRainChartWidget.h
@@ -36,5 +40,7 @@ target_link_libraries(WeatherStation PRIVATE
     Qt6::Core
     Qt6::Gui
     Qt6::Widgets
+    Qt6::QuickWidgets
+    Qt6::Svg
     Qt6::SerialPort
 )

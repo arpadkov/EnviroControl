@@ -198,6 +198,7 @@ void MainWindow::initWeatherStationThread()
 	auto weather_history_widget = new WeatherHistoryWidget(this);
 	ui->_weather_history_layout->addWidget(weather_history_widget);
 	QObject::connect(weather_station, &IWeatherStation::weatherDataReady, weather_history_widget, &WeatherHistoryWidget::onWeatherData);
+	QObject::connect(weather_station, &IWeatherStation::weatherDataReady, ui->_weather_station_widget, &WeatherStationWidget::onWeatherData);
 
 	_weather_station_thread->start();
 }

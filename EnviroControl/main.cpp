@@ -89,6 +89,7 @@ int main(int argc, char* argv[])
 #ifdef Q_OS_LINUX
 		// Check if the application is running on Linux (e.g., a Raspberry Pi)
 	window.showFullScreen();
+	QApplication::setOverrideCursor(Qt::BlankCursor);
 #else
 		// For other platforms, show the window in its normal state
 	window.show();

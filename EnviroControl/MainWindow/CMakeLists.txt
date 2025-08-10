@@ -21,7 +21,9 @@ target_link_libraries(MainWindow PRIVATE
     Config
     DeviceController
     AutomationEngine
+
     Qt6::Core
     Qt6::Gui
+    Qt6::Svg
     Qt6::Widgets
 )

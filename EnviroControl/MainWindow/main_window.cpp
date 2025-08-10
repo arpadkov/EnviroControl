@@ -11,12 +11,34 @@
 #include "ErrorDetailsWidget.h"
 
 #include <QtCore/QThread>
+#include <QtCore/QFile>
+#include <QtWidgets/QStyle>
+#include <QtWidgets/QButtonGroup>
+#include <QtWidgets/QToolButton>
+
+namespace
+{
+QString getStyleSheet(const QString& file_name)
+{
+	QFile style_file(QString(":/styles/style_sheets/%1.qss").arg(file_name));
+	if (style_file.open(QFile::ReadOnly | QFile::Text))
+	{
+		QTextStream stream(&style_file);
+		QString style_sheet = stream.readAll();
+		style_file.close();
+		return style_sheet;
+	}
+	return QString();
+}
+}
 
 MainWindow::MainWindow(const Cfg::Config& cfg, QWidget* parent)
 	: QMainWindow(parent), _cfg(cfg)
 	, ui(new Ui::MainWindowClass())
 {
 	ui->setupUi(this);
+
+	initNavigationBar();
 
 	initErrorDisplyaWidget();
 
@@ -43,6 +65,71 @@ void MainWindow::onWeatherForecastData(const WFP::ForecastData& data)
 void MainWindow::onWeatherData(const WeatherData& data)
 {
 	ui->_weather_station_label->setText(data.toDebugString());
+}
+
+void MainWindow::onNavButtonClicked()
+{
+	if (auto clicked_button = qobject_cast<QToolButton*>(sender()))
+		activateNavButton(clicked_button);
+}
+
+void MainWindow::activateNavButton(QToolButton* btn)
+{
+	// Deactivate all buttons
+	auto navbar_layout = ui->_navigation_bar->layout();
+	if (!navbar_layout)
+		return;
+
+	for (int i = 0; i < navbar_layout->count(); ++i)
+	{
+		QWidget* widget = navbar_layout->itemAt(i)->widget();
+		if (auto button = qobject_cast<QToolButton*>(widget))
+		{
+			button->style()->polish(button); // Repolish the style to remove the highlight
+		}
+	}
+
+	// Activate the clicked button
+	btn->setChecked(true);
+	btn->style()->polish(btn);
+
+	// Get the button's index and set the stacked widget
+	int index = navbar_layout->indexOf(btn);
+	ui->_main_stack->setCurrentIndex(index);
+}
+
+void MainWindow::initNavigationBar()
+{
+	auto navbar_btn_group = new QButtonGroup(this);
+	navbar_btn_group->setExclusive(true);
+
+	static const QSize NAVBAR_ICON_SIZE(64, 64);
+
+	ui->_navigation_bar->setStyleSheet(getStyleSheet("navigation_bar"));
+	ui->_navigation_bar->layout()->setContentsMargins(0, 0, 0, 0);
+	ui->_navigation_bar->layout()->setSpacing(0);
+	ui->_navigation_bar->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+	layout()->setContentsMargins(0, 0, 0, 0);
+	layout()->setSpacing(0);
+
+	// Connect navigation buttons to the main tab stack
+	auto init_nav_btn = [this, navbar_btn_group](QToolButton* button, int index)
+		{
+			navbar_btn_group->addButton(button);
+			button->setCheckable(true);
+			button->setIcon(QIcon(":/main_tabs/icons/home.svg"));
+			button->setIconSize(NAVBAR_ICON_SIZE);
+			connect(button, &QToolButton::clicked, this, &MainWindow::onNavButtonClicked);
+		};
+	init_nav_btn(ui->_home_btn, 0);
+	init_nav_btn(ui->_weather_history_btn, 1);
+	init_nav_btn(ui->_weather_forecast_btn, 2);
+	activateNavButton(ui->_home_btn); // Set the initial active button
+
+	// Close button
+	ui->_close_btn->setIcon(QIcon(":/main_tabs/icons/close.svg"));
+	ui->_close_btn->setIconSize(NAVBAR_ICON_SIZE);
+	connect(ui->_close_btn, &QToolButton::clicked, QApplication::instance(), &QApplication::quit);
 }
 
 void MainWindow::initWeatherForecastThread()

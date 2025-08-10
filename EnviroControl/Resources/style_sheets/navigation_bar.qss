@@ -1,0 +1,32 @@
+/* Make the container widget fill all available space */
+QWidget#_navigation_bar {
+    background-color: #222222;
+    border: none;
+    margin: 0px;
+    padding: 0px;
+}
+
+/* General button style, filling space horizontally */
+QToolButton {
+    background-color: transparent;
+    color: #f0f0f0;
+    border-left: 8px solid #222222;
+    padding: 15px;
+    font-size: 14px;
+    text-align: center;
+    margin: 0px; /* This removes space between buttons */
+    border-radius: 0px;
+}
+
+/* Hover effect */
+QToolButton:hover {
+    background-color: #3e3e3e;
+}
+
+/* Style the "toggled" or "checked" button */
+QToolButton:checked {
+    background-color: #3e3e3e;
+    font-weight: bold;
+    border-left: 8px solid #00008b;
+    border-radius: 0px;
+}

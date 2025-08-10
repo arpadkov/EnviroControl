@@ -8,4 +8,11 @@
         <file>icons/unknown.svg</file>
         <file>icons/auto_mode.svg</file>
     </qresource>
+    <qresource prefix="/main_tabs">
+        <file>icons/close.svg</file>
+        <file>icons/home.svg</file>
+    </qresource>
+    <qresource prefix="/styles">
+        <file>style_sheets/navigation_bar.qss</file>
+    </qresource>
 </RCC>

@@ -92,6 +92,7 @@ int main(int argc, char* argv[])
 #else
 		// For other platforms, show the window in its normal state
 	window.show();
+	window.setFixedSize(1280, 720); // Set the size of the pi display
 #endif
 	return app.exec();
 }

@@ -14,6 +14,7 @@ class MainWindowClass;
 QT_END_NAMESPACE
 
 class QThread;
+class QToolButton;
 
 class WeatherData;
 class ErrorDetailsWidget;
@@ -41,6 +42,9 @@ public Q_SLOTS:
 	void onWeatherData(const WeatherData& data);
 
 private:
+	void onNavButtonClicked();
+	void activateNavButton(QToolButton* btn);
+	void initNavigationBar();
 	void initWeatherForecastThread();
 	void initWeatherStationThread();
 	void initIndoorStationThread();

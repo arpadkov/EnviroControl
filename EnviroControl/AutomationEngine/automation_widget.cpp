@@ -37,6 +37,8 @@ void AutomationWidget::initLayout()
 	_manual_ctrl_w = new ManualDeviceControlWidget(_devices_cfg, this);
 	main_layout->addWidget(_manual_ctrl_w);
 
+	main_layout->addStretch();
+
 	auto device_state_w = new DeviceStateWidget(_devices_cfg, this);
 	main_layout->addWidget(device_state_w);
 	connect(_automation_engine, &AutomationEngine::deviceStatesUpdated,

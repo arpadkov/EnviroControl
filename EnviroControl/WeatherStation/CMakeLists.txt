@@ -6,8 +6,8 @@ qt_add_library(WeatherStation STATIC
     weather_station_if.cpp
     WeatherStationMock.h
     weather_station_mock.cpp
-    WeatherStationWidget.h
-    weather_station_widget.cpp
+    WeatherHistoryWidget.h
+    weather_history_widget.cpp
     WindRainChartWidget.h
     wind_rain_chart_widget.cpp
     WeatherDataLogger.h

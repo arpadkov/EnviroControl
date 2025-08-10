@@ -9,13 +9,13 @@ class QTabWidget;
 
 class WindRainChartWidget;
 
-class WeatherStationWidget : public QWidget
+class WeatherHistoryWidget : public QWidget
 {
 	Q_OBJECT
 
 public:
-	explicit WeatherStationWidget(QWidget* parent = nullptr);
-	~WeatherStationWidget();
+	explicit WeatherHistoryWidget(QWidget* parent = nullptr);
+	~WeatherHistoryWidget();
 
 public Q_SLOTS:
 	void onWeatherData(const WeatherData& data);

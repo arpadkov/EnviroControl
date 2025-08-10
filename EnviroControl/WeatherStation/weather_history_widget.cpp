@@ -1,26 +1,26 @@
-#include "WeatherStationWidget.h"
+#include "WeatherHistoryWidget.h"
 #include "WindRainChartWidget.h"
 
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QTabWidget>
 
-WeatherStationWidget::WeatherStationWidget(QWidget* parent)
+WeatherHistoryWidget::WeatherHistoryWidget(QWidget* parent)
 	: QWidget(parent)
 {
 	initLayout();
 }
 
-WeatherStationWidget::~WeatherStationWidget()
+WeatherHistoryWidget::~WeatherHistoryWidget()
 {
 }
 
-void WeatherStationWidget::onWeatherData(const WeatherData& data)
+void WeatherHistoryWidget::onWeatherData(const WeatherData& data)
 {
 	if (_wind_rain_chart)
 		_wind_rain_chart->onWeatherData(data);
 }
 
-void WeatherStationWidget::initLayout()
+void WeatherHistoryWidget::initLayout()
 {
 	auto layout = new QVBoxLayout(this);
 	setLayout(layout);
@@ -36,6 +36,6 @@ void WeatherStationWidget::initLayout()
 	_tab_widget->addTab(_wind_rain_chart, "Wind & Rain");
 }
 
-void WeatherStationWidget::updateDisplay(const WeatherData& data)
+void WeatherHistoryWidget::updateDisplay(const WeatherData& data)
 {
 }

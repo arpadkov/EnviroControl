@@ -7,7 +7,7 @@
 #include "AutomationWidget.h"
 #include "WeatherStation.h"
 #include "WeatherStationMock.h"
-#include "WeatherStationWidget.h"
+#include "WeatherHistoryWidget.h"
 #include "ErrorDetailsWidget.h"
 
 #include <QtCore/QThread>
@@ -59,7 +59,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::onWeatherForecastData(const WFP::ForecastData& data)
 {
-	ui->_test_l->setText(data.toString());
+	ui->_weather_forecast_l->setText(data.toString());
 }
 
 void MainWindow::onWeatherData(const WeatherData& data)
@@ -195,9 +195,9 @@ void MainWindow::initWeatherStationThread()
 
 	QObject::connect(weather_station, &IWeatherStation::errorOccurred, _error_details_widget, &ErrorDetailsWidget::onErrorOccurred);
 
-	auto weather_station_widget = new WeatherStationWidget(this);
-	ui->_weather_station_layout->addWidget(weather_station_widget);
-	QObject::connect(weather_station, &IWeatherStation::weatherDataReady, weather_station_widget, &WeatherStationWidget::onWeatherData);
+	auto weather_history_widget = new WeatherHistoryWidget(this);
+	ui->_weather_history_layout->addWidget(weather_history_widget);
+	QObject::connect(weather_station, &IWeatherStation::weatherDataReady, weather_history_widget, &WeatherHistoryWidget::onWeatherData);
 
 	_weather_station_thread->start();
 }

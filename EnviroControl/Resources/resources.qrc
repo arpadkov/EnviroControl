@@ -18,5 +18,6 @@
     <qresource prefix="/WeatherStation">
         <file>qml_resources/WindWheel.qml</file>
         <file>icons/wind_wheel.svg</file>
+        <file>qml_resources/SunPlot.qml</file>
     </qresource>
 </RCC>

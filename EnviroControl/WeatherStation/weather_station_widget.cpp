@@ -1,5 +1,6 @@
 #include "WeatherStationWidget.h"
 #include "WindWheelWidget.h"
+#include "SunPlotWidget.h"
 
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QPushButton>
@@ -24,8 +25,11 @@ void WeatherStationWidget::onWeatherData(const WeatherData& data)
 
 void WeatherStationWidget::initLayout()
 {
-	auto layout = new QVBoxLayout(this);
+	auto layout = new QHBoxLayout(this);
 	setLayout(layout);
+
+	_sun_plot_widget = new SunPlotWidget(this);
+	layout->addWidget(_sun_plot_widget);
 
 	_wind_wheel_widget = new WindWheelWidget(this);
 	layout->addWidget(_wind_wheel_widget);

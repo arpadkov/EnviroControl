@@ -6,6 +6,7 @@
 #include "WeatherData.h"
 
 class WindWheelWidget;
+class SunPlotWidget;
 
 class WeatherStationWidget : public QWidget
 {
@@ -23,4 +24,5 @@ private:
 	void updateDisplay(const WeatherData& data);
 
 	QPointer<WindWheelWidget> _wind_wheel_widget;
+	QPointer<SunPlotWidget> _sun_plot_widget;
 };

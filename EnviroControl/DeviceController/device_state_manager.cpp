@@ -265,6 +265,9 @@ void DeviceStateManager::calculateAndSetNextState()
 
 	for (const auto& new_state : _desired_states.states)
 	{
+		if (new_state.position == DevicePosition::Unknown)
+			continue; // Skip devices with Unknown position
+
 		auto current_state_it = std::find_if(_device_states.states.begin(), _device_states.states.end(),
 			[&new_state](const Device::DeviceState& s)
 			{

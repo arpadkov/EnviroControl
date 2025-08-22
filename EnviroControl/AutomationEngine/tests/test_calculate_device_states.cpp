@@ -86,20 +86,23 @@ RuleSet createRuleSetWindow(const QString& device_id)
 	auto rule_close_on_high = createRuleWithoutConditionWithId(device_id, 999, Device::DevicePosition::Closed);
 	rule_close_on_high.conditions.push_back(std::make_unique<NumericThresholdCondition>(SensorDataSource::WeatherData, "wind_speed", ConditionOperator::GreaterThan, 25));
 
-	// 2. Open window, when:
-	//  2.3: High IndoorTemp
-	//  2.4: No rain
+	// 2. Close window on rain
+	auto rule_close_on_rain = createRuleWithoutConditionWithId(device_id, 998, Device::DevicePosition::Closed);
+	rule_close_on_rain.conditions.push_back(std::make_unique<BooleanStateCondition>(SensorDataSource::WeatherData, "is_raining", true));
+
+	// 2. Close window on Low IndoorTemp
+	auto rule_close_on_cold = createRuleWithoutConditionWithId(device_id, 5001, Device::DevicePosition::Closed);
+	rule_close_on_cold.conditions.push_back(std::make_unique<NumericThresholdCondition>(SensorDataSource::IndoorData, "indoor_temp", ConditionOperator::LessThan, 15));
+
+	// 3. Open window, when High IndoorTemp
 	auto rule_open_window = createRuleWithoutConditionWithId(device_id, 500, Device::DevicePosition::Open);
 	rule_open_window.conditions.push_back(std::make_unique<NumericThresholdCondition>(SensorDataSource::IndoorData, "indoor_temp", ConditionOperator::GreaterThan, 20));
-	rule_open_window.conditions.push_back(std::make_unique<BooleanStateCondition>(SensorDataSource::WeatherData, "is_raining", false)); // Open if NOT raining
-
-	// 3. Default close
-	auto rule_default_close_window = createRuleWithoutConditionWithId(device_id, 1, Device::DevicePosition::Closed);
 
 	std::vector<Rule> rules;
 	rules.push_back(std::move(rule_close_on_high));
+	rules.push_back(std::move(rule_close_on_cold));
+	rules.push_back(std::move(rule_close_on_rain));
 	rules.push_back(std::move(rule_open_window));
-	rules.push_back(std::move(rule_default_close_window));
 
 	RuleSet rule_set;
 	rule_set.setRules(std::move(rules));
@@ -221,7 +224,7 @@ TEST(CalculateDeviceStateTest, TestSunblindLowWindLowIndoorOpen)
 
 TEST(CalculateDeviceStateTest, TestWindowHotIndoorOpen)
 {
-	// Create device (sunblind)
+	// Create device (window)
 	QString device_id = "window_1";
 	std::vector<QString> device_ids = { device_id };
 	auto now = QDateTime::currentDateTime();
@@ -238,4 +241,46 @@ TEST(CalculateDeviceStateTest, TestWindowHotIndoorOpen)
 	auto window_state = device_states.getDevicePosition(device_id);
 
 	EXPECT_TRUE(window_state == Device::DevicePosition::Open);
+}
+
+TEST(CalculateDeviceStateTest, TestWindowColdIndoorClosed)
+{
+	// Create device (window)
+	QString device_id = "window_1";
+	std::vector<QString> device_ids = { device_id };
+	auto now = QDateTime::currentDateTime();
+
+	const auto& rule_set = createRuleSetWindow(device_id);
+
+	std::vector<WeatherData> weather_history;
+	weather_history.push_back(WeatherDataCreator::createWindy(now, 12));
+
+	std::vector<IndoorData> indoor_history;
+	indoor_history.push_back(WeatherDataCreator::createIndoorData(now, 12));
+
+	const auto& device_states = RulesProcessor::calculateDeviceStates(rule_set, device_ids, weather_history, indoor_history);
+	auto window_state = device_states.getDevicePosition(device_id);
+
+	EXPECT_TRUE(window_state == Device::DevicePosition::Closed);
+}
+
+TEST(CalculateDeviceStateTest, TestWindowNorRuleEffect)
+{
+	// Create device (window)
+	QString device_id = "window_1";
+	std::vector<QString> device_ids = { device_id };
+	auto now = QDateTime::currentDateTime();
+
+	const auto& rule_set = createRuleSetWindow(device_id);
+
+	std::vector<WeatherData> weather_history;
+	weather_history.push_back(WeatherDataCreator::createWindy(now, 12));
+
+	std::vector<IndoorData> indoor_history;
+	indoor_history.push_back(WeatherDataCreator::createIndoorData(now, 18)); // <- between 15 and 20, no rule effect
+
+	const auto& device_states = RulesProcessor::calculateDeviceStates(rule_set, device_ids, weather_history, indoor_history);
+	auto window_state = device_states.getDevicePosition(device_id);
+
+	EXPECT_TRUE(window_state == Device::DevicePosition::Unknown);
 }

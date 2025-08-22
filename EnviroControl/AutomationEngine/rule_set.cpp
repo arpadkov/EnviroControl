@@ -13,7 +13,6 @@ bool RuleSet::loadFromJson(const QString& file_path)
 {
 	_rules.clear();
 
-
 	QFile config_file(file_path);
 
 	if (!config_file.open(QIODevice::ReadOnly | QIODevice::Text))

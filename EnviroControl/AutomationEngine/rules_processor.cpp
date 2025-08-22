@@ -40,7 +40,7 @@ Device::DeviceStates RulesProcessor::calculateDeviceStates(
 {
 	Device::DeviceStates calculated_states;
 
-	// Set all to closed by default
+	// Set all to unknown by default
 	for (const auto& device_id : device_ids)
 		calculated_states.states.push_back({ device_id, Device::DevicePosition::Unknown });
 
@@ -55,16 +55,6 @@ Device::DeviceStates RulesProcessor::calculateDeviceStates(
 			calculated_states.setDevicePosition(rule.device_id, rule.position);
 
 	} // Loop over rules
-
-	// If no rule set the state, set to closed
-	for (const auto& device_id : device_ids)
-	{
-		if (calculated_states.getDevicePosition(device_id) == Device::DevicePosition::Unknown)
-		{
-			qCritical() << "RulesProcessor: Device " << device_id << " position could not be determined";
-			throw std::runtime_error("Device position could not be determined for device: " + device_id.toStdString());
-		}
-	}
 
 	return calculated_states;
 }

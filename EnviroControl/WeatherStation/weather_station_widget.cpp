@@ -5,6 +5,8 @@
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QPushButton>
 
+static const int MAX_SUN_INTENSITY = 99; // kLux
+
 WeatherStationWidget::WeatherStationWidget(QWidget* parent)
 	: QWidget(parent)
 {
@@ -38,4 +40,7 @@ void WeatherStationWidget::initLayout()
 void WeatherStationWidget::updateDisplay(const WeatherData& data)
 {
 	_wind_wheel_widget->windSpeedChanged(data.wind);
+
+	// Sun plot widget only gets relative values (0...1)
+	_sun_plot_widget->onSunDataChanged(data.sun_south / MAX_SUN_INTENSITY, data.sun_east / MAX_SUN_INTENSITY, data.sun_west / MAX_SUN_INTENSITY);
 }

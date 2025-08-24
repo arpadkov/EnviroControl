@@ -5,14 +5,12 @@
 #include <QtQuickWidgets/QQuickWidget>
 
 SunPlotWidget::SunPlotWidget(QWidget* parent)
-	: QWidget(parent), _qml_widget(new QQuickWidget(this))
+	: QWidget(parent), _qml_widget(new QQuickWidget(this)), _sun_plot_data(new SunPlotData(this))
 {
 	_qml_widget->setResizeMode(QQuickWidget::SizeRootObjectToView);
+	_qml_widget->rootContext()->setContextProperty("sunPlotData", _sun_plot_data);
 	_qml_widget->setSource(QUrl("qrc:/WeatherStation/qml_resources/SunPlot.qml"));
-	//_qml_widget->rootContext()->setContextProperty("sunPlotWidget", this);
 	initLayout();
-	//setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
-	//setFixedSize(300, 300);
 }
 
 SunPlotWidget::~SunPlotWidget()
@@ -21,11 +19,11 @@ SunPlotWidget::~SunPlotWidget()
 
 void SunPlotWidget::onSunDataChanged(double south, double east, double west)
 {
-	if (_qml_widget)
+	if (_sun_plot_data)
 	{
-		//_qml_widget->rootObject()->setProperty("south", south);
-		//_qml_widget->rootObject()->setProperty("east", east);
-		//_qml_widget->rootObject()->setProperty("west", west);
+		_sun_plot_data->setSunSouth(south);
+		_sun_plot_data->setSunEast(east);
+		_sun_plot_data->setSunWest(west);
 	}
 }
 

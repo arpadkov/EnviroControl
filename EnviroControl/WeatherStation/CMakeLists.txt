@@ -20,6 +20,8 @@ qt_add_library(WeatherStation STATIC
     weather_data_logger.cpp
     SunPlotWidget.h
     sun_plot_widget.cpp
+    ThermometerWidget.h
+    thermometer_widget.cpp
     IndoorStation.h
     indoor_station.cpp
 )

@@ -1,6 +1,7 @@
 #include "WeatherStationWidget.h"
 #include "WindWheelWidget.h"
 #include "SunPlotWidget.h"
+#include "ThermometerWidget.h"
 
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QPushButton>
@@ -35,6 +36,9 @@ void WeatherStationWidget::initLayout()
 
 	_wind_wheel_widget = new WindWheelWidget(this);
 	layout->addWidget(_wind_wheel_widget);
+
+	_thermometer_widget = new ThermometerWidget(this);
+	layout->addWidget(_thermometer_widget);
 }
 
 void WeatherStationWidget::updateDisplay(const WeatherData& data)
@@ -43,4 +47,6 @@ void WeatherStationWidget::updateDisplay(const WeatherData& data)
 
 	// Sun plot widget only gets relative values (0...1)
 	_sun_plot_widget->onSunDataChanged(data.sun_south / MAX_SUN_INTENSITY, data.sun_east / MAX_SUN_INTENSITY, data.sun_west / MAX_SUN_INTENSITY);
+
+	_thermometer_widget->temperatureChanged(data.temperature);
 }

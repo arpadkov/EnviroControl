@@ -7,6 +7,7 @@
 
 class WindWheelWidget;
 class SunPlotWidget;
+class ThermometerWidget;
 
 class WeatherStationWidget : public QWidget
 {
@@ -25,4 +26,5 @@ private:
 
 	QPointer<WindWheelWidget> _wind_wheel_widget;
 	QPointer<SunPlotWidget> _sun_plot_widget;
+	QPointer<ThermometerWidget> _thermometer_widget;
 };

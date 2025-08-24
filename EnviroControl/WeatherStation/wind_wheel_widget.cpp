@@ -10,7 +10,6 @@ WindWheelWidget::WindWheelWidget(QWidget* parent)
 	_qml_widget->rootContext()->setContextProperty("windWheelData", _wind_wheel_data);
 	_qml_widget->setResizeMode(QQuickWidget::SizeRootObjectToView);
 	_qml_widget->setSource(QUrl("qrc:/WeatherStation/qml_resources/WindWheel.qml"));
-	//_qml_widget->setSource(QUrl());
 
 	initLayout();
 }

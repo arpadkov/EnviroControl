@@ -19,5 +19,7 @@
         <file>qml_resources/WindWheel.qml</file>
         <file>icons/wind_wheel.svg</file>
         <file>qml_resources/SunPlot.qml</file>
+        <file>qml_resources/Thermometer.qml</file>
+        <file>icons/thermometer_base.svg</file>
     </qresource>
 </RCC>

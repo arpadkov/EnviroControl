@@ -8,6 +8,7 @@
 #include "WeatherStation.h"
 #include "WeatherStationMock.h"
 #include "WeatherHistoryWidget.h"
+#include "IndoorStationWidget.h"
 #include "ErrorDetailsWidget.h"
 
 #include <QtCore/QThread>
@@ -193,6 +194,7 @@ void MainWindow::initWeatherStationThread()
 			ui->_weather_station_label->setText(error);
 		});
 
+	// Connect to widgets
 	QObject::connect(weather_station, &IWeatherStation::errorOccurred, _error_details_widget, &ErrorDetailsWidget::onErrorOccurred);
 
 	auto weather_history_widget = new WeatherHistoryWidget(this);
@@ -219,10 +221,9 @@ void MainWindow::initIndoorStationThread()
 		{
 			_automation_engine->onError(error);
 		});
-	QObject::connect(indoor_station, &IndoorStation::indoorDataReady, this, [this](const IndoorData& data)
-		{
-			ui->_indoor_data_l->setText(data.toString());
-		});
+
+	// Connect to widgets
+	QObject::connect(indoor_station, &IndoorStation::indoorDataReady, ui->_indoor_station_widget, &IndoorStationWidget::onIndoorDataChanged);
 
 	QObject::connect(indoor_station, &IndoorStation::errorOccurred, _error_details_widget, &ErrorDetailsWidget::onErrorOccurred);
 

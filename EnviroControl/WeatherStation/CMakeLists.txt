@@ -24,6 +24,8 @@ qt_add_library(WeatherStation STATIC
     thermometer_widget.cpp
     IndoorStation.h
     indoor_station.cpp
+    IndoorStationWidget.h
+    indoor_station_widget.cpp
 )
 
 # Specify include directories for this library.

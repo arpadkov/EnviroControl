@@ -90,23 +90,23 @@
         <widget class="QWidget" name="_home_page">
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
-           <widget class="QLabel" name="_indoor_data_l">
-            <property name="text">
-             <string>TextLabel</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="_weather_station_layout">
+           <layout class="QHBoxLayout" name="_stations_layout">
             <item>
-             <widget class="QLabel" name="_weather_station_label">
-              <property name="text">
-               <string>TextLabel</string>
-              </property>
-             </widget>
+             <widget class="IndoorStationWidget" name="_indoor_station_widget" native="true"/>
             </item>
             <item>
-             <widget class="WeatherStationWidget" name="_weather_station_widget" native="true"/>
+             <layout class="QHBoxLayout" name="_weather_station_layout">
+              <item>
+               <widget class="QLabel" name="_weather_station_label">
+                <property name="text">
+                 <string>TextLabel</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="WeatherStationWidget" name="_weather_station_widget" native="true"/>
+              </item>
+             </layout>
             </item>
            </layout>
           </item>
@@ -166,6 +166,12 @@
    <class>WeatherStationWidget</class>
    <extends>QWidget</extends>
    <header>WeatherStationWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>IndoorStationWidget</class>
+   <extends>QWidget</extends>
+   <header>IndoorStationWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

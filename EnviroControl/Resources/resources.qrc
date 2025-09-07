@@ -14,6 +14,7 @@
     </qresource>
     <qresource prefix="/styles">
         <file>style_sheets/navigation_bar.qss</file>
+        <file>style_sheets/station_frame.qss</file>
     </qresource>
     <qresource prefix="/WeatherStation">
         <file>qml_resources/WindWheel.qml</file>

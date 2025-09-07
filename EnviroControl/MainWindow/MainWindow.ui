@@ -92,21 +92,37 @@
           <item>
            <layout class="QHBoxLayout" name="_stations_layout">
             <item>
-             <widget class="IndoorStationWidget" name="_indoor_station_widget" native="true"/>
+             <widget class="IndoorStationWidget" name="_indoor_station_widget">
+              <property name="minimumSize">
+               <size>
+                <width>30</width>
+                <height>30</height>
+               </size>
+              </property>
+             </widget>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="_weather_station_layout">
-              <item>
-               <widget class="QLabel" name="_weather_station_label">
-                <property name="text">
-                 <string>TextLabel</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="WeatherStationWidget" name="_weather_station_widget" native="true"/>
-              </item>
-             </layout>
+             <spacer name="_between_station_widgets_spacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="WeatherStationWidget" name="_weather_station_widget">
+              <property name="minimumSize">
+               <size>
+                <width>30</width>
+                <height>30</height>
+               </size>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
@@ -163,15 +179,15 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>WeatherStationWidget</class>
-   <extends>QWidget</extends>
-   <header>WeatherStationWidget.h</header>
+   <class>IndoorStationWidget</class>
+   <extends>QFrame</extends>
+   <header>IndoorStationWidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>IndoorStationWidget</class>
-   <extends>QWidget</extends>
-   <header>IndoorStationWidget.h</header>
+   <class>WeatherStationWidget</class>
+   <extends>QFrame</extends>
+   <header>WeatherStationWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

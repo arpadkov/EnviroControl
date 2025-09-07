@@ -39,7 +39,6 @@ public:
 
 public Q_SLOTS:
 	void onWeatherForecastData(const WFP::ForecastData& data);
-	void onWeatherData(const WeatherData& data);
 
 private:
 	void onNavButtonClicked();

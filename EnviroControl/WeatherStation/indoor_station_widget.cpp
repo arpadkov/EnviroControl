@@ -1,22 +1,33 @@
 #include "IndoorStationWidget.h"
 #include "IndoorStation.h"
+#include "ThermometerWidget.h"
 
-#include <QVBoxLayout>
-#include <QLabel>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QLabel>
+#include <QtCore/QFile>
 
 IndoorStationWidget::IndoorStationWidget(QWidget* parent)
-    : QWidget(parent)
+	: QFrame(parent)
 {
-    auto layout = new QVBoxLayout(this);
-    _data_label = new QLabel("No data", this);
-    layout->addWidget(_data_label);
-    setLayout(layout);
+	initLayout();
 }
 
 IndoorStationWidget::~IndoorStationWidget() = default;
 
 void IndoorStationWidget::onIndoorDataChanged(const IndoorData& data)
 {
-    // Assuming IndoorData has a toString() method
-    _data_label->setText(data.toString());
+	//_data_label->setText(data.toString());
+	_thermometer_widget->temperatureChanged(data.temperature);
+}
+
+void IndoorStationWidget::initLayout()
+{
+	auto layout = new QVBoxLayout(this);
+	setLayout(layout);
+
+	//_data_label = new QLabel(this);
+	//layout->addWidget(_data_label);
+
+	_thermometer_widget = new ThermometerWidget(this);
+	layout->addWidget(_thermometer_widget);
 }

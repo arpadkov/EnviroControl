@@ -39,9 +39,9 @@ Item {
 
             ListModel {
                 id: sunRaysModel
-                ListElement {data: "East"; direction: 0} // East
-                ListElement {data: "South"; direction: -90} // South
-                ListElement {data: "West"; direction: 180} // West
+                ListElement { data: "East"; direction: 0; label_offset_x: -10; label_offset_y: -22 }
+                ListElement { data: "South"; direction: -90; label_offset_x: 17; label_offset_y: -10 }
+                ListElement { data: "West"; direction: 180; label_offset_x: 10; label_offset_y: -22 }
             }
         
             Shape {
@@ -151,6 +151,126 @@ Item {
 
               
             } // End of Shape sunPath
+
+            // Container for the value text labels
+            Item {
+                id: textContainer
+                anchors.fill: parent
+
+                // Add Text labels to the segments
+                Instantiator {
+                    model: sunRaysModel
+                    delegate: Text {
+                        property real value: {
+                            if (model.data === "East") {
+                                return sunPlotData.sunEast;
+                            } else if (model.data === "West") {
+                                return sunPlotData.sunWest;
+                            } else {
+                                return sunPlotData.sunSouth;
+                            }
+                        }
+                        
+                        text: (value * 99).toFixed(0)
+                        color: "black"
+                        font.pixelSize: 20
+                        font.bold: true
+
+                        // Position the text in the middle of each segment
+                        property real textRadius: sunPlot.max_radius * 0.55 // Adjust this value to change the distance from the center
+                        property var textPosition: sunPlot.caartesianCoordsFromPolar(model.direction, textRadius)
+                        x: textPosition.x - width / 2 + model.label_offset_x
+                        y: textPosition.y - height / 2 + model.label_offset_y
+                    }
+
+                    onObjectAdded: function(index, obj) {
+                        sunRays.data.push(obj)
+                    }
+                    onObjectRemoved: function(index, obj) {
+                        sunRays.data.splice(sunRays.data.indexOf(obj), 1)
+                    }
+
+                }
+            }
+
+                        // New section for the directional arrows and labels
+            Shape {
+                id: directionalArrowsAndLabels
+                anchors.fill: parent
+
+                Instantiator {
+                    model: sunRaysModel
+                    delegate: Item { // An Item to group the line, arrowhead, and text
+                        property real lineLength: sunPlot.max_radius
+                        property real labelOffset: 0 // Distance of the label from the arrowhead
+
+                        property var endPoint: sunPlot.caartesianCoordsFromPolar(model.direction, lineLength)
+                        property var labelPoint: sunPlot.caartesianCoordsFromPolar(model.direction, lineLength + labelOffset)
+
+                        // Arrow Line (ShapePath within this Item's coordinate system)
+                        Shape {
+                            ShapePath {
+                                strokeColor: "black"
+                                strokeWidth: 2
+
+                                //PathLine { x: 100; y: 100 }
+                                
+                                PathMove { x: sunPlot.centerX; y: sunPlot.centerY } // Start from the center
+                                PathLine { x: endPoint.x; y: endPoint.y } // End at the outer radius
+                            }
+                        }
+
+                        // Arrowhead (a small Shape positioned at the end of the line)
+                        Shape {
+                            x: endPoint.x // Position at the end of the line
+                            y: endPoint.y
+                            width: 20
+                            height: 20
+                            antialiasing: true
+                            
+                            // Manually correct arrowhed rotation (because i am dumm)
+                            property real additional_rotation: {
+                                if (model.data === "East") {
+                                    return 90;
+                                } else if (model.data === "West") {
+                                    return -90;
+                                } else {
+                                    return 180; // South
+                                }
+                            }
+
+                            rotation: additional_rotation
+                            transformOrigin: Item.TopLeft    
+
+                            ShapePath {
+                                fillColor: "black"
+                                PathMove { x: 0; y: -10 } // Pointy top
+                                PathLine { x: 10; y: 10 } // Bottom right
+                                PathLine { x: -10; y: 10 } // Bottom left
+                                PathLine { x: 0; y: -10 } // Close path
+                            }
+                        }
+
+                        // Directional Label Text (E, W, S)
+                        Text {
+                            text: model.data.charAt(0) // Get the first letter (E, S, W)
+                            color: "black"
+                            font.pixelSize: 25
+                            font.bold: true
+                            // Position it based on the labelPoint
+                            x: labelPoint.x - width / 2 + model.label_offset_x
+                            y: labelPoint.y - height / 2 + model.label_offset_y
+                            //x: labelPoint.x + label_offset.x
+                            //y: labelPoint.y + label_offset.y
+                        }
+                    }
+
+                    onObjectAdded: function(index, obj) {
+                        obj.parent = directionalArrowsAndLabels
+                    }
+                }
+            }  // End of
+
         }
     }
 }

@@ -9,11 +9,8 @@
 static const int MAX_SUN_INTENSITY = 99; // kLux
 
 WeatherStationWidget::WeatherStationWidget(QWidget* parent)
-	: QWidget(parent)
+	: QFrame(parent)
 {
-	setAttribute(Qt::WA_TranslucentBackground);
-	setStyleSheet("background: transparent;");
-
 	initLayout();
 }
 

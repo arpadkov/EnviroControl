@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QtWidgets/QWidget>
+#include <QtWidgets/QFrame>
 #include <QtCore/QPointer>
 
 #include "WeatherData.h"
@@ -9,7 +9,7 @@ class WindWheelWidget;
 class SunPlotWidget;
 class ThermometerWidget;
 
-class WeatherStationWidget : public QWidget
+class WeatherStationWidget : public QFrame
 {
 	Q_OBJECT
 

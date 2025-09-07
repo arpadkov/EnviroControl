@@ -63,11 +63,6 @@ void MainWindow::onWeatherForecastData(const WFP::ForecastData& data)
 	ui->_weather_forecast_l->setText(data.toString());
 }
 
-void MainWindow::onWeatherData(const WeatherData& data)
-{
-	ui->_weather_station_label->setText(data.toDebugString());
-}
-
 void MainWindow::onNavButtonClicked()
 {
 	if (auto clicked_button = qobject_cast<QToolButton*>(sender()))
@@ -188,13 +183,8 @@ void MainWindow::initWeatherStationThread()
 			_automation_engine->onError(error);
 		});
 
-	QObject::connect(weather_station, &IWeatherStation::weatherDataReady, this, &MainWindow::onWeatherData);
-	QObject::connect(weather_station, &IWeatherStation::errorOccurred, this, [this](const QString& error)
-		{
-			ui->_weather_station_label->setText(error);
-		});
-
 	// Connect to widgets
+	ui->_weather_station_widget->setStyleSheet(getStyleSheet("station_frame"));
 	QObject::connect(weather_station, &IWeatherStation::errorOccurred, _error_details_widget, &ErrorDetailsWidget::onErrorOccurred);
 
 	auto weather_history_widget = new WeatherHistoryWidget(this);
@@ -223,6 +213,7 @@ void MainWindow::initIndoorStationThread()
 		});
 
 	// Connect to widgets
+	ui->_indoor_station_widget->setStyleSheet(ui->_indoor_station_widget->styleSheet() + getStyleSheet("station_frame"));
 	QObject::connect(indoor_station, &IndoorStation::indoorDataReady, ui->_indoor_station_widget, &IndoorStationWidget::onIndoorDataChanged);
 
 	QObject::connect(indoor_station, &IndoorStation::errorOccurred, _error_details_widget, &ErrorDetailsWidget::onErrorOccurred);

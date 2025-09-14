@@ -42,7 +42,9 @@ public:
 	void setAutoMode();
 
 Q_SIGNALS:
-	void deviceStatesUpdated(const Device::DeviceStates& calulated_states);
+	void deviceMovementStarted(const Device::DeviceState& state);
+	void deviceMovementFinished(const Device::DeviceState& state);
+	void deviceStatesUpdated(const Device::DeviceStates& calulated_states); // Calculated states
 	void automationModeChanged(bool automatic_mode);
 	void manualDeviceRequest(const Device::DeviceState& state);
 	void abortMovement();

@@ -157,6 +157,10 @@ void AutomationEngine::initStateManagerThread()
 	connect(this, &AutomationEngine::manualDeviceRequest, _state_manager, &Device::DeviceStateManager::onManualDeviceRequest);
 	connect(this, &AutomationEngine::abortMovement, _state_manager, &Device::DeviceStateManager::onAbort);
 
+	// Forward signals
+	connect(_state_manager, &Device::DeviceStateManager::deviceMovementStarted, this, &AutomationEngine::deviceMovementStarted);
+	connect(_state_manager, &Device::DeviceStateManager::deviceMovementFinished, this, &AutomationEngine::deviceMovementFinished);
+
 	_state_manager_thread->start();
 }
 

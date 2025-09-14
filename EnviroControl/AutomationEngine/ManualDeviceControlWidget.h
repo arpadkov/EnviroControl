@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ConfigParser.h"
+#include "DeviceState.h"
 
 #include <QtWidgets/QWidget>
 #include <QtCore/QPointer>
@@ -25,6 +26,8 @@ Q_SIGNALS:
 
 public Q_SLOTS:
 	void onAutomationModeChanged(bool auto_mode);
+	void onDeviceMovementFinished(const Device::DeviceState& state);
+	void onDeviceStatesUpdated(const Device::DeviceStates& states);
 
 private:
 	void initLayout();
@@ -32,8 +35,11 @@ private:
 private:
 	Cfg::DeviceConfigList _devices_cfg;
 
+	Device::DeviceStates _calculated_device_states;
+
 	// Widgets
 	QPointer<QPushButton> _auto_mode_btn;
+	std::map<QString, std::pair<QPushButton*, QPushButton*>> _device_buttons; // device_id -> <open_btn, close_btn>
 };
 
 }

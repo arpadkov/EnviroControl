@@ -21,6 +21,9 @@ AutomationWidget::AutomationWidget(const Cfg::DeviceConfigList& cfg, AutomationE
 	connect(_manual_ctrl_w, &Automation::ManualDeviceControlWidget::abortPressed, _automation_engine, &Automation::AutomationEngine::onAbort);
 	connect(_manual_ctrl_w, &Automation::ManualDeviceControlWidget::automationModeChangeRequest, _automation_engine, &AutomationEngine::onAutomationModeChangeRequest);
 
+	connect(_automation_engine, &AutomationEngine::deviceMovementFinished, _manual_ctrl_w, &ManualDeviceControlWidget::onDeviceMovementFinished);
+	connect(_automation_engine, &AutomationEngine::deviceStatesUpdated, _manual_ctrl_w, &ManualDeviceControlWidget::onDeviceStatesUpdated);
+
 	// Connect AutomationEngine response signals to this
 	connect(_automation_engine, &Automation::AutomationEngine::automationModeChanged, _manual_ctrl_w, &Automation::ManualDeviceControlWidget::onAutomationModeChanged);
 }

@@ -31,6 +31,7 @@ Q_SIGNALS:
 
 public Q_SLOTS:
 	void onAutomationModeChanged(bool auto_mode);
+	void onDeviceMovementStarted(const Device::DeviceState& state);
 	void onDeviceMovementFinished(const Device::DeviceState& state);
 	void onDeviceStatesUpdated(const Device::DeviceStates& states);
 

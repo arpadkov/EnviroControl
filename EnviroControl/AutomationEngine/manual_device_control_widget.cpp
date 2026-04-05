@@ -55,6 +55,15 @@ bool isManualOverwriteConfirmed(const Device::DeviceStates& calculated_states, c
 	return is_state_same_as_requested || is_state_unknown || leaveAutomationModeDialog(calculated_states, device_cfg);
 }
 
+void setButtonsEnabled(std::map<QString, std::pair<QPushButton*, QPushButton*>> buttons_map, bool enabled)
+{
+	for (auto& [id, btn_pair] : buttons_map)
+	{
+		btn_pair.first->setEnabled(enabled);
+		btn_pair.second->setEnabled(enabled);
+	}
+}
+
 }	// namespace
 
 ManualDeviceControlWidget::ManualDeviceControlWidget(const Cfg::DeviceConfigList& cfg, AutomationWidget* parent)
@@ -71,6 +80,11 @@ ManualDeviceControlWidget::~ManualDeviceControlWidget()
 void ManualDeviceControlWidget::onAutomationModeChanged(bool auto_mode)
 {
 	_auto_mode_btn->setChecked(auto_mode);
+}
+
+void ManualDeviceControlWidget::onDeviceMovementStarted(const Device::DeviceState& state)
+{
+	setButtonsEnabled(_device_buttons, false);
 }
 
 void ManualDeviceControlWidget::onDeviceMovementFinished(const Device::DeviceState& state)
@@ -95,6 +109,8 @@ void ManualDeviceControlWidget::onDeviceMovementFinished(const Device::DeviceSta
 		btn_pair.second->setChecked(true);
 		break;
 	}
+
+	setButtonsEnabled(_device_buttons, true);
 }
 
 void ManualDeviceControlWidget::onDeviceStatesUpdated(const Device::DeviceStates& states)

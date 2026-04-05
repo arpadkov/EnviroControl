@@ -1,4 +1,5 @@
 #include "ManualDeviceControlWidget.h"
+#include "AutomationWidget.h"
 #include "DeviceState.h"
 
 #include <QtWidgets/QHBoxLayout>
@@ -41,17 +42,25 @@ bool leaveAutomationModeDialog(const Device::DeviceStates& calculated_states, co
 /*
 * Only emit if the device has no calculated state (is free to do whatever), or if the user confirms leaving automation mode
 */
-bool emitManualRequestSignal(const Device::DeviceStates& calculated_states, const Cfg::DeviceConfig& device_cfg)
+bool isManualOverwriteConfirmed(const Device::DeviceStates& calculated_states, const Device::DevicePosition& desired_state, const Cfg::DeviceConfig& device_cfg)
 {
-	bool is_state_unknown = calculated_states.getDevicePosition(device_cfg.device_id) == Device::DevicePosition::Unknown;
-	return is_state_unknown || leaveAutomationModeDialog(calculated_states, device_cfg);
+	const auto& calculated_state = calculated_states.getDevicePosition(device_cfg.device_id);
+
+	// In unknown state, the device is free to do whatever, so no need to ask the user for confirmation
+	bool is_state_unknown = calculated_state == Device::DevicePosition::Unknown;
+
+	// If the calculated state is the same as the requested one, just allow it without asking the user, since it's not really an overwrite
+	bool is_state_same_as_requested = calculated_state == desired_state;
+
+	return is_state_same_as_requested || is_state_unknown || leaveAutomationModeDialog(calculated_states, device_cfg);
 }
 
 }	// namespace
 
-ManualDeviceControlWidget::ManualDeviceControlWidget(const Cfg::DeviceConfigList& cfg, QWidget* parent)
+ManualDeviceControlWidget::ManualDeviceControlWidget(const Cfg::DeviceConfigList& cfg, AutomationWidget* parent)
 	: QWidget(parent), _devices_cfg(cfg)
 {
+	_auto_w = parent;
 	initLayout();
 }
 
@@ -127,24 +136,38 @@ inline void ManualDeviceControlWidget::initLayout()
 		// Define connections: need to know about both buttons
 		connect(open_btn, &QPushButton::clicked, this, [this, device_cfg, uncheck_btns, open_btn]()
 			{
-				if (!emitManualRequestSignal(_calculated_device_states, device_cfg))
+				// If it is now un-checked (was checked already) -> re-check and leave
+				if (!open_btn->isChecked())
 				{
-					open_btn->setCheckable(false); // Uncheck the button, if the user cancelled
+					open_btn->setChecked(true);
 					return;
 				}
 
+				if (_auto_w->isInAutoMode() && !isManualOverwriteConfirmed(_calculated_device_states, Device::DevicePosition::Open, device_cfg))
+				{
+					open_btn->setChecked(false); // Uncheck the button, if the user cancelled
+					return;
+				}
 				uncheck_btns();
+
 				Q_EMIT deviceOpenPressed(device_cfg.device_id);
 			});
 		connect(close_btn, &QPushButton::clicked, this, [this, device_cfg, uncheck_btns, close_btn]()
 			{
-				if (!emitManualRequestSignal(_calculated_device_states, device_cfg))
+				// If it is now un-checked (was checked already) -> re-check and leave
+				if (!close_btn->isChecked())
 				{
-					close_btn->setCheckable(false); // Uncheck the button, if the user cancelled
+					close_btn->setChecked(true);
 					return;
 				}
 
+				if (_auto_w->isInAutoMode() && !isManualOverwriteConfirmed(_calculated_device_states, Device::DevicePosition::Closed, device_cfg))
+				{
+					close_btn->setChecked(false); // Uncheck the button, if the user cancelled
+					return;
+				}
 				uncheck_btns();
+
 				Q_EMIT deviceClosePressed(device_cfg.device_id);
 			});
 
@@ -165,7 +188,7 @@ inline void ManualDeviceControlWidget::initLayout()
 	_auto_mode_btn = createButton("auto_mode", this);
 	ctrl_layout->addWidget(_auto_mode_btn);
 	_auto_mode_btn->setCheckable(true);
-	_auto_mode_btn->setChecked(false);
+	_auto_mode_btn->setChecked(_auto_w->isInAutoMode());
 	connect(_auto_mode_btn, &QPushButton::clicked, this, [this]()
 		{
 			// Just emit the signal, the buttons state is changed, once AutomationEngine is set to auto mode

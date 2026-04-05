@@ -10,12 +10,17 @@ class QPushButton;
 
 namespace Automation
 {
+class AutomationWidget;
+}
+
+namespace Automation
+{
 
 class ManualDeviceControlWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	ManualDeviceControlWidget(const Cfg::DeviceConfigList& cfg, QWidget* parent = nullptr);
+	ManualDeviceControlWidget(const Cfg::DeviceConfigList& cfg, AutomationWidget* parent = nullptr);
 	~ManualDeviceControlWidget() override;
 
 Q_SIGNALS:
@@ -36,6 +41,9 @@ private:
 	Cfg::DeviceConfigList _devices_cfg;
 
 	Device::DeviceStates _calculated_device_states;
+
+	// Parent
+	AutomationWidget* _auto_w;
 
 	// Widgets
 	QPointer<QPushButton> _auto_mode_btn;

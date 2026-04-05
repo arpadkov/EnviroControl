@@ -73,6 +73,11 @@ void AutomationEngine::setAutoMode()
 	Q_EMIT automationModeChanged(true);
 }
 
+bool AutomationEngine::isInAutoMode() const
+{
+	return _automation_connect;
+}
+
 void AutomationEngine::onWeatherStationData(const WeatherData& weather_data)
 {
 	addCircularBufferData(_weather_data_history, weather_data, _data_history_secs);

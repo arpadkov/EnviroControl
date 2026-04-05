@@ -21,6 +21,8 @@ public:
 	AutomationWidget(const Cfg::DeviceConfigList& cfg, AutomationEngine* automation_engine, QWidget* parent = nullptr);
 	~AutomationWidget() override;
 
+	bool isInAutoMode() const;
+
 Q_SIGNALS:
 	void deviceOpenPressed(QString device_id);
 	void deviceClosePressed(QString device_id);

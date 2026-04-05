@@ -40,6 +40,7 @@ public:
 	void loadRules(const QString& file_path);
 	void setManualMode();
 	void setAutoMode();
+	bool isInAutoMode() const;
 
 Q_SIGNALS:
 	void deviceMovementStarted(const Device::DeviceState& state);

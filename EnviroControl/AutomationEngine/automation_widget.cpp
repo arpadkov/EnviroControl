@@ -32,6 +32,11 @@ AutomationWidget::~AutomationWidget()
 {
 }
 
+bool AutomationWidget::isInAutoMode() const
+{
+	return _automation_engine->isInAutoMode();
+}
+
 void AutomationWidget::initLayout()
 {
 	auto main_layout = new QHBoxLayout();

@@ -6,6 +6,7 @@
 #include <QtCore/QPointer>
 #include <QtCore/QVector>
 #include <QtCore/QPointF>
+#include <QtWidgets/QGraphicsSimpleTextItem>
 
 class QChart;
 class QChartView;
@@ -27,7 +28,10 @@ public:
 private:
 		QPointer<QChart> _chart;
 		QPointer<QChartView> _chart_view;
-		QLineSeries* _series;
+		QLineSeries* _upper_series;
+		QLineSeries* _lower_series;
+		QAreaSeries* _area_series;
+		QGraphicsSimpleTextItem* _title_item;
 };
 
 class SunChartWidget : public WeatherHistoryWidgetBase

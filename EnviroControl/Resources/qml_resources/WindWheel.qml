@@ -1,6 +1,14 @@
 import QtQuick 2.15
 
 Item {
+    // configurable background: default transparent, set to "white" to force white background
+    property color backgroundColor: "white"
+
+    // background rectangle so the control can be made white or transparent
+    Rectangle {
+        anchors.fill: parent
+        color: backgroundColor
+    }
     width: 200
     height: 200
 

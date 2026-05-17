@@ -8,6 +8,7 @@
 class QTabWidget;
 
 class WindRainChartWidget;
+class SunChartWidget;
 
 class WeatherHistoryWidget : public QWidget
 {
@@ -27,4 +28,5 @@ private:
 private:
 	QPointer<QTabWidget> _tab_widget;
 	QPointer<WindRainChartWidget> _wind_rain_chart;
+	QPointer<SunChartWidget> _sun_chart;
 };

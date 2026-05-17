@@ -1,6 +1,6 @@
 #pragma once
 
-#include "WeatherData.h"
+#include "WeatherHistoryWidgetBase.h"
 
 #include <QtWidgets/QWidget>
 #include <QtCore/QPointer>
@@ -10,7 +10,7 @@ class QChartView;
 class QLineSeries;
 class QAreaSeries;
 
-class WindRainChartWidget : public QWidget
+class WindRainChartWidget : public WeatherHistoryWidgetBase
 {
   Q_OBJECT
 
@@ -18,12 +18,9 @@ public:
   explicit WindRainChartWidget(int history_length_sec, QWidget* parent = nullptr);
   ~WindRainChartWidget();
 
-public Q_SLOTS:
-  void onWeatherData(const WeatherData& data);
-
 private:
-  void setupChart();
-  void updateCharts();
+  void setupChart() override;
+  void updateCharts() override;
 
   QPointer<QChart> _chart;
   QPointer<QChartView> _chart_view;
@@ -33,7 +30,4 @@ private:
   QAreaSeries* _rain_series;
   QLineSeries* _rain_upper_series;
   QLineSeries* _rain_lower_series;
-
-  std::vector<WeatherData> _weather_history;
-  int _history_length_sec;
 };

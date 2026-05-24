@@ -6,6 +6,13 @@ Item {
     id: rootItem
     anchors.fill: parent
 
+    // Background to avoid showing black under transparent shapes
+    Rectangle {
+        anchors.fill: parent
+        color: "white"
+        z: -1
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 10

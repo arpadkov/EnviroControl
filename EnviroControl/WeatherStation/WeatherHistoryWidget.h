@@ -23,7 +23,6 @@ public Q_SLOTS:
 
 private:
 	void initLayout();
-	void updateDisplay(const WeatherData& data);
 
 private:
 	QPointer<QTabWidget> _tab_widget;

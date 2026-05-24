@@ -1,0 +1,41 @@
+QTabWidget
+{
+    background: transparent;
+    border: none;
+}
+
+QTabBar
+{
+    margin: 0px;
+    /* padding: 10px; */
+    spacing: 0px;
+    background: transparent;
+    border: none;
+}
+
+/* Individual tabs */
+QTabBar::tab
+{
+    background: transparent;
+    border: none;
+    padding: 0px;
+    margin: 0px;
+    width: 48px;
+    height: 48px;
+    /* qproperty-alignment: AlignCenter; */
+    /* Try to center icon-only tabs */
+    /* text-align: center; */
+}
+
+/* Selected tab */
+QTabBar::tab:selected
+{
+    background: rgba(0, 0, 255, 120);
+    border: none;
+}
+
+/* Hover (optional but useful for debugging) */
+QTabBar::tab:hover
+{
+    background: rgba(0, 0, 255, 50);
+}

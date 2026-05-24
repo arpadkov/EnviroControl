@@ -22,8 +22,6 @@ private:
   void setupChart() override;
   void updateCharts() override;
 
-  QPointer<QChart> _chart;
-  QPointer<QChartView> _chart_view;
   QPointer<QLineSeries> _wind_series;
 
   // QAreaSeries for rain

@@ -13,7 +13,7 @@ class QAreaSeries;
 class WeatherHistoryWidgetBase : public QWidget
 {
 public:
-	explicit WeatherHistoryWidgetBase(int history_length_sec, QWidget* parent = nullptr);
+	explicit WeatherHistoryWidgetBase(QWidget* parent = nullptr);
 	~WeatherHistoryWidgetBase();
 
 public Q_SLOTS:
@@ -26,6 +26,10 @@ protected:
 	// WeatherHistoryChart tools
 	static void adjustXAxisRange(QChart* chart, const std::vector<WeatherData>& history);
 
-	std::vector<WeatherData> _weather_history;
+	QPointer<QChart> _chart;
+	QPointer<QChartView> _chart_view;
+
+	std::shared_ptr<std::vector<WeatherData>> _weather_history;
 	int _history_length_sec;
+	int _display_length_sec;
 };

@@ -11,42 +11,50 @@
 class QChart;
 class QChartView;
 class QLineSeries;
+class QPointF;
+//class QVector<QPointF>;
 
 // Simple single-line chart widget used by SunChartWidget.
 // Declared here, implemented in sun_chart_widget.cpp
-class SingleSunChart : public QWidget
+class SingleSunChart : public WeatherHistoryWidgetBase
 {
 public:
-		explicit SingleSunChart(const QString& title = QString(), QWidget* parent = nullptr);
-		~SingleSunChart();
+	explicit SingleSunChart(const QString& title = QString(), QWidget* parent = nullptr);
+	~SingleSunChart();
 
-		void setTitle(const QString& title);
-		void setPoints(const QVector<QPointF>& points); // x = ms since epoch
+	void setTitle(const QString& title);
+	void setPoints(const QVector<QPointF>& points); // x = ms since epoch
+	void setGetPointFunc(std::function<double(const WeatherData&)> func);
 
-		QChart* chart() const;
+	QChart* chart() const;
 
 private:
-		QPointer<QChart> _chart;
-		QPointer<QChartView> _chart_view;
-		QLineSeries* _upper_series;
-		QLineSeries* _lower_series;
-		QAreaSeries* _area_series;
-		QGraphicsSimpleTextItem* _title_item;
+	void setupChart() override;
+	void updateCharts() override;
+
+private:
+	QLineSeries* _upper_series;
+	QLineSeries* _lower_series;
+	QAreaSeries* _area_series;
+	QGraphicsSimpleTextItem* _title_item;
+
+	// function to determine, which points are displayed (south/east/west)
+	std::function<double(const WeatherData&)> _get_point_func;
 };
 
-class SunChartWidget : public WeatherHistoryWidgetBase
+class SunChartWidget : public QWidget
 {
-		Q_OBJECT
+	Q_OBJECT
 
 public:
-		explicit SunChartWidget(int history_length_sec, QWidget* parent = nullptr);
-		~SunChartWidget();
+	explicit SunChartWidget(int history_length_sec, QWidget* parent = nullptr);
+	~SunChartWidget();
+
+	void onWeatherData(const WeatherData& data);
 
 private:
-		void setupChart() override;
-		void updateCharts() override;
 
-		QPointer<SingleSunChart> _south_chart;
-		QPointer<SingleSunChart> _east_chart;
-		QPointer<SingleSunChart> _west_chart;
+	QPointer<SingleSunChart> _south_chart;
+	QPointer<SingleSunChart> _east_chart;
+	QPointer<SingleSunChart> _west_chart;
 };

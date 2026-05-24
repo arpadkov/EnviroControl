@@ -11,8 +11,7 @@
 #include <QtCharts/QAreaSeries>
 
 WindRainChartWidget::WindRainChartWidget(int history_length_sec, QWidget* parent)
-	: WeatherHistoryWidgetBase(history_length_sec, parent),
-	_chart(new QChart()), _chart_view(new QChartView(_chart, this)),
+	: WeatherHistoryWidgetBase(parent),
 	_wind_series(new QLineSeries())
 {
 	setupChart();
@@ -32,8 +31,6 @@ void WindRainChartWidget::setupChart()
 {
 	//_chart->setTitle("Wind and Rain");
 	_chart->legend()->show();
-	_chart->setMargins(QMargins(0, 0, 0, 0)); // Set all margins to 0
-	_chart->setContentsMargins(0, 0, 0, 0);  // Set content margins to 0
 
 	// Wind series
 	_wind_series->setName("Wind (m/s)");
@@ -87,7 +84,7 @@ void WindRainChartWidget::updateCharts()
 	_rain_upper_series->clear();
 	_rain_lower_series->clear();
 
-	for (const auto& data : _weather_history)
+	for (const auto& data : *_weather_history)
 	{
 		// Add wind data
 		_wind_series->append(data.timestamp.toMSecsSinceEpoch(), data.wind);
@@ -96,5 +93,5 @@ void WindRainChartWidget::updateCharts()
 		_rain_upper_series->append(data.timestamp.toMSecsSinceEpoch(), data.rain ? 1 : 0);
 	}
 
-	adjustXAxisRange(_chart, _weather_history);
+	adjustXAxisRange(_chart, *_weather_history);
 }

@@ -17,15 +17,9 @@
 
 // SingleSunChart
 SingleSunChart::SingleSunChart(const QString& title, QWidget* parent)
-	: QWidget(parent), _chart(new QChart()), _chart_view(new QChartView(_chart, this)), _upper_series(new QLineSeries(_chart)), _lower_series(new QLineSeries(_chart)), _area_series(nullptr)
+	: WeatherHistoryWidgetBase(parent), _upper_series(new QLineSeries(_chart)), _lower_series(new QLineSeries(_chart)), _area_series(nullptr)
 {
 	_chart->legend()->hide();
-
-	// reduce default margins so plot area uses more vertical space
-	_chart->setMargins(QMargins(0, 0, 0, 0));
-	// also remove any internal contents margins and title space the QChart might reserve
-	_chart->setContentsMargins(QMargins(0, 0, 0, 0));
-	_chart_view->setContentsMargins(0, 0, 0, 0);
 
 	// Prepare area series: lower is baseline at 0 (will be set in setPoints)
 	_area_series = new QAreaSeries(_upper_series, _lower_series);
@@ -85,6 +79,22 @@ QChart* SingleSunChart::chart() const
 	return _chart;
 }
 
+void SingleSunChart::setupChart()
+{}
+
+void SingleSunChart::updateCharts()
+{
+	QVector<QPointF> points;
+	for (const auto& data : *_weather_history)
+	{
+		const qint64 t = data.timestamp.toMSecsSinceEpoch();
+		points.append(QPointF(t, _get_point_func(data)));
+	}
+
+	setPoints(points);
+	WeatherHistoryWidgetBase::adjustXAxisRange(_chart, *_weather_history);
+}
+
 SingleSunChart::~SingleSunChart()
 {}
 
@@ -123,14 +133,21 @@ void SingleSunChart::setPoints(const QVector<QPointF>& points)
 	}
 }
 
+void SingleSunChart::setGetPointFunc(std::function<double(const WeatherData&)> func)
+{
+	_get_point_func = func;
+}
+
 // SunChartWidget
 SunChartWidget::SunChartWidget(int history_length_sec, QWidget* parent)
-	: WeatherHistoryWidgetBase(history_length_sec, parent),
+	: QWidget(parent),
 	_south_chart(new SingleSunChart("South", this)),
 	_east_chart(new SingleSunChart("East", this)),
 	_west_chart(new SingleSunChart("West", this))
 {
-	setupChart();
+	_south_chart->setGetPointFunc([](const WeatherData& data)	{return data.sun_south;});
+	_east_chart->setGetPointFunc([](const WeatherData& data) {return data.sun_east;});
+	_west_chart->setGetPointFunc([](const WeatherData& data) {return data.sun_west;});
 
 	auto layout = new QVBoxLayout(this);
 	layout->addWidget(_south_chart);
@@ -145,46 +162,10 @@ SunChartWidget::SunChartWidget(int history_length_sec, QWidget* parent)
 SunChartWidget::~SunChartWidget()
 {}
 
-void SunChartWidget::setupChart()
+void SunChartWidget::onWeatherData(const WeatherData & data)
 {
-	// nothing here; charts are created individually
-}
-
-void SunChartWidget::updateCharts()
-{
-	QVector<QPointF> south_points;
-	QVector<QPointF> east_points;
-	QVector<QPointF> west_points;
-
-	qint64 min_ts = std::numeric_limits<qint64>::max();
-	qint64 max_ts = 0;
-
-	for (const auto& data : _weather_history)
-	{
-		const qint64 t = data.timestamp.toMSecsSinceEpoch();
-		south_points.append(QPointF(t, data.sun_south));
-		east_points.append(QPointF(t, data.sun_east));
-		west_points.append(QPointF(t, data.sun_west));
-		min_ts = std::min(min_ts, t);
-		max_ts = std::max(max_ts, t);
-	}
-
-	if (_south_chart)
-		_south_chart->setPoints(south_points);
-	if (_east_chart)
-		_east_chart->setPoints(east_points);
-	if (_west_chart)
-		_west_chart->setPoints(west_points);
-
-	// Use shared utility to adjust X axis range on each chart
-	if (min_ts <= max_ts)
-	{
-		if (_south_chart && _south_chart->chart())
-			WeatherHistoryWidgetBase::adjustXAxisRange(_south_chart->chart(), _weather_history);
-		if (_east_chart && _east_chart->chart())
-			WeatherHistoryWidgetBase::adjustXAxisRange(_east_chart->chart(), _weather_history);
-		if (_west_chart && _west_chart->chart())
-			WeatherHistoryWidgetBase::adjustXAxisRange(_west_chart->chart(), _weather_history);
-	}
+	_south_chart->onWeatherData(data);
+	_east_chart->onWeatherData(data);
+	_west_chart->onWeatherData(data);
 }
 

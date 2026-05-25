@@ -72,6 +72,9 @@ void SingleSunChart::setupChart()
 
 void SingleSunChart::updateCharts()
 {
+	QElapsedTimer timer;
+	timer.start();
+
 	QVector<QPointF> points;
 	for (const auto& data : *_weather_history)
 	{
@@ -80,7 +83,10 @@ void SingleSunChart::updateCharts()
 	}
 
 	setPoints(points);
+
+	qDebug() << " SINGLE SUN CHART UPDATE TOOK" << timer.elapsed() << "ms for" << points.size() << "points";
 	WeatherHistoryWidgetBase::adjustXAxisRange();
+	qDebug() << " SINGLE SUN CHART ADJUST X-AXIS TOOK" << timer.elapsed() << "ms";
 }
 
 SingleSunChart::~SingleSunChart()

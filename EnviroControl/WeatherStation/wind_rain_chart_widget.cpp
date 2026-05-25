@@ -9,6 +9,7 @@
 #include <QtCharts/QLineSeries>
 #include <QtCharts/QValueAxis>
 #include <QtCharts/QAreaSeries>
+#include <QtCore/QElapsedTimer>
 
 WindRainChartWidget::WindRainChartWidget(std::shared_ptr<std::vector<WeatherData>> weather_history, QWidget* parent)
 	: WeatherHistoryWidgetBase(weather_history, parent),

@@ -13,6 +13,7 @@
 #include <QtCharts/QValueAxis>
 #include <QtCharts/QAreaSeries>
 #include <QtCore/QMargins>
+#include <QtCore/QElapsedTimer>
 
 // SingleSunChart
 SingleSunChart::SingleSunChart(std::shared_ptr<std::vector<WeatherData>> weather_history, const QString& title, QWidget* parent)

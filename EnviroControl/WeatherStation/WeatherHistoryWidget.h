@@ -25,6 +25,9 @@ private:
 	void initLayout();
 
 private:
+	std::shared_ptr<std::vector<WeatherData>> _weather_history;
+	int _history_length_sec;
+
 	QPointer<QTabWidget> _tab_widget;
 	QPointer<WindRainChartWidget> _wind_rain_chart;
 	QPointer<SunChartWidget> _sun_chart;

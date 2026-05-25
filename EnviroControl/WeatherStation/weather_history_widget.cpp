@@ -14,7 +14,7 @@
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QHBoxLayout>
 
-static const int history_length_sec = 900; // 15 minutes
+static const int DEFAULT_HISTORY_LENGTH_SEC = 86400;
 
 namespace
 {
@@ -43,8 +43,10 @@ void stylaTab(int id, const QString& icon_path, QPointer<QTabWidget> tab_widget)
 }
 
 WeatherHistoryWidget::WeatherHistoryWidget(QWidget* parent)
-	: QWidget(parent)
+	: QWidget(parent), _history_length_sec(DEFAULT_HISTORY_LENGTH_SEC)
 {
+	_weather_history = std::make_shared<std::vector<WeatherData>>();
+
 	initLayout();
 }
 
@@ -53,10 +55,17 @@ WeatherHistoryWidget::~WeatherHistoryWidget()
 
 void WeatherHistoryWidget::onWeatherData(const WeatherData& data)
 {
+	_weather_history->push_back(data);
+
+	// Limit history to the specified time duration length
+	QDateTime oldest_to_keep = data.timestamp.addSecs(-_history_length_sec);
+	while (!_weather_history->empty() && _weather_history->front().timestamp < oldest_to_keep)
+		_weather_history->erase(_weather_history->begin());
+
 	if (_wind_rain_chart && _sun_chart)
 	{
-		_wind_rain_chart->onWeatherData(data);
-		_sun_chart->onWeatherData(data);
+		_wind_rain_chart->onWeatherData();
+		_sun_chart->onWeatherData();
 	}
 }
 
@@ -84,12 +93,12 @@ void WeatherHistoryWidget::initLayout()
 	layout->addWidget(_tab_widget);
 
 	// Init wind/rain chart
-	_wind_rain_chart = new WindRainChartWidget(history_length_sec, this);
+	_wind_rain_chart = new WindRainChartWidget(_weather_history, this);
 	int id_wind_rain = _tab_widget->addTab(_wind_rain_chart, "");
 	stylaTab(id_wind_rain, ":/main_tabs/icons/close.svg", _tab_widget);
 
 	// Init sun chart
-	_sun_chart = new SunChartWidget(history_length_sec, this);
+	_sun_chart = new SunChartWidget(_weather_history, this);
 	int id_sun = _tab_widget->addTab(_sun_chart, "");
 	stylaTab(id_sun, ":/main_tabs/icons/close.svg", _tab_widget);
 }

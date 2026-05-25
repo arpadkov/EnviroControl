@@ -19,7 +19,7 @@ class QPointF;
 class SingleSunChart : public WeatherHistoryWidgetBase
 {
 public:
-	explicit SingleSunChart(const QString& title = QString(), QWidget* parent = nullptr);
+	explicit SingleSunChart(std::shared_ptr<std::vector<WeatherData>> weather_history, const QString& title = QString(), QWidget* parent = nullptr);
 	~SingleSunChart();
 
 	void setTitle(const QString& title);
@@ -47,10 +47,10 @@ class SunChartWidget : public QWidget
 	Q_OBJECT
 
 public:
-	explicit SunChartWidget(int history_length_sec, QWidget* parent = nullptr);
+	explicit SunChartWidget(std::shared_ptr<std::vector<WeatherData>> weather_history, QWidget* parent = nullptr);
 	~SunChartWidget();
 
-	void onWeatherData(const WeatherData& data);
+	void onWeatherData();
 
 private:
 

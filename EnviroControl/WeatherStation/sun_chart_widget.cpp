@@ -16,8 +16,8 @@
 #include <QtCore/QMargins>
 
 // SingleSunChart
-SingleSunChart::SingleSunChart(const QString& title, QWidget* parent)
-	: WeatherHistoryWidgetBase(parent), _upper_series(new QLineSeries(_chart)), _lower_series(new QLineSeries(_chart)), _area_series(nullptr)
+SingleSunChart::SingleSunChart(std::shared_ptr<std::vector<WeatherData>> weather_history, const QString& title, QWidget* parent)
+	: WeatherHistoryWidgetBase(weather_history, parent), _upper_series(new QLineSeries(_chart)), _lower_series(new QLineSeries(_chart)), _area_series(nullptr)
 {
 	_chart->legend()->hide();
 
@@ -92,7 +92,7 @@ void SingleSunChart::updateCharts()
 	}
 
 	setPoints(points);
-	WeatherHistoryWidgetBase::adjustXAxisRange(_chart, *_weather_history);
+	WeatherHistoryWidgetBase::adjustXAxisRange();
 }
 
 SingleSunChart::~SingleSunChart()
@@ -139,11 +139,11 @@ void SingleSunChart::setGetPointFunc(std::function<double(const WeatherData&)> f
 }
 
 // SunChartWidget
-SunChartWidget::SunChartWidget(int history_length_sec, QWidget* parent)
+SunChartWidget::SunChartWidget(std::shared_ptr<std::vector<WeatherData>> weather_history, QWidget* parent)
 	: QWidget(parent),
-	_south_chart(new SingleSunChart("South", this)),
-	_east_chart(new SingleSunChart("East", this)),
-	_west_chart(new SingleSunChart("West", this))
+	_south_chart(new SingleSunChart(weather_history, "South", this)),
+	_east_chart(new SingleSunChart(weather_history, "East", this)),
+	_west_chart(new SingleSunChart(weather_history, "West", this))
 {
 	_south_chart->setGetPointFunc([](const WeatherData& data)	{return data.sun_south;});
 	_east_chart->setGetPointFunc([](const WeatherData& data) {return data.sun_east;});
@@ -162,10 +162,10 @@ SunChartWidget::SunChartWidget(int history_length_sec, QWidget* parent)
 SunChartWidget::~SunChartWidget()
 {}
 
-void SunChartWidget::onWeatherData(const WeatherData & data)
+void SunChartWidget::onWeatherData()
 {
-	_south_chart->onWeatherData(data);
-	_east_chart->onWeatherData(data);
-	_west_chart->onWeatherData(data);
+	_south_chart->onWeatherData();
+	_east_chart->onWeatherData();
+	_west_chart->onWeatherData();
 }
 

@@ -10,8 +10,8 @@
 #include <QtCharts/QValueAxis>
 #include <QtCharts/QAreaSeries>
 
-WindRainChartWidget::WindRainChartWidget(int history_length_sec, QWidget* parent)
-	: WeatherHistoryWidgetBase(parent),
+WindRainChartWidget::WindRainChartWidget(std::shared_ptr<std::vector<WeatherData>> weather_history, QWidget* parent)
+	: WeatherHistoryWidgetBase(weather_history, parent),
 	_wind_series(new QLineSeries())
 {
 	setupChart();
@@ -93,5 +93,5 @@ void WindRainChartWidget::updateCharts()
 		_rain_upper_series->append(data.timestamp.toMSecsSinceEpoch(), data.rain ? 1 : 0);
 	}
 
-	adjustXAxisRange(_chart, *_weather_history);
+	adjustXAxisRange();
 }

@@ -15,7 +15,7 @@ class WindRainChartWidget : public WeatherHistoryWidgetBase
   Q_OBJECT
 
 public:
-  explicit WindRainChartWidget(int history_length_sec, QWidget* parent = nullptr);
+  explicit WindRainChartWidget(std::shared_ptr<std::vector<WeatherData>> weather_history, QWidget* parent = nullptr);
   ~WindRainChartWidget();
 
 private:

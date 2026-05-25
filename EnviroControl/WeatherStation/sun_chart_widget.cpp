@@ -12,7 +12,6 @@
 #include <QtCharts/QLineSeries>
 #include <QtCharts/QValueAxis>
 #include <QtCharts/QAreaSeries>
-#include <QtGui/QLinearGradient>
 #include <QtCore/QMargins>
 
 // SingleSunChart
@@ -25,19 +24,8 @@ SingleSunChart::SingleSunChart(std::shared_ptr<std::vector<WeatherData>> weather
 	_area_series = new QAreaSeries(_upper_series, _lower_series);
 	_area_series->setName(title);
 
-	// Gradient fill: yellow at top to transparent at bottom
-	QLinearGradient gradient;
-	gradient.setStart(0, 0);
-	gradient.setFinalStop(0, 1);
-	gradient.setCoordinateMode(QGradient::ObjectBoundingMode);
-	QColor topColor(Qt::yellow);
-	topColor.setAlphaF(0.9);
-	QColor bottomColor(Qt::yellow);
-	bottomColor.setAlphaF(0.0);
-	gradient.setColorAt(0.0, topColor);
-	gradient.setColorAt(1.0, bottomColor);
-	_area_series->setBrush(gradient);
-	_area_series->setPen(QPen(Qt::NoPen));
+		// Set gradient fill using helper
+		WeatherHistoryWidgetBase::setAreaSeriesFill(_area_series, QColor(Qt::yellow));
 	_chart->addSeries(_area_series);
 	_chart_view->setRenderHint(QPainter::Antialiasing);
 

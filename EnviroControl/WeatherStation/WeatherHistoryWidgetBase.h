@@ -5,6 +5,7 @@
 #include <QtWidgets/QWidget>
 #include <QtCore/QPointer>
 #include <QtCharts/QChartView>
+#include <QtGui/QColor>
 
 class QChart;
 class QLineSeries;
@@ -36,6 +37,10 @@ class WeatherHistoryWidgetBase : public QWidget
 public:
 	explicit WeatherHistoryWidgetBase(std::shared_ptr<std::vector<WeatherData>> weather_history, QWidget* parent = nullptr);
 	~WeatherHistoryWidgetBase();
+
+	// Helper to set a gradient fill on an area series. The topColor will be used
+	// as the opaque color at the top; a transparent variant will be used at the bottom.
+	static void setAreaSeriesFill(QAreaSeries* area, const QColor& topColor);
 
 public Q_SLOTS:
 	void onWeatherData();

@@ -3,6 +3,9 @@
 #include <QtCharts/QDateTimeAxis>
 #include <QtCharts/QChart>
 #include <QtCharts/QXYSeries>
+#include <QtCharts/QAreaSeries>
+#include <QtGui/QLinearGradient>
+#include <QtGui/QPen>
 
 static const int DEFAULT_DISPLAY_LENGTH_SEC = 900;
 
@@ -11,6 +14,28 @@ ScrollableChartView::ScrollableChartView(QChart* chart, QWidget* parent)
 {
 	setRubberBand(QChartView::NoRubberBand);
 	setMouseTracking(true);
+}
+
+void WeatherHistoryWidgetBase::setAreaSeriesFill(QAreaSeries* area, const QColor& topColor)
+{
+		if (!area)
+				return;
+
+		// Create gradient from top (opaque topColor) to bottom (transparent)
+		QLinearGradient gradient;
+		gradient.setStart(0, 0);
+		gradient.setFinalStop(0, 1);
+		gradient.setCoordinateMode(QGradient::ObjectBoundingMode);
+
+		QColor top = topColor;
+		top.setAlphaF(0.9);
+		QColor bottom = topColor;
+		bottom.setAlphaF(0.0);
+		gradient.setColorAt(0.0, top);
+		gradient.setColorAt(1.0, bottom);
+
+		area->setBrush(gradient);
+		area->setPen(QPen(Qt::NoPen));
 }
 
 ScrollableChartView::~ScrollableChartView()

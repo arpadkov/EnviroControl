@@ -49,7 +49,7 @@ void WindRainChartWidget::setupChart()
 	// Set a semi-transparent blue color for the filled area
 	QColor area_color("#87CEEB");
 	area_color.setAlphaF(0.3);
-	_rain_series->setColor(area_color);
+	setAreaSeriesFill(_rain_series, area_color);
 
 	// Make the boundary lines invisible
 	QPen transparentPen(Qt::transparent);

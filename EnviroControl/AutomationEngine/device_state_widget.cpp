@@ -74,9 +74,13 @@ void DeviceStateWidget::onDeviceStatesUpdated(const Device::DeviceStates& calula
 			else
 				icon_name = "unknown";
 
-
-			auto icon = QIcon(QString(":/manual_ctrl/icons/%1.svg").arg(icon_name));
-			state_label->setPixmap(icon.pixmap(QSize(32, 32)));
+			if (!icon_name.isEmpty())
+			{
+				// TODO: icons should be cached and not recreated every time
+				// Having the "unknown" icon create an exception.. wtf
+				auto icon = QIcon(QString(":/manual_ctrl/icons/%1.svg").arg(icon_name));
+				state_label->setPixmap(icon.pixmap(QSize(32, 32)));
+			}
 			// Update the label text
 		}
 		else

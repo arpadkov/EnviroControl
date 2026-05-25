@@ -9,6 +9,7 @@
 #include <QtCore/QTimer>
 #include <QtCore/QPointer>
 
+#include <deque>
 
 class QThread;
 
@@ -66,8 +67,8 @@ private:
 
 private:
 	QPointer<QTimer> _calc_timer = nullptr;
-	std::vector<WeatherData> _weather_data_history;
-	std::vector<IndoorData> _indoor_data_history;
+	std::deque<WeatherData> _weather_data_history;
+	std::deque<IndoorData> _indoor_data_history;
 	int _data_history_secs = 3600;
 	Cfg::DeviceConfigList _devices_cfg;
 	RuleSet _rule_set;

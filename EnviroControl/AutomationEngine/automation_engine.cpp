@@ -10,18 +10,17 @@ namespace Automation
 namespace
 {
 template<typename T>
-void addCircularBufferData(std::vector<T>& buffer, const T& new_data, int max_size_seconds)
+void addCircularBufferData(std::deque<T>& buffer, const T& new_data, int max_size_seconds)
 {
-	buffer.insert(buffer.begin(), new_data);
+	buffer.push_front(new_data);
 
 	const QDateTime& newest_time = new_data.timestamp;
 	while (!buffer.empty())
 	{
-		const QDateTime& oldest_time = buffer.back().timestamp;
-		if (oldest_time.secsTo(newest_time) < max_size_seconds)
+		const QDateTime& oldest_time = buffer.front().timestamp;
 			break;
 
-		buffer.pop_back();
+		buffer.pop_front();
 	}
 }
 }
@@ -139,7 +138,9 @@ void AutomationEngine::onCalcTimeout()
 
 	try
 	{
-		const auto& calculated_states = RulesProcessor::calculateDeviceStates(_rule_set, device_ids, _weather_data_history, _indoor_data_history);
+		const auto& weather_data_history = std::vector<WeatherData>(_weather_data_history.begin(), _weather_data_history.end());
+		const auto& indoor_data_history = std::vector<IndoorData>(_indoor_data_history.begin(), _indoor_data_history.end());
+		const auto& calculated_states = RulesProcessor::calculateDeviceStates(_rule_set, device_ids, weather_data_history, indoor_data_history);
 		Q_EMIT deviceStatesUpdated(calculated_states);
 	}
 	catch (const std::runtime_error& e)

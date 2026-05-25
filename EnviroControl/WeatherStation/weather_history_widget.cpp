@@ -14,7 +14,7 @@
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QHBoxLayout>
 
-static const int DEFAULT_HISTORY_LENGTH_SEC = 3600;
+static const int DEFAULT_HISTORY_LENGTH_SEC = 1800;
 
 namespace
 {

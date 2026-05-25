@@ -5,8 +5,8 @@
         <file>icons/sunblind_open.svg</file>
         <file>icons/window_close.svg</file>
         <file>icons/window_open.svg</file>
-        <file>icons/unknown.svg</file>
         <file>icons/auto_mode.svg</file>
+        <file>icons/unknown.svg</file>
     </qresource>
     <qresource prefix="/main_tabs">
         <file>icons/close.svg</file>

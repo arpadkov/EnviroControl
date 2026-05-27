@@ -85,9 +85,7 @@ void SingleSunChart::updateCharts()
 
 	setPoints(points);
 
-	qDebug() << " SINGLE SUN CHART UPDATE TOOK" << timer.elapsed() << "ms for" << points.size() << "points";
 	WeatherHistoryWidgetBase::adjustXAxisRange();
-	qDebug() << " SINGLE SUN CHART ADJUST X-AXIS TOOK" << timer.elapsed() << "ms";
 }
 
 SingleSunChart::~SingleSunChart()

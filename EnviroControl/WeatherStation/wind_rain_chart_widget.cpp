@@ -97,7 +97,5 @@ void WindRainChartWidget::updateCharts()
 		_rain_upper_series->append(data.timestamp.toMSecsSinceEpoch(), data.rain ? 1 : 0);
 	}
 
-	qDebug() << " WIND RAIN CHART UPDATE TOOK" << timer.elapsed() << "ms for" << _weather_history->size() << "points";
 	adjustXAxisRange();
-	qDebug() << " WIND RAIN CHART ADJUST X-AXIS TOOK" << timer.elapsed() << "ms";
 }

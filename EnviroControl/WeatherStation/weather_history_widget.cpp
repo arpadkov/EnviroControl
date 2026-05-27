@@ -55,6 +55,7 @@ WeatherHistoryWidget::~WeatherHistoryWidget()
 
 void WeatherHistoryWidget::onWeatherData(const WeatherData& data)
 {
+
 	_weather_history->push_back(data);
 
 	// Limit history to the specified time duration length
@@ -62,11 +63,12 @@ void WeatherHistoryWidget::onWeatherData(const WeatherData& data)
 	while (!_weather_history->empty() && _weather_history->front().timestamp < oldest_to_keep)
 		_weather_history->erase(_weather_history->begin());
 
-	if (_wind_rain_chart && _sun_chart)
-	{
-		_wind_rain_chart->onWeatherData();
-		_sun_chart->onWeatherData();
-	}
+	// Temporarily disable updates
+	//if (_wind_rain_chart && _sun_chart)
+	//{
+	//	_wind_rain_chart->onWeatherData();
+	//	_sun_chart->onWeatherData();
+	//}
 }
 
 void WeatherHistoryWidget::initLayout()

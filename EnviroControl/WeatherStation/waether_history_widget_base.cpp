@@ -14,28 +14,29 @@ ScrollableChartView::ScrollableChartView(QChart* chart, QWidget* parent)
 {
 	setRubberBand(QChartView::NoRubberBand);
 	setMouseTracking(true);
+	setAttribute(Qt::WA_AcceptTouchEvents, true);
 }
 
 void WeatherHistoryWidgetBase::setAreaSeriesFill(QAreaSeries* area, const QColor& topColor)
 {
-		if (!area)
-				return;
+	if (!area)
+		return;
 
-		// Create gradient from top (opaque topColor) to bottom (transparent)
-		QLinearGradient gradient;
-		gradient.setStart(0, 0);
-		gradient.setFinalStop(0, 1);
-		gradient.setCoordinateMode(QGradient::ObjectBoundingMode);
+	// Create gradient from top (opaque topColor) to bottom (transparent)
+	QLinearGradient gradient;
+	gradient.setStart(0, 0);
+	gradient.setFinalStop(0, 1);
+	gradient.setCoordinateMode(QGradient::ObjectBoundingMode);
 
-		QColor top = topColor;
-		top.setAlphaF(0.9);
-		QColor bottom = topColor;
-		bottom.setAlphaF(0.0);
-		gradient.setColorAt(0.0, top);
-		gradient.setColorAt(1.0, bottom);
+	QColor top = topColor;
+	top.setAlphaF(0.9);
+	QColor bottom = topColor;
+	bottom.setAlphaF(0.0);
+	gradient.setColorAt(0.0, top);
+	gradient.setColorAt(1.0, bottom);
 
-		area->setBrush(gradient);
-		area->setPen(QPen(Qt::NoPen));
+	area->setBrush(gradient);
+	area->setPen(QPen(Qt::NoPen));
 }
 
 ScrollableChartView::~ScrollableChartView()
@@ -53,7 +54,8 @@ void ScrollableChartView::mousePressEvent(QMouseEvent* event)
 	{
 		_dragging = true;
 		_last_pos = event->pos();
-		setCursor(Qt::DragMoveCursor);
+		// Show a hand cursor immediately on press to indicate the view can be dragged
+		setCursor(Qt::ClosedHandCursor);
 	}
 
 	QChartView::mousePressEvent(event);
@@ -115,6 +117,7 @@ void ScrollableChartView::mouseReleaseEvent(QMouseEvent* event)
 	if (event->button() == Qt::LeftButton)
 	{
 		_dragging = false;
+		// Restore the default cursor when the press is released
 		setCursor(Qt::ArrowCursor);
 	}
 
@@ -149,7 +152,7 @@ void WeatherHistoryWidgetBase::showEvent(QShowEvent* event)
 void WeatherHistoryWidgetBase::adjustXAxisRange(bool force)
 {
 	auto x_axis = qobject_cast<QDateTimeAxis*>(_chart->axes(Qt::Horizontal).at(0));
-	if (!x_axis)
+	if (!x_axis || _weather_history->empty())
 		return;
 
 	QDateTime first = _weather_history->front().timestamp;

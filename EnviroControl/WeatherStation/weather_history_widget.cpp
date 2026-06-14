@@ -18,6 +18,77 @@ static const int DEFAULT_HISTORY_LENGTH_SEC = 1800;
 
 namespace
 {
+static const int SHORT_BUFFER_SEC = 10;
+
+// Compute averaged WeatherData from a buffer of samples.
+static WeatherData computeAveragedWeatherData(const std::vector<WeatherData>& buf)
+{
+	WeatherData a{};
+	double t_sum = 0.0;
+	double ss_sum = 0.0;
+	double se_sum = 0.0;
+	double sw_sum = 0.0;
+	double daylight_sum = 0.0;
+	double wind_sum = 0.0;
+	bool twighlight_any = false;
+	bool rain_any = false;
+
+	for (const auto& s : buf)
+	{
+		t_sum += s.temperature;
+		ss_sum += s.sun_south;
+		se_sum += s.sun_east;
+		sw_sum += s.sun_west;
+		daylight_sum += s.daylight;
+		wind_sum += s.wind;
+		twighlight_any = twighlight_any || s.twighlight;
+		rain_any = rain_any || s.rain;
+	}
+
+	double count = static_cast<double>(buf.size());
+	a.temperature = t_sum / count;
+	a.sun_south = ss_sum / count;
+	a.sun_east = se_sum / count;
+	a.sun_west = sw_sum / count;
+	a.daylight = daylight_sum / count;
+	a.wind = wind_sum / count;
+	a.twighlight = twighlight_any;
+	a.rain = rain_any;
+	a.timestamp = buf.back().timestamp;
+	return a;
+}
+
+// Process the short-term buffer: remove too-old entries, and when the buffer spans at
+// least SHORT_BUFFER_SEC seconds, compute an averaged WeatherData entry, push it to
+// the main history and trim the main history to the configured duration.
+bool processShortBuffer(std::vector<WeatherData>& short_buffer,
+	const WeatherData& latest,
+	std::shared_ptr<std::vector<WeatherData>> history,
+	int history_length_sec)
+{
+	if (short_buffer.empty())
+		return false;
+
+	QDateTime earliest = short_buffer.front().timestamp;
+	qint64 span = earliest.msecsTo(short_buffer.back().timestamp);
+	if (span < (qint64)SHORT_BUFFER_SEC * 1000)
+		return false;
+
+	// Compute averaged sample and push to history
+	WeatherData avg = computeAveragedWeatherData(short_buffer);
+	history->push_back(avg);
+
+	// Clear short buffer after aggregation
+	short_buffer.clear();
+
+	// Limit history to the specified time duration length
+	QDateTime oldest_to_keep = latest.timestamp.addSecs(-history_length_sec);
+	while (!history->empty() && history->front().timestamp < oldest_to_keep)
+		history->erase(history->begin());
+
+	return true;
+}
+
 QString getStyleSheet(const QString& file_name)
 {
 	QFile style_file(QString(":/styles/style_sheets/%1.qss").arg(file_name));
@@ -55,20 +126,16 @@ WeatherHistoryWidget::~WeatherHistoryWidget()
 
 void WeatherHistoryWidget::onWeatherData(const WeatherData& data)
 {
+	// Append incoming sample to short-term buffer and process/aggregate when needed
+	_short_buffer.push_back(data);
+	bool pushed = processShortBuffer(_short_buffer, data, _weather_history, _history_length_sec);
 
-	_weather_history->push_back(data);
-
-	// Limit history to the specified time duration length
-	QDateTime oldest_to_keep = data.timestamp.addSecs(-_history_length_sec);
-	while (!_weather_history->empty() && _weather_history->front().timestamp < oldest_to_keep)
-		_weather_history->erase(_weather_history->begin());
-
-	// Temporarily disable updates
-	//if (_wind_rain_chart && _sun_chart)
-	//{
-	//	_wind_rain_chart->onWeatherData();
-	//	_sun_chart->onWeatherData();
-	//}
+	// If a new averaged sample was pushed to history, update charts
+	if (pushed && !_weather_history->empty())
+	{
+		_wind_rain_chart->onWeatherData();
+		_sun_chart->onWeatherData();
+	}
 }
 
 void WeatherHistoryWidget::initLayout()

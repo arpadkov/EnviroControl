@@ -2,6 +2,7 @@
 
 #include <QtWidgets/QWidget>
 #include <QtCore/QPointer>
+#include <vector>
 
 #include "WeatherData.h"
 
@@ -26,7 +27,10 @@ private:
 
 private:
 	std::shared_ptr<std::vector<WeatherData>> _weather_history;
-	int _history_length_sec;
+		int _history_length_sec;
+
+		// Buffer holding fine-grained incoming WeatherData for a short period before aggregation
+		std::vector<WeatherData> _short_buffer;
 
 	QPointer<QTabWidget> _tab_widget;
 	QPointer<WindRainChartWidget> _wind_rain_chart;

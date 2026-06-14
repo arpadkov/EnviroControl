@@ -15,7 +15,9 @@ Item {
     Image {
         id: windWheel
         source: "qrc:/WeatherStation/icons/wind_wheel.svg"
-        anchors.centerIn: parent
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenterOffset: 16
         width: 150
         height: 150
 
@@ -36,9 +38,10 @@ Item {
     // Wind speed label in a rounded box (meters per second)
     Rectangle {
         id: windSpeedBox
-        anchors.top: windWheel.bottom
-        anchors.topMargin: 16
+        anchors.bottom: windWheel.top
+        anchors.bottomMargin: 36
         anchors.horizontalCenter: parent.horizontalCenter
+        z: 1
         color: "#22000000" // subtle translucent background
         radius: 10
         border.width: 0
